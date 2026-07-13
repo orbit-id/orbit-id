@@ -10,7 +10,7 @@ in the spirit of Snowflake and ULID — not merely a one-off library.
 - [x] Draft Orbit ID v1 bit layout and epoch
 - [x] Canonical test vectors
 - [x] Type registry draft and node-management guidance
-- [ ] Finalize official Type assignments
+- [x] Finalize official Type assignments
 - [ ] Decide production Node allocation and reuse quarantine
 - [ ] Decide default clock-rollback tolerance
 - [ ] Conformance / test suite

@@ -9,36 +9,33 @@ Type は物理テーブルではなく、長期間意味が変わらない論理
 
 - 値の範囲は `0..63` です。
 - 一度 stable release で割り当てた値の意味は変更・再利用しません。
+- stable v1 より前は、migration impact を記した pull request がある場合に限り、draft 割当を
+  変更できます。
 - 廃止した値は `DEPRECATED` として予約し続けます。
-- 実験用の割当は stable data に保存しません。
+- 実験用の割当は stable data に保存しません。使い捨て環境でのみ私的な Type 空間を使い、
+  共有本番データへ持ち込まないでください。
 - 新しい Type は、既存 Type で表現できない永続的な identity boundary がある場合だけ追加します。
 - Type の追加・変更は pull request で理由と migration impact を記録します。
 
 ## Assigned values
 
-現時点では v1 が Draft のため、`RESERVED` 以外は正式割当ではありません。
+以下は v1 の **draft-official** な Orbit Type 割当です。実装とドキュメントはこれらの値を使う
+べきです。意味は stable v1 まで変更可能であり、stable v1 以降は上記の registry 規則に従います。
 
 | Value | Name | Status | Description |
 | ---: | --- | --- | --- |
 | 0 | `RESERVED` | Reserved | 発行禁止。未指定値・sentinel 用 |
-| 1..63 | — | Unassigned | 将来の割当用 |
-
-## Initial proposal
-
-以下は議論開始用の候補です。stable specification へ昇格するまでは使用しません。
-
-| Proposed value | Name | Intended meaning |
-| ---: | --- | --- |
-| 1 | `ACCOUNT` | 人またはサービスのアカウント identity |
-| 2 | `TALENT` | タレント identity |
-| 3 | `EVENT` | イベント identity |
-| 4 | `CONTENT` | 公開・配信コンテンツ identity |
-| 5 | `MEMBERSHIP` | メンバーシップ identity |
-| 6 | `TRANSACTION` | 金銭・ポイント等の取引 identity |
-| 7 | `NOTIFICATION` | 通知 identity |
-| 8 | `AUDIT` | 監査イベント identity |
-| 9 | `MEDIA` | メディア資産 identity |
-| 10 | `ORGANIZATION` | 組織 identity |
+| 1 | `ACCOUNT` | Assigned (draft) | 人またはサービスのアカウント identity |
+| 2 | `TALENT` | Assigned (draft) | タレント identity |
+| 3 | `EVENT` | Assigned (draft) | イベント identity |
+| 4 | `CONTENT` | Assigned (draft) | 公開・配信コンテンツ identity |
+| 5 | `MEMBERSHIP` | Assigned (draft) | メンバーシップ identity |
+| 6 | `TRANSACTION` | Assigned (draft) | 金銭・ポイント等の取引 identity |
+| 7 | `NOTIFICATION` | Assigned (draft) | 通知 identity |
+| 8 | `AUDIT` | Assigned (draft) | 監査イベント identity |
+| 9 | `MEDIA` | Assigned (draft) | メディア資産 identity |
+| 10 | `ORGANIZATION` | Assigned (draft) | 組織 identity |
+| 11..63 | — | Unassigned | 将来の割当用 |
 
 ## Modeling guidance
 

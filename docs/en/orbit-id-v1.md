@@ -193,9 +193,11 @@ Existing IDs MUST NOT be reinterpreted as a new format.
 
 ## 14. Open items before stable v1
 
-- Official Type ID assignments
 - Production Node ID allocation and reuse quarantine
 - Default clock-rollback tolerance
 - Conformance test suite
 - Canonical API error codes
 - External versioning policy for identifying v2
+
+Draft-official Type assignments live in the [Type Registry](type-registry.md). They remain mutable
+until stable v1.

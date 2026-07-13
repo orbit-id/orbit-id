@@ -190,9 +190,10 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 
 ## 14. Open items before stable v1
 
-- Type ID の正式割当
 - Node ID の本番割当方式と再利用待機時間
 - 時計巻き戻りの既定許容時間
 - conformance test suite
 - canonical API error codes
 - v2 を識別する外部 versioning 方針
+
+draft-official な Type 割当は [Type Registry](type-registry.md) を参照。stable v1 まで変更可能です。

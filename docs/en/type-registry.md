@@ -9,37 +9,34 @@ Do not encode implementation details such as state, permissions, roles, or table
 
 - Valid values are `0..63`.
 - Once assigned in a stable release, a value's meaning MUST NOT be changed or reused.
+- Before stable v1, draft assignments MAY change only via a documented pull request with migration
+  impact.
 - Retired values remain reserved as `DEPRECATED`.
-- Experimental assignments MUST NOT be persisted in stable data.
+- Experimental assignments MUST NOT be persisted in stable data. Use a private / non-registry Type
+  space only in disposable environments; do not ship those values in shared production data.
 - Add a new Type only when there is a persistent identity boundary that existing Types cannot express.
 - Record the rationale and migration impact for Type additions or changes in a pull request.
 
 ## Assigned values
 
-Because v1 is still Draft, only `RESERVED` is an official assignment.
+The following values are the **draft-official** Orbit Type assignments for v1. They are the values
+implementations and documentation SHOULD use. Meanings remain changeable until stable v1; after
+stable v1 they follow the registry rules above.
 
 | Value | Name | Status | Description |
 | ---: | --- | --- | --- |
 | 0 | `RESERVED` | Reserved | Must not be issued. For unspecified / sentinel use |
-| 1..63 | — | Unassigned | Reserved for future assignment |
-
-## Initial proposal
-
-The following are discussion starters only. Do not use them until promoted into the stable
-specification.
-
-| Proposed value | Name | Intended meaning |
-| ---: | --- | --- |
-| 1 | `ACCOUNT` | Account identity for a person or service |
-| 2 | `TALENT` | Talent identity |
-| 3 | `EVENT` | Event identity |
-| 4 | `CONTENT` | Published or delivered content identity |
-| 5 | `MEMBERSHIP` | Membership identity |
-| 6 | `TRANSACTION` | Monetary / points transaction identity |
-| 7 | `NOTIFICATION` | Notification identity |
-| 8 | `AUDIT` | Audit event identity |
-| 9 | `MEDIA` | Media asset identity |
-| 10 | `ORGANIZATION` | Organization identity |
+| 1 | `ACCOUNT` | Assigned (draft) | Account identity for a person or service |
+| 2 | `TALENT` | Assigned (draft) | Talent identity |
+| 3 | `EVENT` | Assigned (draft) | Event identity |
+| 4 | `CONTENT` | Assigned (draft) | Published or delivered content identity |
+| 5 | `MEMBERSHIP` | Assigned (draft) | Membership identity |
+| 6 | `TRANSACTION` | Assigned (draft) | Monetary / points transaction identity |
+| 7 | `NOTIFICATION` | Assigned (draft) | Notification identity |
+| 8 | `AUDIT` | Assigned (draft) | Audit event identity |
+| 9 | `MEDIA` | Assigned (draft) | Media asset identity |
+| 10 | `ORGANIZATION` | Assigned (draft) | Organization identity |
+| 11..63 | — | Unassigned | Reserved for future assignment |
 
 ## Modeling guidance
 
