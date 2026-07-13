@@ -199,7 +199,7 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 
 ## 14. Open items before stable v1
 
-- Node ID の本番割当方式と再利用待機時間
+- Node 再利用の quarantine 期間（割当方式は [Node Management](node-management.md)）
 - conformance test suite
 - canonical API error codes
 - v2 を識別する外部 versioning 方針

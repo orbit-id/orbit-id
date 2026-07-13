@@ -202,7 +202,7 @@ Existing IDs MUST NOT be reinterpreted as a new format.
 
 ## 14. Open items before stable v1
 
-- Production Node ID allocation and reuse quarantine
+- Node reuse quarantine period (allocation strategy: see [Node Management](node-management.md))
 - Conformance test suite
 - Canonical API error codes
 - External versioning policy for identifying v2

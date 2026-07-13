@@ -6,6 +6,21 @@ Orbit ID の一意性は、同時に発行するプロセス間で Node ID（`0.
 依存します。Node ID の割当は control plane の責務であり、ID ごとの生成処理はローカルで
 完結させます。
 
+## 本番の既定
+
+次のマトリクスから割当方式を選びます。該当する行のうち、できるだけ上を優先します。
+
+| 環境 | 既定方式 | 注記 |
+| --- | --- | --- |
+| オーケストレータが安定したインスタンス ordinal を提供する（例: Kubernetes StatefulSet） | **オーケストレータ ordinal** | ordinal → Node ID `0..127` の写像を文書化する。利用可能なら最優先。 |
+| replica 数が固定でオートスケールしない | **静的設定** | インスタンスごとに `ORBIT_NODE_ID` を注入。割当台帳をデプロイ設定に残す。 |
+| オートスケールまたは短命インスタンス | 強い整合性ストアによる **lease** | Redis 等。lease は control plane のみ。ID 生成 hot path には載せない。 |
+| ローカル開発 / 単一プロセス | **静的** 固定値（例: `0`） | 同じ本番 Node ID を複数インスタンスへ複製しない。 |
+
+本番デプロイは、採用した方式とインスタンスへの Node ID 写像を文書化しなければなりません。
+同一環境で方式を混在させる場合も、同時稼働ジェネレーター間で Node ID の和集合が排他的で
+ある必要があります。
+
 ## Recommended order
 
 環境に応じて、次の優先順で採用します。
@@ -53,6 +68,7 @@ lease 実装は最低限、次を満たす必要があります。
 
 - 最終 Timestamp を durable storage に保存し、起動時に比較する。
 - lease 解放後に clock rollback の最大許容幅を上回る quarantine period を設ける。
+  既定の quarantine 値は、当該 open item が確定したときに定義します。
 - 確認できない場合は別 Node ID を割り当てる。
 
 ## Operational signals
