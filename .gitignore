@@ -1,0 +1,55 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Node / JS
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.npm/
+.yarn/
+.pnpm-store/
+.turbo/
+
+# Java
+target/
+*.class
+*.jar
+*.war
+.gradle/
+.mvn/
+
+# Go
+bin/
+vendor/
+
+# Rust
+target/
+
+# PHP
+vendor/
+.phpunit.result.cache
+
+# Python (tooling)
+__pycache__/
+.venv/
+venv/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / temp
+*.log
+tmp/
+temp/
+.cache/
