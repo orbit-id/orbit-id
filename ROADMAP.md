@@ -14,7 +14,7 @@ in the spirit of Snowflake and ULID — not merely a one-off library.
 - [ ] Decide production Node allocation and reuse quarantine
 - [ ] Decide default clock-rollback tolerance
 - [ ] Conformance / test suite
-- [ ] Choose an OSS license (e.g. MIT)
+- [x] Choose an OSS license (Apache-2.0)
 
 ## Library API (planned)
 

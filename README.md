@@ -85,5 +85,5 @@ and library surface.
 
 ## License
 
-The license is not yet decided. Public use and redistribution are not explicitly permitted until a
-license file is added.
+Licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright 2026 ponstream24.
