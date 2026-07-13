@@ -1,0 +1,36 @@
+{
+  "version": "orbit-conformance/v1",
+  "spec": "orbit-id/v1",
+  "cases": [
+    {
+      "id": "epoch",
+      "time": "2026-01-01T00:00:00.000Z",
+      "timestamp": "0",
+      "type": 1,
+      "node": 7,
+      "sequence": 42,
+      "idDecimal": "138282",
+      "idHex": "0x0000000000021c2a"
+    },
+    {
+      "id": "representative",
+      "time": "2026-07-14T00:12:34.567Z",
+      "timestamp": "16762354567",
+      "type": 2,
+      "node": 7,
+      "sequence": 42,
+      "idDecimal": "140612821619842090",
+      "idHex": "0x01f38e9dc3841c2a"
+    },
+    {
+      "id": "maximum",
+      "time": "2095-09-07T15:47:35.551Z",
+      "timestamp": "2199023255551",
+      "type": 63,
+      "node": 127,
+      "sequence": 1023,
+      "idDecimal": "18446744073709551615",
+      "idHex": "0xffffffffffffffff"
+    }
+  ]
+}

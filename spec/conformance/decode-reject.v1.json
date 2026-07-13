@@ -1,0 +1,36 @@
+{
+  "version": "orbit-conformance/v1",
+  "spec": "orbit-id/v1",
+  "cases": [
+    {
+      "id": "negative",
+      "input": "-1",
+      "reason": "Negative value"
+    },
+    {
+      "id": "overflow-u64",
+      "input": "18446744073709551616",
+      "reason": "Greater than 2^64 - 1"
+    },
+    {
+      "id": "decimal-point",
+      "input": "1.0",
+      "reason": "Not an integer string"
+    },
+    {
+      "id": "leading-plus",
+      "input": "+1",
+      "reason": "Leading plus sign is not canonical"
+    },
+    {
+      "id": "leading-whitespace",
+      "input": " 1",
+      "reason": "Whitespace is not canonical"
+    },
+    {
+      "id": "empty",
+      "input": "",
+      "reason": "Missing value"
+    }
+  ]
+}

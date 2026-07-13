@@ -202,7 +202,6 @@ Existing IDs MUST NOT be reinterpreted as a new format.
 
 ## 14. Open items before stable v1
 
-- Conformance test suite
 - Canonical API error codes
 - External versioning policy for identifying v2
 
@@ -213,3 +212,6 @@ Default clock-rollback tolerance is defined in §7 (`5_000` ms).
 
 Production Node allocation and reuse quarantine defaults are defined in
 [Node Management](node-management.md).
+
+The conformance fixture format and initial encode/decode cases live in
+[`spec/conformance/`](../../spec/conformance/).
