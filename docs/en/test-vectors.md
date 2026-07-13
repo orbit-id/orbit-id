@@ -126,4 +126,4 @@ in [`generator.v1.json`](../../spec/conformance/generator.v1.json).
 | Timestamp advance resets sequence | `(1000, 42)` | `1001` | Issue with sequence `0` |
 | Sequence exhausted | `(1000, 1023)` | `1000` | Wait for next ms **or** `SEQUENCE_EXHAUSTED` |
 | Rollback within tolerance | `(1000, 10)` | `995` | Wait until timestamp `1000` |
-| Rollback beyond tolerance | `(1000, 10)` | `0` | `CLOCK_ROLLBACK` |
+| Rollback beyond tolerance | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |

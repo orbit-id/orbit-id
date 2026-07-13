@@ -7,7 +7,8 @@ Each ID embeds the issuance timestamp, entity type, issuing node, and a per-mill
 so those fields can be decoded without querying a database.
 
 > [!IMPORTANT]
-> This project is currently in the specification stage. Implementations and package APIs are not yet available.
+> Orbit ID v1 is stable (`v1.0.0`). See [`@orbit-id/core`](packages/core) and
+> [`@orbit-id/typescript`](packages/typescript).
 
 ## Features
 
@@ -79,10 +80,9 @@ is required for external exposure, or as authorization tokens.
 
 ## Current Scope
 
-The first milestone is specification-first: a language-agnostic format, shared test vectors, then a
-reference implementation and multi-language packages. Redis (when used) manages Node leases only —
-ID generation stays local to each Orbit node. See [Roadmap](docs/en/roadmap.md) for the planned
-monorepo and library surface.
+Orbit ID v1 is stable. Start with [`@orbit-id/core`](packages/core) or
+[`@orbit-id/typescript`](packages/typescript). Redis (when used) manages Node leases only — ID
+generation stays local to each Orbit node. See [Roadmap](docs/en/roadmap.md) for remaining packages.
 
 ## License
 

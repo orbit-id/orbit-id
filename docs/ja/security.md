@@ -4,7 +4,9 @@
 
 ## Supported versions
 
-Orbit ID はまだ Draft であり、サポート対象の stable release はありません。
+| Version | Supported |
+| --- | --- |
+| `v1.0.0` | Yes |
 
 ## Reporting a vulnerability
 

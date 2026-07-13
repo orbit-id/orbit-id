@@ -5,7 +5,9 @@ Canonical English: [docs/en/security.md](docs/en/security.md)
 
 ## Supported versions
 
-Orbit ID is still Draft. There is no supported stable release yet.
+| Version | Supported |
+| --- | --- |
+| `v1.0.0` | Yes |
 
 ## Reporting a vulnerability
 

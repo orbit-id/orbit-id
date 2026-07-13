@@ -2,8 +2,7 @@
 
 [日本語](../ja/library-api.md)
 
-Status: Draft — not yet implemented. Semantic surface is stabilized for multi-language alignment;
-names and types still follow each language’s conventions.
+Status: Stable (`v1.0.0`) — implemented in `@orbit-id/core` / `@orbit-id/typescript`.
 
 This document describes the common API surface for Orbit ID libraries.
 

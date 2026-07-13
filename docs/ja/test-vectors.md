@@ -125,4 +125,4 @@ Calculation:
 | Timestamp 進行で Sequence リセット | `(1000, 42)` | `1001` | sequence `0` で発行 |
 | Sequence 枯渇 | `(1000, 1023)` | `1000` | 次 ms 待ち **または** `SEQUENCE_EXHAUSTED` |
 | 許容内の巻き戻り | `(1000, 10)` | `995` | timestamp `1000` まで待機 |
-| 許容超過の巻き戻り | `(1000, 10)` | `0` | `CLOCK_ROLLBACK` |
+| 許容超過の巻き戻り | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |

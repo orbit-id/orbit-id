@@ -2,7 +2,7 @@
 
 [English](../en/library-api.md)
 
-Status: Draft — 未実装。多言語で揃える意味的な API 表面はここで安定化します。名前や型は各言語の
+Status: Stable (`v1.0.0`) — `@orbit-id/core` / `@orbit-id/typescript` で実装済み。名前や型は各言語の
 慣例に合わせます。
 
 Orbit ID ライブラリが共通で揃える API 表面です。

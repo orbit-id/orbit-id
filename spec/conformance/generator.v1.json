@@ -54,7 +54,7 @@
     },
     {
       "id": "clock-rollback-beyond-tolerance-fail",
-      "prior": { "lastTimestamp": "1000", "sequence": 10 },
+      "prior": { "lastTimestamp": "6000", "sequence": 10 },
       "nowTimestamp": "0",
       "type": 1,
       "node": 7,

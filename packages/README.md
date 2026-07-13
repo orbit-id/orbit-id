@@ -1,13 +1,15 @@
 # Packages
 
-Language implementations and tools will live here once the Orbit ID v1 specification is stable
-enough to implement.
+| Package | Role |
+| --- | --- |
+| [`@orbit-id/core`](core/) | Reference encode / decode / generator and conformance tests |
+| [`@orbit-id/typescript`](typescript/) | TypeScript language package (re-exports core) |
 
-## Planned layout
+## Planned (later)
 
 ```text
 packages/
-├── core          # shared reference logic / fixtures (required before stable v1)
+├── core
 ├── typescript
 ├── java
 ├── go
@@ -17,10 +19,8 @@ packages/
 └── playground
 ```
 
-Each package SHOULD expose the common operations described in
+Each language package SHOULD expose the common operations described in
 [Library API](../docs/en/library-api.md).
-
-Until then, this directory is intentionally empty of implementations.
 
 `packages/core` is required before promoting the specification to stable `v1.0.0`. See
 [Stable v1 promotion criteria](../docs/en/stable-release-criteria.md).

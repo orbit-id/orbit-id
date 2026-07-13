@@ -1,8 +1,8 @@
-# Orbit ID Specification v1.0.0-draft.1
+# Orbit ID Specification v1.0.0
 
 [English](../en/orbit-id-v1.md)
 
-Status: Draft  
+Status: Stable (`v1.0.0`)  
 Epoch: `2026-01-01T00:00:00.000Z`
 
 ## 1. Purpose
