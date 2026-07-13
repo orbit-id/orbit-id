@@ -124,13 +124,22 @@ against a persisted last Timestamp, reassign the Node, or wait safely.
 IDs MUST NOT be generated while the system clock is behind `last_timestamp`. Implementations adopt
 one or more of the following:
 
-- Wait up to a configured tolerance until `last_timestamp`.
+- Wait up to a configured tolerance until wall time catches up to `last_timestamp`.
 - Use a monotonic clock as a supplement to keep a safe Timestamp.
 - Persist the last Timestamp and compare on restart.
 - Fail closed with an explicit `CLOCK_ROLLBACK` error.
 
-Rollbacks beyond the tolerance SHOULD fail by default. NTP synchronization alone MUST NOT be treated
-as a uniqueness guarantee.
+**Default tolerance:** `5_000` milliseconds (`5` seconds).
+
+Behavior:
+
+- If `last_timestamp - now` is in `(0, tolerance]`, the generator MUST wait until `now >=
+  last_timestamp` (or an equivalent safe monotonic advancement) before issuing, then continue.
+- If `last_timestamp - now` is greater than `tolerance`, the generator MUST fail closed with
+  `CLOCK_ROLLBACK` by default. Operators MAY lower the tolerance; raising it increases stall risk
+  and MUST be justified operationally.
+- NTP synchronization alone MUST NOT be treated as a uniqueness guarantee.
+- Waiting MUST NOT reuse a previously issued `(Timestamp, Sequence)` pair for the same Node.
 
 ## 8. Uniqueness and ordering
 
@@ -194,10 +203,11 @@ Existing IDs MUST NOT be reinterpreted as a new format.
 ## 14. Open items before stable v1
 
 - Production Node ID allocation and reuse quarantine
-- Default clock-rollback tolerance
 - Conformance test suite
 - Canonical API error codes
 - External versioning policy for identifying v2
 
 Draft-official Type assignments live in the [Type Registry](type-registry.md). They remain mutable
 until stable v1.
+
+Default clock-rollback tolerance is defined in §7 (`5_000` ms).

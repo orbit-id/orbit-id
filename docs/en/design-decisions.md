@@ -49,8 +49,8 @@ With Timestamp in the most significant bits, IDs from different milliseconds sor
 the same millisecond, Type and Node sit above Sequence, so strict issuance order across a
 distributed system is not guaranteed.
 
-## 9. IDs are transparent identifiers
+## 10. Default clock-rollback tolerance is 5 seconds
 
-Debuggability and routing / inspection take priority: timestamp, type, and node are recoverable.
-As a trade-off, IDs do not hide issuance time or internal structure. Do not treat them as secrets or
-authorization tokens.
+Small backward steps from NTP or VM scheduling are common; failing immediately would make generators
+fragile. Waiting up to `5_000` ms covers typical skew while bounding stall time. Larger rollbacks
+fail closed so uniqueness is not trusted to wall-clock correction alone.

@@ -123,13 +123,22 @@ unix_time_ms = timestamp + 1767225600000
 システム時計が `last_timestamp` より前へ戻った状態で ID を生成してはなりません。実装は
 以下のいずれか、または組み合わせを採用します。
 
-- 設定した許容時間以内だけ `last_timestamp` まで待つ。
+- 設定した許容時間以内だけ、壁時計が `last_timestamp` に追いつくまで待つ。
 - 単調増加時計を補助的に用いて安全な Timestamp を維持する。
 - 最終 Timestamp を永続化し、再起動時に比較する。
 - 明示的な `CLOCK_ROLLBACK` エラーで fail closed する。
 
-許容時間を超える巻き戻りは、既定でエラーにするべきです。NTP 同期だけを一意性の保証として
-扱ってはなりません。
+**既定の許容時間:** `5_000` ミリ秒（`5` 秒）。
+
+振る舞い:
+
+- `last_timestamp - now` が `(0, tolerance]` のとき、ジェネレーターは発行前に
+  `now >= last_timestamp`（または同等の安全な単調進行）になるまで待たなければなりません。
+- `last_timestamp - now` が `tolerance` を超えるとき、ジェネレーターは既定で
+  `CLOCK_ROLLBACK` により fail closed しなければなりません。運用者は許容時間を下げても構いません。
+  上げる場合はストールリスクが増えるため、運用上の根拠が必要です。
+- NTP 同期だけを一意性の保証として扱ってはなりません。
+- 待機中であっても、同一 Node で既出の `(Timestamp, Sequence)` 組を再利用してはなりません。
 
 ## 8. Uniqueness and ordering
 
@@ -191,9 +200,10 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 ## 14. Open items before stable v1
 
 - Node ID の本番割当方式と再利用待機時間
-- 時計巻き戻りの既定許容時間
 - conformance test suite
 - canonical API error codes
 - v2 を識別する外部 versioning 方針
 
 draft-official な Type 割当は [Type Registry](type-registry.md) を参照。stable v1 まで変更可能です。
+
+時計巻き戻りの既定許容時間は §7（`5_000` ms）で定義します。
