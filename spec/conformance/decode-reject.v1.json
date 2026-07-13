@@ -28,9 +28,24 @@
       "reason": "Whitespace is not canonical"
     },
     {
+      "id": "trailing-whitespace",
+      "input": "1 ",
+      "reason": "Whitespace is not canonical"
+    },
+    {
       "id": "empty",
       "input": "",
       "reason": "Missing value"
+    },
+    {
+      "id": "leading-zero",
+      "input": "01",
+      "reason": "Leading zeros are not canonical"
+    },
+    {
+      "id": "hex-prefix",
+      "input": "0x1",
+      "reason": "Hexadecimal prefix is not a decimal string"
     }
   ]
 }

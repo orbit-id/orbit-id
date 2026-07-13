@@ -4,7 +4,7 @@
 
 Orbit ID v1 implementations MUST encode the following values to the same unsigned 64-bit ID and
 decode that ID back to the original fields. Timestamps are UTC. Hex values are big-endian numeric
-representations. Type values in these vectors are for bit-layout verification only and do not imply
+forms. Type values in these vectors are for bit-layout verification only and do not imply
 official registry assignments.
 
 Machine-readable fixtures live in [`spec/conformance/`](../../spec/conformance/). Automated tests
@@ -61,6 +61,42 @@ Calculation:
 
 This vector is for bit-layout boundary checks. Type `63` is not an official registry assignment.
 
+## Vector 4: Minimum non-zero timestamp
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:00.001Z` |
+| Timestamp | `1` |
+| Type | `1` |
+| Node | `0` |
+| Sequence | `0` |
+| Decimal ID | `8519680` |
+| Hex ID | `0x0000000000820000` |
+
+## Vector 5: Max node, zero sequence
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `10` |
+| Node | `127` |
+| Sequence | `0` |
+| Decimal ID | `8390048768` |
+| Hex ID | `0x00000001f415fc00` |
+
+## Vector 6: Maximum sequence
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `1` |
+| Node | `1` |
+| Sequence | `1,023` |
+| Decimal ID | `8388741119` |
+| Hex ID | `0x00000001f40207ff` |
+
 ## Decoder rejection cases
 
 A decimal-string decoder MUST reject at least the following inputs.
@@ -72,4 +108,22 @@ A decimal-string decoder MUST reject at least the following inputs.
 | `1.0` | Not an integer string |
 | `+1` | Leading plus sign is not canonical |
 | ` 1` | Whitespace is not canonical |
+| `1 ` | Whitespace is not canonical |
 | empty string | Missing value |
+| `01` | Leading zeros are not canonical |
+| `0x1` | Hexadecimal prefix is not a decimal string |
+
+`0` is canonical and MUST be accepted.
+
+## Generator behavior cases
+
+Default clock-rollback tolerance used by these cases: `5_000` ms. Full machine-readable cases are
+in [`generator.v1.json`](../../spec/conformance/generator.v1.json).
+
+| Case | Prior `(lastTimestamp, sequence)` | `nowTimestamp` | Required outcome |
+| --- | --- | ---: | --- |
+| Same ms increments sequence | `(1000, 0)` | `1000` | Issue with sequence `1` |
+| Timestamp advance resets sequence | `(1000, 42)` | `1001` | Issue with sequence `0` |
+| Sequence exhausted | `(1000, 1023)` | `1000` | Wait for next ms **or** `SEQUENCE_EXHAUSTED` |
+| Rollback within tolerance | `(1000, 10)` | `995` | Wait until timestamp `1000` |
+| Rollback beyond tolerance | `(1000, 10)` | `0` | `CLOCK_ROLLBACK` |

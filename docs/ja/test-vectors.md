@@ -60,6 +60,42 @@ Calculation:
 
 この vector は bit layout の境界検証用です。Type `63` は registry 上の正式割当を意味しません。
 
+## Vector 4: 最小の非ゼロ Timestamp
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:00.001Z` |
+| Timestamp | `1` |
+| Type | `1` |
+| Node | `0` |
+| Sequence | `0` |
+| Decimal ID | `8519680` |
+| Hex ID | `0x0000000000820000` |
+
+## Vector 5: Node 最大・Sequence 0
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `10` |
+| Node | `127` |
+| Sequence | `0` |
+| Decimal ID | `8390048768` |
+| Hex ID | `0x00000001f415fc00` |
+
+## Vector 6: Sequence 最大
+
+| Field | Value |
+| --- | ---: |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `1` |
+| Node | `1` |
+| Sequence | `1,023` |
+| Decimal ID | `8388741119` |
+| Hex ID | `0x00000001f40207ff` |
+
 ## Decoder rejection cases
 
 10 進文字列 decoder は少なくとも次を拒否します。
@@ -71,4 +107,22 @@ Calculation:
 | `1.0` | Not an integer string |
 | `+1` | Leading plus sign is not canonical |
 | ` 1` | Whitespace is not canonical |
+| `1 ` | Whitespace is not canonical |
 | empty string | Missing value |
+| `01` | Leading zeros are not canonical |
+| `0x1` | Hexadecimal prefix is not a decimal string |
+
+`0` は正規形であり、受理しなければなりません。
+
+## Generator behavior cases
+
+これらのケースが用いる時計巻き戻しの既定許容時間は `5_000` ms です。機械可読な完全なケースは
+[`generator.v1.json`](../../spec/conformance/generator.v1.json) にあります。
+
+| Case | 事前状態 `(lastTimestamp, sequence)` | `nowTimestamp` | 要求される結果 |
+| --- | --- | ---: | --- |
+| 同一 ms で Sequence 増加 | `(1000, 0)` | `1000` | sequence `1` で発行 |
+| Timestamp 進行で Sequence リセット | `(1000, 42)` | `1001` | sequence `0` で発行 |
+| Sequence 枯渇 | `(1000, 1023)` | `1000` | 次 ms 待ち **または** `SEQUENCE_EXHAUSTED` |
+| 許容内の巻き戻り | `(1000, 10)` | `995` | timestamp `1000` まで待機 |
+| 許容超過の巻き戻り | `(1000, 10)` | `0` | `CLOCK_ROLLBACK` |

@@ -47,8 +47,11 @@ Each case provides a decimal string `input` that MUST be rejected by a canonical
 ### `generator`
 
 Each case describes generator inputs (clock readings, prior state) and the required outcome
-(`issue`, `wait`, or `error`). Exact wall-clock sleeping is not required in unit tests; asserting
-the decided action and resulting state is enough.
+(`issue`, `wait`, `wait_or_fail`, or `error`). Exact wall-clock sleeping is not required in unit
+tests; asserting the decided action and resulting state is enough.
+
+Optional top-level `defaults` (for example `clockRollbackToleranceMs`) apply unless a case overrides
+them.
 
 ## Consumption guidance
 

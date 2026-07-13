@@ -31,6 +31,36 @@
       "sequence": 1023,
       "idDecimal": "18446744073709551615",
       "idHex": "0xffffffffffffffff"
+    },
+    {
+      "id": "min-nonzero-timestamp",
+      "time": "2026-01-01T00:00:00.001Z",
+      "timestamp": "1",
+      "type": 1,
+      "node": 0,
+      "sequence": 0,
+      "idDecimal": "8519680",
+      "idHex": "0x0000000000820000"
+    },
+    {
+      "id": "node-max-seq-zero",
+      "time": "2026-01-01T00:00:01.000Z",
+      "timestamp": "1000",
+      "type": 10,
+      "node": 127,
+      "sequence": 0,
+      "idDecimal": "8390048768",
+      "idHex": "0x00000001f415fc00"
+    },
+    {
+      "id": "sequence-max",
+      "time": "2026-01-01T00:00:01.000Z",
+      "timestamp": "1000",
+      "type": 1,
+      "node": 1,
+      "sequence": 1023,
+      "idDecimal": "8388741119",
+      "idHex": "0x00000001f40207ff"
     }
   ]
 }

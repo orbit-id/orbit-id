@@ -1,5 +1,67 @@
 {
   "version": "orbit-conformance/v1",
   "spec": "orbit-id/v1",
-  "cases": []
+  "defaults": {
+    "clockRollbackToleranceMs": "5000"
+  },
+  "cases": [
+    {
+      "id": "same-ms-increment-sequence",
+      "prior": { "lastTimestamp": "1000", "sequence": 0 },
+      "nowTimestamp": "1000",
+      "type": 1,
+      "node": 7,
+      "expect": {
+        "action": "issue",
+        "timestamp": "1000",
+        "sequence": 1
+      }
+    },
+    {
+      "id": "timestamp-advance-resets-sequence",
+      "prior": { "lastTimestamp": "1000", "sequence": 42 },
+      "nowTimestamp": "1001",
+      "type": 1,
+      "node": 7,
+      "expect": {
+        "action": "issue",
+        "timestamp": "1001",
+        "sequence": 0
+      }
+    },
+    {
+      "id": "sequence-exhausted-wait-next-ms",
+      "prior": { "lastTimestamp": "1000", "sequence": 1023 },
+      "nowTimestamp": "1000",
+      "type": 1,
+      "node": 7,
+      "expect": {
+        "action": "wait_or_fail",
+        "allowedActions": ["wait_next_ms", "error"],
+        "error": "SEQUENCE_EXHAUSTED"
+      }
+    },
+    {
+      "id": "clock-rollback-within-tolerance-wait",
+      "prior": { "lastTimestamp": "1000", "sequence": 10 },
+      "nowTimestamp": "995",
+      "type": 1,
+      "node": 7,
+      "expect": {
+        "action": "wait",
+        "waitUntilTimestamp": "1000"
+      }
+    },
+    {
+      "id": "clock-rollback-beyond-tolerance-fail",
+      "prior": { "lastTimestamp": "1000", "sequence": 10 },
+      "nowTimestamp": "0",
+      "type": 1,
+      "node": 7,
+      "expect": {
+        "action": "error",
+        "error": "CLOCK_ROLLBACK"
+      }
+    }
+  ]
 }
