@@ -199,7 +199,6 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 
 ## 14. Open items before stable v1
 
-- Node 再利用の quarantine 期間（割当方式は [Node Management](node-management.md)）
 - conformance test suite
 - canonical API error codes
 - v2 を識別する外部 versioning 方針
@@ -207,3 +206,5 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 draft-official な Type 割当は [Type Registry](type-registry.md) を参照。stable v1 まで変更可能です。
 
 時計巻き戻りの既定許容時間は §7（`5_000` ms）で定義します。
+
+本番の Node 割当と再利用 quarantine の既定は [Node Management](node-management.md) で定義します。

@@ -66,11 +66,28 @@ confirm ownership.
 A new process reusing the same Node ID MUST ensure it is not running concurrently with the old
 process, and MUST NOT reuse the old process's final Timestamp / Sequence pairs.
 
+### Quarantine (normative defaults)
+
+**Default quarantine period:** `120_000` milliseconds (`2` minutes).
+
+Rules:
+
+- After a Node ID is released (lease expiry/release or intentional decommission), it MUST NOT be
+  assigned to another generator until the quarantine period has elapsed.
+- The quarantine period MUST be greater than or equal to the configured clock-rollback tolerance
+  (default tolerance `5_000` ms; see the v1 specification §7).
+- For lease-based allocation, the recommended quarantine is
+  `max(2 * clock_rollback_tolerance, lease_ttl)`.
+- If the previous process's last Timestamp is persisted and compared on startup such that the new
+  process cannot issue earlier `(Timestamp, Sequence)` pairs, quarantine MAY be shortened, but
+  operators remain responsible for excluding concurrent overlap.
+- When ownership or last-issuance state cannot be confirmed, assign a different Node ID instead of
+  shortening quarantine.
+
 Recommended practices:
 
 - Persist the last Timestamp to durable storage and compare on startup.
-- After lease release, apply a quarantine period longer than the maximum allowed clock-rollback
-  window. Default quarantine values are defined when that open item is finalized.
+- Apply the quarantine rules above after lease release or Node reassignment.
 - Assign a different Node ID when ownership cannot be confirmed.
 
 ## Operational signals

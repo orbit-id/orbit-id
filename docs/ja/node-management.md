@@ -64,11 +64,26 @@ lease 実装は最低限、次を満たす必要があります。
 同じ Node ID を再利用する新プロセスは、旧プロセスと並行稼働していないことに加え、旧プロセスが
 使用した最終 Timestamp / Sequence を再利用しないことを保証する必要があります。
 
+### Quarantine（規範的な既定）
+
+**既定の quarantine 期間:** `120_000` ミリ秒（`2` 分）。
+
+規則:
+
+- Node ID が解放されたあと（lease の期限切れ・解放、または意図的な退役）、quarantine 期間が
+  経過するまで別のジェネレーターへ割り当ててはなりません。
+- quarantine 期間は、設定された時計巻き戻し許容時間以上でなければなりません
+  （既定の許容は `5_000` ms。v1 仕様 §7 を参照）。
+- lease 方式では、推奨 quarantine は `max(2 * clock_rollback_tolerance, lease_ttl)` です。
+- 旧プロセスの最終 Timestamp を永続化し、起動時比較により新しいプロセスがより前の
+  `(Timestamp, Sequence)` を発行できないことが保証できる場合、quarantine を短縮しても構いません。
+  ただし同時稼働の排除は運用者の責任です。
+- 所有権や最終発行状態を確認できない場合は、quarantine を短縮せず別 Node ID を割り当てます。
+
 推奨策:
 
 - 最終 Timestamp を durable storage に保存し、起動時に比較する。
-- lease 解放後に clock rollback の最大許容幅を上回る quarantine period を設ける。
-  既定の quarantine 値は、当該 open item が確定したときに定義します。
+- lease 解放や Node 再割当のあと、上記の quarantine 規則を適用する。
 - 確認できない場合は別 Node ID を割り当てる。
 
 ## Operational signals

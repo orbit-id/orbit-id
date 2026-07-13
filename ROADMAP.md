@@ -13,7 +13,7 @@ in the spirit of Snowflake and ULID — not merely a one-off library.
 - [x] Type registry draft and node-management guidance
 - [x] Finalize official Type assignments
 - [x] Decide production Node allocation strategy
-- [ ] Decide Node reuse quarantine
+- [x] Decide Node reuse quarantine
 - [x] Decide default clock-rollback tolerance
 - [ ] Conformance / test suite
 - [x] Choose an OSS license (Apache-2.0)
