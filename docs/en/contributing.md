@@ -1,17 +1,19 @@
 # Contributing to Orbit ID
 
-Canonical English: [docs/en/contributing.md](docs/en/contributing.md)  
-日本語: [docs/ja/contributing.md](docs/ja/contributing.md)
+[日本語](../ja/contributing.md)
 
 Orbit ID is currently developed specification-first. Interoperability of the format, edge cases, and
 test vectors is finalized before implementations.
+
+The root [`CONTRIBUTING.md`](../../CONTRIBUTING.md) mirrors this document for GitHub’s conventional
+entry point.
 
 ## Proposing a change
 
 1. Open an issue describing the requirement and use case.
 2. If the change affects the bit layout or wire format, include compatibility and a migration plan.
 3. In the pull request, update the specification, related docs, and test vectors together.
-4. Follow the [Type Registry](docs/en/type-registry.md) rules when adding a Type.
+4. Follow the [Type Registry](type-registry.md) rules when adding a Type.
 
 ## Documentation style
 

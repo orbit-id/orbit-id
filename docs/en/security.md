@@ -1,7 +1,9 @@
 # Security Policy
 
-Canonical English: [docs/en/security.md](docs/en/security.md)  
-日本語: [docs/ja/security.md](docs/ja/security.md)
+[日本語](../ja/security.md)
+
+The root [`SECURITY.md`](../../SECURITY.md) mirrors this document for GitHub’s security policy entry
+point.
 
 ## Supported versions
 

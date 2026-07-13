@@ -1,6 +1,6 @@
 # Roadmap
 
-[English](../../ROADMAP.md)
+[English](../en/roadmap.md)
 
 Orbit は、単なる ID 生成ライブラリではなく、Snowflake や ULID のように **仕様・実装・テストを備えた
 ID 生成アルゴリズム** として育てることを目指します。

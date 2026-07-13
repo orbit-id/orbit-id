@@ -1,6 +1,6 @@
 # Contributing to Orbit ID
 
-[English](../../CONTRIBUTING.md)
+[English](../en/contributing.md)
 
 Orbit ID は現在 specification-first で開発しています。実装より先に、形式、境界条件、test vector の
 相互運用性を確定します。

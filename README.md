@@ -72,16 +72,16 @@ is required for external exposure, or as authorization tokens.
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
 - [Library API (Draft)](docs/en/library-api.md)
-- [Roadmap](ROADMAP.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security Policy](SECURITY.md)
+- [Roadmap](docs/en/roadmap.md)
+- [Contributing](docs/en/contributing.md)
+- [Security Policy](docs/en/security.md)
 
 ## Current Scope
 
 The first milestone is specification-first: a language-agnostic format, shared test vectors, then a
 reference implementation and multi-language packages. Redis (when used) manages Node leases only —
-ID generation stays local to each Orbit node. See [ROADMAP.md](ROADMAP.md) for the planned monorepo
-and library surface.
+ID generation stays local to each Orbit node. See [Roadmap](docs/en/roadmap.md) for the planned
+monorepo and library surface.
 
 ## License
 

@@ -1,10 +1,12 @@
 # Roadmap
 
-Canonical English: [docs/en/roadmap.md](docs/en/roadmap.md)  
-日本語: [docs/ja/roadmap.md](docs/ja/roadmap.md)
+[日本語](../ja/roadmap.md)
 
 Orbit aims to be an ID generation **algorithm** with a specification, implementations, and tests —
 in the spirit of Snowflake and ULID — not merely a one-off library.
+
+The root [`ROADMAP.md`](../../ROADMAP.md) mirrors this document for a convenient top-level entry
+point.
 
 ## Near term (specification)
 
@@ -15,7 +17,7 @@ in the spirit of Snowflake and ULID — not merely a one-off library.
 - [ ] Decide production Node allocation and reuse quarantine
 - [ ] Decide default clock-rollback tolerance
 - [ ] Conformance / test suite
-- [x] Choose an OSS license (Apache-2.0)
+- [ ] Choose an OSS license (e.g. MIT)
 
 ## Library API (planned)
 
@@ -31,7 +33,7 @@ getSequence(id)
 isValid(id)
 ```
 
-See [Library API](docs/en/library-api.md).
+See [Library API](library-api.md).
 
 ## Implementations (planned)
 

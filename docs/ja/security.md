@@ -1,6 +1,6 @@
 # Security Policy
 
-[English](../../SECURITY.md)
+[English](../en/security.md)
 
 ## Supported versions
 
