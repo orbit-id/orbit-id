@@ -1,0 +1,29 @@
+name: Implementation task
+description: Track library, CLI, tooling, or infrastructure work
+title: "[impl] "
+labels: ["implementation"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should be built or changed?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist of done conditions.
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: depends
+    attributes:
+      label: Depends on
+      description: Related issues or spec decisions.
+      value: "None"
+    validations:
+      required: false

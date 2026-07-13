@@ -1,0 +1,52 @@
+name: Bug report
+description: Report incorrect behavior in the specification docs or an implementation
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Specification / docs
+        - TypeScript
+        - Other language package
+        - CLI / playground / tooling
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: ids
+    attributes:
+      label: Relevant Timestamp / Type / Node / Sequence or ID values
+      description: Include when uniqueness or decoding is involved.
+    validations:
+      required: false
