@@ -5,6 +5,21 @@
 Orbit ID uniqueness depends on Node IDs (`0..127`) not overlapping across processes that issue IDs
 concurrently. Node ID allocation is a control-plane responsibility; per-ID generation remains local.
 
+## Production defaults
+
+Choose the allocation method from this matrix. Prefer the highest applicable row.
+
+| Environment | Default method | Notes |
+| --- | --- | --- |
+| Orchestrator provides a stable per-instance ordinal (for example Kubernetes StatefulSet) | **Orchestrator ordinal** | Map ordinal → Node ID `0..127` with a documented formula. Prefer this when available. |
+| Fixed replica count, no autoscaling | **Static configuration** | Inject `ORBIT_NODE_ID` per instance. Keep an allocation ledger in deploy config. |
+| Autoscaling or ephemeral instances | **Lease** via a strongly consistent store | Redis or equivalent. Lease is control-plane only; never on the ID generation hot path. |
+| Local development / single process | **Static** fixed value (for example `0`) | Do not copy the same production Node ID across instances. |
+
+Production deployments MUST document which method they use and how Node IDs map to instances.
+Mixing methods in one environment is allowed only when the union of assigned Node IDs remains
+exclusive among concurrent generators.
+
 ## Recommended order
 
 Prefer the following approaches, in order, based on the environment.
@@ -55,7 +70,7 @@ Recommended practices:
 
 - Persist the last Timestamp to durable storage and compare on startup.
 - After lease release, apply a quarantine period longer than the maximum allowed clock-rollback
-  window.
+  window. Default quarantine values are defined when that open item is finalized.
 - Assign a different Node ID when ownership cannot be confirmed.
 
 ## Operational signals

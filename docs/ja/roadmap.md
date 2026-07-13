@@ -11,7 +11,8 @@ ID 生成アルゴリズム** として育てることを目指します。
 - [x] Canonical test vectors
 - [x] Type registry Draft と Node 管理ガイド
 - [x] Type の正式割当
-- [ ] 本番の Node 割当方式と再利用待機時間
+- [x] 本番の Node 割当方式
+- [ ] Node 再利用の quarantine 期間
 - [x] 時計巻き戻りの既定許容時間
 - [ ] Conformance / test suite
 - [x] OSS ライセンスの決定（Apache-2.0）
