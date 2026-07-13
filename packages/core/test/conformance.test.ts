@@ -3,10 +3,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
+  OrbitError,
   OrbitGenerator,
   decode,
   encode,
   fromDecimalString,
+  getNode,
+  getSequence,
+  getTimestamp,
+  getType,
   isValid,
   parse,
   toDecimalString,
@@ -71,8 +76,14 @@ describe("conformance encode-decode", () => {
       expect(toHexString(id)).toBe(c.idHex.toLowerCase());
       expect(decode(id)).toEqual(fields);
       expect(parse(c.idDecimal)).toEqual(fields);
+      expect(parse(id)).toEqual(fields);
       expect(fromDecimalString(c.idDecimal)).toBe(id);
+      expect(getTimestamp(c.idDecimal)).toBe(fields.timestamp);
+      expect(getType(id)).toBe(fields.type);
+      expect(getNode(c.idDecimal)).toBe(fields.node);
+      expect(getSequence(id)).toBe(fields.sequence);
       expect(isValid(c.idDecimal)).toBe(true);
+      expect(isValid(id)).toBe(true);
     });
   }
 });
@@ -82,7 +93,14 @@ describe("conformance decode-reject", () => {
 
   for (const c of fixture.cases) {
     it(c.id, () => {
-      expect(() => fromDecimalString(c.input)).toThrow();
+      expect(() => fromDecimalString(c.input)).toThrow(OrbitError);
+      try {
+        fromDecimalString(c.input);
+      } catch (e) {
+        expect(e).toBeInstanceOf(OrbitError);
+        expect((e as OrbitError).code).toBe("INVALID_DECIMAL");
+      }
+      expect(() => parse(c.input)).toThrow(OrbitError);
       expect(isValid(c.input)).toBe(false);
     });
   }
