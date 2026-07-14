@@ -50,9 +50,9 @@ Tracked on GitHub with label `phase-3`:
 
 | Work | Issue | Status |
 | --- | --- | --- |
-| Benchmark framework under `benchmark/` | [#18](https://github.com/orbit-id/orbit-id/issues/18) |
+| Benchmark framework under `benchmark/` | [#18](https://github.com/orbit-id/orbit-id/issues/18) | done in-repo |
 | Optional Redis Node lease (+ optional Orbit node service) | [#19](https://github.com/orbit-id/orbit-id/issues/19) | done in-repo (node service optional later) |
-| Playground (`packages/playground`) | [#20](https://github.com/orbit-id/orbit-id/issues/20) |
+| Playground (`packages/playground`) | [#20](https://github.com/orbit-id/orbit-id/issues/20) | done in-repo |
 | Java / Go / Rust / PHP packages | [#21](https://github.com/orbit-id/orbit-id/issues/21) |
 | Remaining registries (Maven / Go modules / crates.io / Packagist) | [#42](https://github.com/orbit-id/orbit-id/issues/42) |
 
@@ -66,13 +66,14 @@ orbit-id/
 │   ├── core          ← shipped (npm)
 │   ├── typescript    ← shipped (npm)
 │   ├── cli           ← shipped (npm)
+│   ├── node-lease    ← monorepo (#19)
 │   ├── java          ← phase 3 (#21)
 │   ├── go            ← phase 3 (#21)
 │   ├── rust          ← phase 3 (#21)
 │   ├── php           ← phase 3 (#21)
-│   └── playground    ← phase 3 (#20)
+│   └── playground    ← shipped (Pages)
 ├── spec/
-├── benchmark/        ← phase 3 (#18)
+├── benchmark/        ← shipped
 └── docs/
 ```
 
