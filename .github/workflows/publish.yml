@@ -32,13 +32,18 @@ jobs:
       - name: Publish packages
         run: |
           set -euo pipefail
-          for pkg in @orbit-id/core @orbit-id/typescript @orbit-id/cli; do
-            name=$(npm pkg get name -w "$pkg" | tr -d '"')
-            ver=$(npm pkg get version -w "$pkg" | tr -d '"')
+          publish_one() {
+            local dir="$1"
+            local name ver
+            name="$(node -p "require('./${dir}/package.json').name")"
+            ver="$(node -p "require('./${dir}/package.json').version")"
             if npm view "${name}@${ver}" version >/dev/null 2>&1; then
               echo "skip ${name}@${ver} (already on npm)"
             else
               echo "publish ${name}@${ver}"
-              npm publish -w "$pkg" --access public
+              npm publish -w "${name}" --access public
             fi
-          done
+          }
+          publish_one packages/core
+          publish_one packages/typescript
+          publish_one packages/cli
