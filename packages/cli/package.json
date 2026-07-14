@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
-    "orbit-id": "./bin/orbit-id.js"
+    "orbit-id": "bin/orbit-id.js"
   },
   "files": [
     "bin",
