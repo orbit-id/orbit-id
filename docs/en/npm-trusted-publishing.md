@@ -20,7 +20,7 @@ For **each** package above (after the package exists on npm):
 1. Open the package page → **Settings** → **Trusted Publisher**
 2. Choose **GitHub Actions**
 3. Fill in:
-   - Organization or user: `ponstream24`
+   - Organization or user: `orbit-id`
    - Repository: `orbit-id`
    - Workflow filename: `publish.yml` (filename only, not a path)
    - Environment: leave empty unless you add a GitHub Environment
@@ -52,3 +52,8 @@ It uses `permissions: id-token: write`, Node 24, and a recent npm CLI.
   attached; subsequent releases use this workflow
 - Provenance requires a **public** GitHub repository
 - Configure Trusted Publisher on **each** package before relying on CI-only publishes
+
+## Repository location
+
+Canonical GitHub repository: [`orbit-id/orbit-id`](https://github.com/orbit-id/orbit-id).
+Update npm Trusted Publisher to GitHub org/user `orbit-id` and repository `orbit-id`.
