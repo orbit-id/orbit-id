@@ -50,7 +50,7 @@ GitHub の `phase-3` ラベルで追跡します。
 | `benchmark/` の計測枠組み | [#18](https://github.com/orbit-id/orbit-id/issues/18) | リポジトリ内完了 |
 | 任意の Redis Node lease（+ 任意の Orbit ノードサービス） | [#19](https://github.com/orbit-id/orbit-id/issues/19) | リポジトリ内完了（ノードサービスは任意・後続） |
 | Playground（`packages/playground`） | [#20](https://github.com/orbit-id/orbit-id/issues/20) | リポジトリ内完了 |
-| Java / Go / Rust / PHP パッケージ | [#21](https://github.com/orbit-id/orbit-id/issues/21) |
+| Java / Go / Rust / PHP パッケージ | [#21](https://github.com/orbit-id/orbit-id/issues/21) | リポジトリ内完了 |
 | 残りのレジストリ（Maven / Go modules / crates.io / Packagist） | [#42](https://github.com/orbit-id/orbit-id/issues/42) |
 
 TypeScript 系の npm 公開は完了（[#22](https://github.com/orbit-id/orbit-id/issues/22) closed）。他エコシステムは言語実装に合わせて #42 で追います。
@@ -64,10 +64,10 @@ orbit-id/
 │   ├── typescript    ← 公開済み (npm)
 │   ├── cli           ← 公開済み (npm)
 │   ├── node-lease    ← モノレポ (#19)
-│   ├── java          ← phase 3 (#21)
-│   ├── go            ← phase 3 (#21)
-│   ├── rust          ← phase 3 (#21)
-│   ├── php           ← phase 3 (#21)
+│   ├── java          ← モノレポ
+│   ├── go            ← モノレポ
+│   ├── rust          ← モノレポ
+│   ├── php           ← モノレポ
 │   └── playground    ← 公開済み (Pages)
 ├── spec/
 ├── benchmark/        ← 公開済み

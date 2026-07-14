@@ -1,0 +1,15 @@
+[package]
+name = "orbit-id"
+version = "1.0.1"
+edition = "2021"
+rust-version = "1.70"
+description = "Orbit ID v1 encoder, decoder, and synchronous generator"
+license = "Apache-2.0"
+repository = "https://github.com/orbit-id/orbit-id"
+readme = "README.md"
+keywords = ["id", "uuid", "snowflake", "identifier"]
+categories = ["encoding"]
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
