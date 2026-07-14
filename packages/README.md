@@ -9,7 +9,7 @@
 | [`playground`](playground/) | Browser encode / decode UI | local Vite app + GitHub Pages |
 | [`java`](java/) | Java reference library (`io.github.orbit-id:orbit-id`) | monorepo → Maven Central (#54) |
 | [`go`](go/) | Go reference library (`github.com/orbit-id/orbit-id/packages/go`) | monorepo → Go module tags (#55) |
-| [`rust`](rust/) | Rust reference crate | monorepo |
+| [`rust`](rust/) | Rust reference crate (`orbit-id` on crates.io) | monorepo → crates.io (#56) |
 | [`php`](php/) | PHP reference library | monorepo |
 
 Types ship **inside** each TypeScript package (`dist/*.d.ts`). There is no separate `@types/orbit-id`

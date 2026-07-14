@@ -77,6 +77,7 @@ is required for external exposure, or as authorization tokens.
 - [Cross-registry versioning](docs/en/cross-registry-versioning.md)
 - [Maven Central publishing](docs/en/maven-central.md)
 - [Go module publishing](docs/en/go-module.md)
+- [crates.io publishing](docs/en/crates-io.md)
 - [Stable v1 promotion criteria](docs/en/stable-release-criteria.md)
 - [Roadmap](docs/en/roadmap.md)
 - [Contributing](docs/en/contributing.md)

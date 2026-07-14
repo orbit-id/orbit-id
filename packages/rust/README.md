@@ -10,6 +10,13 @@ with the TypeScript reference implementation.
 orbit-id = "1"
 ```
 
+```bash
+cargo add orbit-id
+```
+
+Publishing: [crates.io publishing](../../docs/en/crates-io.md) ·
+[Cross-registry versioning](../../docs/en/cross-registry-versioning.md).
+
 ## API
 
 ```rust
