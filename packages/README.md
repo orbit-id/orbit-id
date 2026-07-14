@@ -7,7 +7,7 @@
 | [`@orbit-id/cli`](cli/) | Minimal CLI (`parse` / `generate`) | npm shipped |
 | [`@orbit-id/node-lease`](node-lease/) | Optional Node lease control plane (memory / Redis) | monorepo |
 | [`playground`](playground/) | Browser encode / decode UI | local Vite app + GitHub Pages |
-| [`java`](java/) | Java reference library | monorepo |
+| [`java`](java/) | Java reference library (`io.github.orbit-id:orbit-id`) | monorepo → Maven Central (#54) |
 | [`go`](go/) | Go reference library | monorepo |
 | [`rust`](rust/) | Rust reference crate | monorepo |
 | [`php`](php/) | PHP reference library | monorepo |

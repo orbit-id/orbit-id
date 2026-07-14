@@ -1,18 +1,22 @@
 # Orbit ID for Java
 
-Java 17+ implementation of the Orbit ID v1 format.
+Java 11+ implementation of the Orbit ID v1 format (Java package `com.github.orbitid`).
+
+Coordinates after Maven Central publish ([#54](https://github.com/orbit-id/orbit-id/issues/54)):
 
 ```xml
 <dependency>
-  <groupId>com.github.orbit-id</groupId>
+  <groupId>io.github.orbit-id</groupId>
   <artifactId>orbit-id</artifactId>
   <version>1.0.0</version>
 </dependency>
 ```
 
+Until Central is live, use a local / CI build of this directory (`mvn install`).
+
 ```java
-import com.github.orbit-id.orbitid.OrbitGenerator;
-import com.github.orbit-id.orbitid.OrbitId;
+import com.github.orbitid.OrbitGenerator;
+import com.github.orbitid.OrbitId;
 
 OrbitGenerator generator = new OrbitGenerator(7);
 long id = generator.generate(1);
@@ -31,8 +35,12 @@ String decimal = OrbitId.toDecimalString(id); // unsigned decimal text
   (`WAIT` or `FAIL`), and an optional ownership callback.
 - `OrbitError`: exception with a stable string code exposed by `getCode()`.
 
-Run the conformance suite from this directory:
+## Build / test
 
 ```sh
 mvn test
 ```
+
+Publishing (Central Portal, signing, CI secrets): see
+[Maven Central publishing](../../docs/en/maven-central.md) and
+[Cross-registry versioning](../../docs/en/cross-registry-versioning.md).

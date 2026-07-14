@@ -75,6 +75,7 @@ is required for external exposure, or as authorization tokens.
 - [Library API](docs/en/library-api.md)
 - [npm Trusted Publishing](docs/en/npm-trusted-publishing.md)
 - [Cross-registry versioning](docs/en/cross-registry-versioning.md)
+- [Maven Central publishing](docs/en/maven-central.md)
 - [Stable v1 promotion criteria](docs/en/stable-release-criteria.md)
 - [Roadmap](docs/en/roadmap.md)
 - [Contributing](docs/en/contributing.md)

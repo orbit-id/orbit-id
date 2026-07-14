@@ -40,7 +40,7 @@ those fields to the **same** `X.Y.Z` before tagging.
 | Ecosystem | Path | Version field | Registry |
 | --- | --- | --- | --- |
 | npm | `packages/{core,typescript,cli}/package.json` | `"version"` | npm (`@orbit-id/*`) |
-| Java | `packages/java/pom.xml` | `<version>` | Maven Central |
+| Java | `packages/java/pom.xml` (`io.github.orbit-id:orbit-id`) | `<version>` | Maven Central ([docs](maven-central.md)) |
 | Go | (Git tag only; no version in `go.mod` for v0/v1) | tag `packages/go/vX.Y.Z` | `proxy.golang.org` |
 | Rust | `packages/rust/Cargo.toml` | `version` | crates.io |
 | PHP | `packages/php/composer.json` | no fixed version; Packagist uses Git tags | Packagist |
