@@ -47,5 +47,8 @@ It uses `permissions: id-token: write`, Node 24, and a recent npm CLI.
 
 ## First publish notes
 
-- `@orbit-id/core` and `@orbit-id/typescript` were published manually at `1.0.0`
-- `@orbit-id/cli` may need one manual `npm publish -w @orbit-id/cli --access public` before Trusted Publishing can be attached to that package, unless your npm org UI already allows pre-registration
+- `@orbit-id/core` and `@orbit-id/typescript` were first published manually at `1.0.0`
+- `@orbit-id/cli` was first published manually (`1.0.0` / `1.0.1`) so Trusted Publisher could be
+  attached; subsequent releases use this workflow
+- Provenance requires a **public** GitHub repository
+- Configure Trusted Publisher on **each** package before relying on CI-only publishes

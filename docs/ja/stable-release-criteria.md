@@ -35,13 +35,14 @@
 
 ## リリース checklist
 
-stable `v1.0.0` を切るとき:
+stable `v1.0.0` を切るとき（本リポジトリでは完了済み）:
 
-- [ ] 上記の必須リストを確認した（`packages/core` を含む）
-- [ ] 仕様 Status を `v1.0.0` にした
-- [ ] README / ROADMAP の Status 文言を更新した
-- [ ] リポジトリに `v1.0.0` タグを打った
-- [ ] v1 major 内で 64-bit 解釈が凍結されることを告知した
+- [x] 上記の必須リストを確認した（`packages/core` を含む）
+- [x] 仕様 Status を `v1.0.0` にした
+- [x] README / ROADMAP の Status 文言を更新した
+- [x] リポジトリに `v1.0.0` タグを打った
+- [x] v1 major 内で 64-bit 解釈が凍結されることを告知した
+  （README の Status と本ドキュメントの互換コミットメントを参照）
 
 ## stable 以降
 

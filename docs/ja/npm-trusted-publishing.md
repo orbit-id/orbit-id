@@ -47,6 +47,8 @@ Orbit ID パッケージは [npm Trusted Publishing](https://docs.npmjs.com/trus
 
 ## 初回公開について
 
-- `@orbit-id/core` と `@orbit-id/typescript` は手動で `1.0.0` を公開済み
-- `@orbit-id/cli` は Trusted Publishing を付ける前に、一度
-  `npm publish -w @orbit-id/cli --access public` が必要な場合があります
+- `@orbit-id/core` と `@orbit-id/typescript` は手動で `1.0.0` を初回公開した
+- `@orbit-id/cli` も Trusted Publisher 付与のため手動で初回公開した（`1.0.0` / `1.0.1`）。以降は
+  この workflow を使う
+- Provenance には **公開** GitHub リポジトリが必要
+- CI のみの公開に頼る前に、**パッケージごと** に Trusted Publisher を設定する

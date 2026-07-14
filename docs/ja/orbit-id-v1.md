@@ -197,15 +197,15 @@ Orbit ID は秘密値ではありません。発行時刻、Type、Node、およ
 形式を導入する場合は、格納列、API field、prefix、または外部 metadata で形式を識別する必要が
 あります。既存 ID を新形式として再解釈してはなりません。
 
-## 14. Open items before stable v1
+## 14. 規範的な関連文書
 
-draft-official な Type 割当は [Type Registry](type-registry.md) を参照。stable v1 まで変更可能です。
+公式 Type 割当は [Type Registry](type-registry.md) を参照。割当済みの意味は v1 内で変更しません。
 
 時計巻き戻りの既定許容時間は §7（`5_000` ms）で定義します。
 
 本番の Node 割当と再利用 quarantine の既定は [Node Management](node-management.md) で定義します。
 
-conformance fixture 形式と初期 encode/decode ケースは
+conformance fixture 形式と encode/decode ケースは
 [`spec/conformance/`](../../spec/conformance/) にあります。
 
 canonical API error codes は [Library API](library-api.md) で定義します。
