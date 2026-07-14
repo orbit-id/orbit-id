@@ -9,11 +9,12 @@
     "benchmark"
   ],
   "scripts": {
-    "build": "npm run build -w @orbit-id/core && npm run build -w @orbit-id/typescript && npm run build -w @orbit-id/cli",
+    "build": "npm run build -w @orbit-id/core && npm run build -w @orbit-id/typescript && npm run build -w @orbit-id/cli && npm run build -w @orbit-id/playground",
     "test": "npm run test -w @orbit-id/core && npm run test -w @orbit-id/typescript && npm run test -w @orbit-id/cli",
-    "typecheck": "npm run typecheck -w @orbit-id/core && npm run typecheck -w @orbit-id/typescript && npm run typecheck -w @orbit-id/cli",
+    "typecheck": "npm run typecheck -w @orbit-id/core && npm run typecheck -w @orbit-id/typescript && npm run typecheck -w @orbit-id/cli && npm run typecheck -w @orbit-id/playground",
     "bench": "npm run build -w @orbit-id/core && npm run bench -w @orbit-id/benchmark",
-    "bench:ci": "npm run build -w @orbit-id/core && npm run bench:ci -w @orbit-id/benchmark"
+    "bench:ci": "npm run build -w @orbit-id/core && npm run bench:ci -w @orbit-id/benchmark",
+    "playground": "npm run dev -w @orbit-id/playground"
   },
   "engines": {
     "node": ">=20"

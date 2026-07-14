@@ -49,7 +49,7 @@ GitHub の `phase-3` ラベルで追跡します。
 | --- | --- | --- |
 | `benchmark/` の計測枠組み | [#18](https://github.com/orbit-id/orbit-id/issues/18) | リポジトリ内完了 |
 | 任意の Redis Node lease（+ 任意の Orbit ノードサービス） | [#19](https://github.com/orbit-id/orbit-id/issues/19) |
-| Playground（`packages/playground`） | [#20](https://github.com/orbit-id/orbit-id/issues/20) |
+| Playground（`packages/playground`） | [#20](https://github.com/orbit-id/orbit-id/issues/20) | リポジトリ内完了 |
 | Java / Go / Rust / PHP パッケージ | [#21](https://github.com/orbit-id/orbit-id/issues/21) |
 | 残りのレジストリ（Maven / Go modules / crates.io / Packagist） | [#42](https://github.com/orbit-id/orbit-id/issues/42) |
 
@@ -67,9 +67,9 @@ orbit-id/
 │   ├── go            ← phase 3 (#21)
 │   ├── rust          ← phase 3 (#21)
 │   ├── php           ← phase 3 (#21)
-│   └── playground    ← phase 3 (#20)
+│   └── playground    ← 公開済み (Pages)
 ├── spec/
-├── benchmark/        ← phase 3 (#18)
+├── benchmark/        ← 公開済み
 └── docs/
 ```
 
