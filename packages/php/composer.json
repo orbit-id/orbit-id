@@ -3,6 +3,19 @@
   "description": "Orbit ID v1 reference implementation for PHP",
   "license": "Apache-2.0",
   "type": "library",
+  "keywords": ["id", "uuid", "snowflake", "identifier", "orbit"],
+  "homepage": "https://github.com/orbit-id/orbit-id/tree/main/packages/php",
+  "support": {
+    "issues": "https://github.com/orbit-id/orbit-id/issues",
+    "source": "https://github.com/orbit-id/orbit-id/tree/main/packages/php",
+    "docs": "https://github.com/orbit-id/orbit-id/blob/main/docs/en/library-api.md"
+  },
+  "authors": [
+    {
+      "name": "ponstream24",
+      "homepage": "https://github.com/ponstream24"
+    }
+  ],
   "require": {
     "php": "^8.1"
   },
@@ -27,5 +40,6 @@
   },
   "config": {
     "sort-packages": true
-  }
+  },
+  "minimum-stability": "stable"
 }

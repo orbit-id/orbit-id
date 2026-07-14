@@ -11,6 +11,10 @@ without GMP or BCMath.
 composer require orbit-id/php
 ```
 
+Publishing uses a [`orbit-id/php`](https://github.com/orbit-id/php) mirror of this
+directory for Packagist — see [Packagist publishing](../../docs/en/packagist.md)
+and [Cross-registry versioning](../../docs/en/cross-registry-versioning.md).
+
 ## API
 
 ```php

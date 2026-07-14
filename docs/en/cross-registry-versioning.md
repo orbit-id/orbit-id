@@ -60,7 +60,7 @@ published versions where supported (npm already skips existing `name@version`).
 | **Maven Central** | `pom.xml` `<version>` | Publish job / manual release should use the same `X.Y.Z` as the release cut when shipping together (#54). |
 | **Go** | Git tag `packages/go/vX.Y.Z` | Module path: `github.com/orbit-id/orbit-id/packages/go`. Consumers: `go get github.com/orbit-id/orbit-id/packages/go@vX.Y.Z`. Root-only `vX.Y.Z` is **not** enough for this subdirectory module. Details: [Go module publishing](go-module.md). |
 | **crates.io** | `Cargo.toml` `version` | `cargo publish` from `packages/rust` ([docs](crates-io.md)). Prefer matching `vX.Y.Z`. |
-| **Packagist** | Git tag visible to Packagist | Prefer root `vX.Y.Z` once the Packagist package is wired to this repo / path (#57). Confirm subdirectory packaging during #57. |
+| **Packagist** | Git tag on mirror [`orbit-id/php`](https://github.com/orbit-id/php) | Prefer root `vX.Y.Z`; CI subtree-splits `packages/php`. Details: [Packagist publishing](packagist.md). |
 
 ## Go module path
 

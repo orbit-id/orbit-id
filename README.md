@@ -78,6 +78,7 @@ is required for external exposure, or as authorization tokens.
 - [Maven Central publishing](docs/en/maven-central.md)
 - [Go module publishing](docs/en/go-module.md)
 - [crates.io publishing](docs/en/crates-io.md)
+- [Packagist publishing](docs/en/packagist.md)
 - [Stable v1 promotion criteria](docs/en/stable-release-criteria.md)
 - [Roadmap](docs/en/roadmap.md)
 - [Contributing](docs/en/contributing.md)
