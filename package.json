@@ -8,9 +8,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "build": "npm run build -w @orbit-id/core && npm run build -w @orbit-id/typescript && npm run build -w @orbit-id/cli",
+    "test": "npm run test -w @orbit-id/core && npm run test -w @orbit-id/typescript && npm run test -w @orbit-id/cli",
+    "typecheck": "npm run typecheck -w @orbit-id/core && npm run typecheck -w @orbit-id/typescript && npm run typecheck -w @orbit-id/cli"
   },
   "engines": {
     "node": ">=20"
