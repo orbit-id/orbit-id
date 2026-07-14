@@ -1,0 +1,23 @@
+{
+  "name": "@orbit-id/playground",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Orbit ID encode / decode playground",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@orbit-id/core": "1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
