@@ -20,7 +20,7 @@ For **each** package above (after the package exists on npm):
 1. Open the package page → **Settings** → **Trusted Publisher**
 2. Choose **GitHub Actions**
 3. Fill in:
-   - Organization or user: `ponstream24`
+   - Organization or user: `orbit-id`
    - Repository: `orbit-id`
    - Workflow filename: `publish.yml` (filename only, not a path)
    - Environment: leave empty unless you add a GitHub Environment

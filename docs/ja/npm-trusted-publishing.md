@@ -20,7 +20,7 @@ Orbit ID パッケージは [npm Trusted Publishing](https://docs.npmjs.com/trus
 1. パッケージページ → **Settings** → **Trusted Publisher**
 2. **GitHub Actions** を選択
 3. 次を入力:
-   - Organization or user: `ponstream24`
+   - Organization or user: `orbit-id`
    - Repository: `orbit-id`
    - Workflow filename: `publish.yml`（パスではなくファイル名のみ）
    - Environment: GitHub Environment を使わないなら空
