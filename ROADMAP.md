@@ -46,13 +46,13 @@ See [Library API](docs/en/library-api.md).
 
 Tracked on GitHub with label `phase-3`:
 
-| Work | Issue |
-| --- | --- |
-| Benchmark framework under `benchmark/` | [#18](https://github.com/ponstream24/orbit-id/issues/18) |
-| Optional Redis Node lease (+ optional Orbit node service) | [#19](https://github.com/ponstream24/orbit-id/issues/19) |
-| Playground (`packages/playground`) | [#20](https://github.com/ponstream24/orbit-id/issues/20) |
-| Java / Go / Rust / PHP packages | [#21](https://github.com/ponstream24/orbit-id/issues/21) |
-| Remaining registries (Maven / Go modules / crates.io / Packagist) | [#42](https://github.com/ponstream24/orbit-id/issues/42) |
+| Work | Issue | Status |
+| --- | --- | --- |
+| Benchmark framework under `benchmark/` | [#18](https://github.com/ponstream24/orbit-id/issues/18) | done in-repo |
+| Optional Redis Node lease (`@orbit-id/node-lease`) | [#19](https://github.com/ponstream24/orbit-id/issues/19) | done in-repo (node service optional later) |
+| Playground (`packages/playground`) | [#20](https://github.com/ponstream24/orbit-id/issues/20) | done in-repo |
+| Java / Go / Rust / PHP packages | [#21](https://github.com/ponstream24/orbit-id/issues/21) | done in-repo |
+| Remaining registries (Maven / Go modules / crates.io / Packagist) | [#42](https://github.com/ponstream24/orbit-id/issues/42) | open |
 
 npm publish for TypeScript packages is complete ([#22](https://github.com/ponstream24/orbit-id/issues/22) closed). #42 covers other ecosystems as language packages land.
 

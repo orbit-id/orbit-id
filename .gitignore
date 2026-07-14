@@ -53,3 +53,7 @@ venv/
 tmp/
 temp/
 .cache/
+
+# Playground Vite
+packages/playground/dist-web/
+

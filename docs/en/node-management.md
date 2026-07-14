@@ -103,3 +103,15 @@ Expose at least the following via metrics / logs:
 
 If a Node ID collision is detected, stop all generators for that Node and audit IDs issued during
 the affected window.
+
+## Reference implementation
+
+TypeScript control-plane helpers live in [`@orbit-id/node-lease`](../../packages/node-lease/):
+
+- `MemoryLeaseStore` — single-process / tests
+- `RedisLeaseStore` — Redis + Lua atomic acquire / renew / release
+- `NodeLeaseClient` — acquire / renew / release / `confirmOwnership`
+
+Wire `confirmOwnership` into `@orbit-id/core` `OrbitGenerator` so generation fail-closes when the
+lease is lost. Do not call Redis on every `generate`.
+

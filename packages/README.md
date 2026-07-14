@@ -5,25 +5,18 @@
 | [`@orbit-id/core`](core/) | Reference encode / decode / generator and conformance tests | npm shipped |
 | [`@orbit-id/typescript`](typescript/) | TypeScript language package (re-exports core) | npm shipped |
 | [`@orbit-id/cli`](cli/) | Minimal CLI (`parse` / `generate`) | npm shipped |
+| [`@orbit-id/node-lease`](node-lease/) | Optional Node lease control plane (memory / Redis) | monorepo |
+| [`playground`](playground/) | Browser encode / decode UI | local Vite app |
+| [`java`](java/) | Java reference library | monorepo |
+| [`go`](go/) | Go reference library | monorepo |
+| [`rust`](rust/) | Rust reference crate | monorepo |
+| [`php`](php/) | PHP reference library | monorepo |
 
-Types ship **inside** each package (`dist/*.d.ts`). There is no separate `@types/orbit-id`
-DefinitelyTyped package.
-
-## Phase 3 (planned)
-
-```text
-packages/
-├── java
-├── go
-├── rust
-├── php
-└── playground
-```
-
-See the [Phase 3 roadmap](../docs/en/roadmap.md#phase-3--expand) and issues #18–#21 / #42.
+Types for TypeScript packages ship **inside** each package (`dist/*.d.ts`). There is no separate
+`@types/orbit-id` DefinitelyTyped package.
 
 Each language package SHOULD expose the common operations described in
-[Library API](../docs/en/library-api.md).
+[Library API](../docs/en/library-api.md) and pass [`spec/conformance/`](../spec/conformance/).
 
-Publishing: [npm Trusted Publishing](../docs/en/npm-trusted-publishing.md) (TypeScript); other
-registries in [#42](https://github.com/ponstream24/orbit-id/issues/42).
+Publishing: [npm Trusted Publishing](../docs/en/npm-trusted-publishing.md); other registries in
+[#42](https://github.com/ponstream24/orbit-id/issues/42).

@@ -1,0 +1,17 @@
+{
+  "name": "@orbit-id/benchmark",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Orbit ID throughput measurements (not formal capacity)",
+  "type": "module",
+  "scripts": {
+    "bench": "node run.mjs",
+    "bench:ci": "node run.mjs --duration-ms 500 --warmup-ms 100"
+  },
+  "dependencies": {
+    "@orbit-id/core": "1.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

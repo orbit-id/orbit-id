@@ -1,0 +1,31 @@
+{
+  "name": "orbit-id/php",
+  "description": "Orbit ID v1 reference implementation for PHP",
+  "license": "Apache-2.0",
+  "type": "library",
+  "require": {
+    "php": "^8.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "OrbitId\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OrbitId\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

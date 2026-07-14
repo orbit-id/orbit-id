@@ -1,9 +1,30 @@
 # Benchmarks
 
-Placeholder for phase-3 work ([#18](https://github.com/ponstream24/orbit-id/issues/18)).
+[Phase-3 #18](https://github.com/ponstream24/orbit-id/issues/18)
 
-A reference implementation already ships on npm (`@orbit-id/core` / `@orbit-id/typescript`). This
-directory will hold runnable harnesses and measured throughput once the framework is added.
+Measure **single-Node** generator throughput using `@orbit-id/core`.
 
-Until benchmarks exist, treat numbers in the specification and README as **formal capacity**, not
-measured throughput.
+Spec and top-level README numbers such as **1,024 IDs/ms per node** are **formal capacity**
+(bit-field limits). They are not claims about this harness or any particular machine.
+
+## Run
+
+From the repo root (after `npm ci` and `npm run build`):
+
+```bash
+npm run bench
+```
+
+CI / smoke (short):
+
+```bash
+npm run bench:ci
+```
+
+Options:
+
+```bash
+node benchmark/run.mjs --duration-ms 3000 --warmup-ms 500 --node 1 --type 1
+```
+
+Output is JSON with `measuredIdsPerMs` / `measuredIdsPerSec` plus the formal capacity reminder.
