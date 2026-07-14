@@ -17,9 +17,9 @@ ID 生成アルゴリズム** として育てることを目指します。
 - [x] Conformance / test suite
 - [x] OSS ライセンスの決定（Apache-2.0）
 
-## ライブラリ API（予定）
+## ライブラリ API
 
-各言語パッケージで最低限揃える表面:
+各言語パッケージで最低限揃える表面（文書化済み・TypeScript で実装済み）:
 
 ```text
 generate(type)
@@ -33,43 +33,46 @@ isValid(id)
 
 詳細は [Library API](library-api.md) を参照。
 
-## 実装（予定）
+## 実装
 
-- TypeScript
+- [x] TypeScript (`@orbit-id/core`, `@orbit-id/typescript`)
 - Java
 - Go
 - Rust
 - PHP
-- CLI
+- [x] CLI (`@orbit-id/cli`)
 - Playground
 - Benchmarks
 
-## パッケージ公開（後続）
+## パッケージ公開
 
-- npm、Maven、Go modules、crates.io、Packagist など
+- [x] npm (`@orbit-id/core`, `@orbit-id/typescript`, `@orbit-id/cli`)
+- Maven、Go modules、crates.io、Packagist など
 - 任意の control plane としての Redis ベース Node lease
 - Orbit ノードサービス（発行経路はローカル完結。Redis は hot path に置かない）
 
-## リポジトリ構成（予定モノレポ）
+## リポジトリ構成（モノレポ）
 
 ```text
-orbit/
+orbit-id/
 ├── packages/
-│   ├── core
-│   ├── typescript
+│   ├── core          ← 公開済み
+│   ├── typescript    ← 公開済み
+│   ├── cli           ← 公開済み
 │   ├── java
 │   ├── go
 │   ├── rust
 │   ├── php
-│   ├── cli
 │   └── playground
 ├── spec/
 ├── benchmark/
 └── docs/
 ```
 
-`packages/` と `benchmark/` 配下は、仕様が実装可能な安定度になるまでのプレースホルダーです。
+`packages/core` / `typescript` / `cli` は npm 公開済み。残りの言語パッケージ、playground、
+`benchmark/` は phase-3 の作業です。
 
 ## Stable release
 
 `draft` から `v1.0.0` への昇格基準は [Stable v1 昇格基準](stable-release-criteria.md) を参照。
+stable `v1.0.0` はタグ済みです。

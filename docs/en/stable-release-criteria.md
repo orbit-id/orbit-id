@@ -39,13 +39,14 @@ All of the following MUST be true:
 
 ## Release checklist
 
-When cutting stable `v1.0.0`:
+When cutting stable `v1.0.0` (completed for this repository):
 
-- [ ] Confirm the required list above (including `packages/core`)
-- [ ] Set specification status to `v1.0.0`
-- [ ] Update README / ROADMAP status wording
-- [ ] Tag the repository `v1.0.0`
-- [ ] Announce that 64-bit interpretation is frozen for the v1 major line
+- [x] Confirm the required list above (including `packages/core`)
+- [x] Set specification status to `v1.0.0`
+- [x] Update README / ROADMAP status wording
+- [x] Tag the repository `v1.0.0`
+- [x] Announce that 64-bit interpretation is frozen for the v1 major line
+  (see README Status callout and this document's compatibility commitment)
 
 ## After stable
 

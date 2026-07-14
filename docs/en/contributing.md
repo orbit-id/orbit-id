@@ -2,8 +2,8 @@
 
 [日本語](../ja/contributing.md)
 
-Orbit ID is currently developed specification-first. Interoperability of the format, edge cases, and
-test vectors is finalized before implementations.
+Orbit ID is specification-first: format, edge cases, and test vectors stay ahead of new language
+packages. Stable v1 interpretation is frozen; see the compatibility section below.
 
 The root [`CONTRIBUTING.md`](../../CONTRIBUTING.md) mirrors this document for GitHub’s conventional
 entry point.
@@ -24,8 +24,9 @@ entry point.
 
 ## Compatibility
 
-The specification may change before stable v1. After a stable release, interpretation of existing
-64-bit values MUST NOT change within the same major version.
+Stable `v1.0.0` is released. Interpretation of existing 64-bit values MUST NOT change within the
+v1 major line. Additive docs, Types (unassigned values only), and library features MAY land in
+minor / patch releases.
 
 ## Pull request checklist
 

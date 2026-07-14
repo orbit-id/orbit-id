@@ -200,17 +200,17 @@ This document defines the v1 bit layout, but the ID itself has no version field.
 incompatible format, identify it via storage column, API field, prefix, or external metadata.
 Existing IDs MUST NOT be reinterpreted as a new format.
 
-## 14. Open items before stable v1
+## 14. Normative companion documents
 
-Draft-official Type assignments live in the [Type Registry](type-registry.md). They remain mutable
-until stable v1.
+Official Type assignments live in the [Type Registry](type-registry.md). Assigned meanings MUST NOT
+change within v1.
 
 Default clock-rollback tolerance is defined in §7 (`5_000` ms).
 
 Production Node allocation and reuse quarantine defaults are defined in
 [Node Management](node-management.md).
 
-The conformance fixture format and initial encode/decode cases live in
+The conformance fixture format and encode/decode cases live in
 [`spec/conformance/`](../../spec/conformance/).
 
 Canonical API error codes are defined in [Library API](library-api.md).

@@ -20,9 +20,9 @@ point.
 - [x] Conformance / test suite
 - [x] Choose an OSS license (Apache-2.0)
 
-## Library API (planned)
+## Library API
 
-Minimum surface across language packages:
+Minimum surface across language packages (documented and implemented in TypeScript):
 
 ```text
 generate(type)
@@ -36,40 +36,46 @@ isValid(id)
 
 See [Library API](library-api.md).
 
-## Implementations (planned)
+## Implementations
 
-- TypeScript
+- [x] TypeScript (`@orbit-id/core`, `@orbit-id/typescript`)
 - Java
 - Go
 - Rust
 - PHP
-- CLI
+- [x] CLI (`@orbit-id/cli`)
 - Playground
 - Benchmarks
 
-## Packaging / publish (later)
+## Packaging / publish
 
-- npm, Maven, Go modules, crates.io, Packagist, etc.
+- [x] npm (`@orbit-id/core`, `@orbit-id/typescript`, `@orbit-id/cli`)
+- Maven, Go modules, crates.io, Packagist, etc.
 - Redis-backed Node lease as an optional control-plane component
 - Orbit node service (issuance path stays local; Redis is not on the hot path)
 
-## Repository layout (planned monorepo)
+## Repository layout (monorepo)
 
 ```text
-orbit/
+orbit-id/
 ├── packages/
-│   ├── core
-│   ├── typescript
+│   ├── core          ← shipped
+│   ├── typescript    ← shipped
+│   ├── cli           ← shipped
 │   ├── java
 │   ├── go
 │   ├── rust
 │   ├── php
-│   ├── cli
 │   └── playground
 ├── spec/
 ├── benchmark/
 └── docs/
 ```
 
-Directories under `packages/` and `benchmark/` are placeholders until the specification is stable
-enough to implement.
+`packages/core`, `packages/typescript`, and `packages/cli` ship on npm. Remaining language
+packages, playground, and `benchmark/` are phase-3 work.
+
+## Stable release
+
+Criteria for promoting `draft` to `v1.0.0` are documented in
+[Stable v1 promotion criteria](stable-release-criteria.md). Stable `v1.0.0` is tagged.
