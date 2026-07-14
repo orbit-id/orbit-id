@@ -58,7 +58,7 @@ published versions where supported (npm already skips existing `name@version`).
 | --- | --- | --- |
 | **npm** | `package.json` `"version"` at the tagged commit | Workflow publishes each workspace if that version is not already on npm. Tag `v1.0.1` does **not** have to equal every package version, but coordinated releases SHOULD. |
 | **Maven Central** | `pom.xml` `<version>` | Publish job / manual release should use the same `X.Y.Z` as the release cut when shipping together (#54). |
-| **Go** | Git tag `packages/go/vX.Y.Z` | Module path: `github.com/orbit-id/orbit-id/packages/go`. Consumers: `go get github.com/orbit-id/orbit-id/packages/go@vX.Y.Z`. Root-only `vX.Y.Z` is **not** enough for this subdirectory module. |
+| **Go** | Git tag `packages/go/vX.Y.Z` | Module path: `github.com/orbit-id/orbit-id/packages/go`. Consumers: `go get github.com/orbit-id/orbit-id/packages/go@vX.Y.Z`. Root-only `vX.Y.Z` is **not** enough for this subdirectory module. Details: [Go module publishing](go-module.md). |
 | **crates.io** | `Cargo.toml` `version` | `cargo publish` from `packages/rust` (#56). Prefer matching `vX.Y.Z`. |
 | **Packagist** | Git tag visible to Packagist | Prefer root `vX.Y.Z` once the Packagist package is wired to this repo / path (#57). Confirm subdirectory packaging during #57. |
 
