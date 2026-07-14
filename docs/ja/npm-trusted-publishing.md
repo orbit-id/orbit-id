@@ -52,3 +52,8 @@ Orbit ID パッケージは [npm Trusted Publishing](https://docs.npmjs.com/trus
   この workflow を使う
 - Provenance には **公開** GitHub リポジトリが必要
 - CI のみの公開に頼る前に、**パッケージごと** に Trusted Publisher を設定する
+
+## リポジトリの場所
+
+正本の GitHub リポジトリは [`orbit-id/orbit-id`](https://github.com/orbit-id/orbit-id) です。
+npm Trusted Publisher の GitHub org/user は `orbit-id`、repository は `orbit-id` に更新してください。
