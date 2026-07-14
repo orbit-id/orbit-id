@@ -99,3 +99,15 @@ lease 実装は最低限、次を満たす必要があります。
 
 Node ID の衝突を検知した場合は、その Node の全 generator を停止し、影響期間に発行された ID を
 監査してください。
+
+## 参照実装
+
+TypeScript の control-plane ヘルパーは [`@orbit-id/node-lease`](../../packages/node-lease/) にあります。
+
+- `MemoryLeaseStore` — 単一プロセス / テスト向け
+- `RedisLeaseStore` — Redis + Lua による atomic acquire / renew / release
+- `NodeLeaseClient` — acquire / renew / release / `confirmOwnership`
+
+lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` を渡し fail closed
+にしてください。`generate` ごとに Redis を呼ばないでください。
+

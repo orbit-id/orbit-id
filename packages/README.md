@@ -5,6 +5,7 @@
 | [`@orbit-id/core`](core/) | Reference encode / decode / generator and conformance tests | npm shipped |
 | [`@orbit-id/typescript`](typescript/) | TypeScript language package (re-exports core) | npm shipped |
 | [`@orbit-id/cli`](cli/) | Minimal CLI (`parse` / `generate`) | npm shipped |
+| [`@orbit-id/node-lease`](node-lease/) | Optional Node lease control plane (memory / Redis) | monorepo |
 | [`playground`](playground/) | Browser encode / decode UI | local Vite app + GitHub Pages |
 
 Types ship **inside** each package (`dist/*.d.ts`). There is no separate `@types/orbit-id`

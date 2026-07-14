@@ -48,7 +48,7 @@ GitHub の `phase-3` ラベルで追跡します。
 | 作業 | Issue | Status |
 | --- | --- | --- |
 | `benchmark/` の計測枠組み | [#18](https://github.com/orbit-id/orbit-id/issues/18) | リポジトリ内完了 |
-| 任意の Redis Node lease（+ 任意の Orbit ノードサービス） | [#19](https://github.com/orbit-id/orbit-id/issues/19) |
+| 任意の Redis Node lease（+ 任意の Orbit ノードサービス） | [#19](https://github.com/orbit-id/orbit-id/issues/19) | リポジトリ内完了（ノードサービスは任意・後続） |
 | Playground（`packages/playground`） | [#20](https://github.com/orbit-id/orbit-id/issues/20) | リポジトリ内完了 |
 | Java / Go / Rust / PHP パッケージ | [#21](https://github.com/orbit-id/orbit-id/issues/21) |
 | 残りのレジストリ（Maven / Go modules / crates.io / Packagist） | [#42](https://github.com/orbit-id/orbit-id/issues/42) |
@@ -63,6 +63,7 @@ orbit-id/
 │   ├── core          ← 公開済み (npm)
 │   ├── typescript    ← 公開済み (npm)
 │   ├── cli           ← 公開済み (npm)
+│   ├── node-lease    ← モノレポ (#19)
 │   ├── java          ← phase 3 (#21)
 │   ├── go            ← phase 3 (#21)
 │   ├── rust          ← phase 3 (#21)
