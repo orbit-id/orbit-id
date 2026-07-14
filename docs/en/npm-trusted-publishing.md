@@ -1,0 +1,51 @@
+# npm Trusted Publishing
+
+[日本語](../ja/npm-trusted-publishing.md)
+
+Orbit ID packages are published with [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+(OIDC from GitHub Actions). No long-lived `NPM_TOKEN` is required in GitHub Secrets.
+
+## Packages
+
+| Package | npm |
+| --- | --- |
+| `@orbit-id/core` | https://www.npmjs.com/package/@orbit-id/core |
+| `@orbit-id/typescript` | https://www.npmjs.com/package/@orbit-id/typescript |
+| `@orbit-id/cli` | https://www.npmjs.com/package/@orbit-id/cli |
+
+## One-time setup on npmjs.com
+
+For **each** package above (after the package exists on npm):
+
+1. Open the package page → **Settings** → **Trusted Publisher**
+2. Choose **GitHub Actions**
+3. Fill in:
+   - Organization or user: `ponstream24`
+   - Repository: `orbit-id`
+   - Workflow filename: `publish.yml` (filename only, not a path)
+   - Environment: leave empty unless you add a GitHub Environment
+4. Allow **npm publish**
+
+Do this for `@orbit-id/core`, `@orbit-id/typescript`, and `@orbit-id/cli`.
+
+## Workflow
+
+[`.github/workflows/publish.yml`](../../.github/workflows/publish.yml) runs on:
+
+- tag push matching `v*` (for example `v1.0.1`)
+- manual **workflow_dispatch**
+
+It uses `permissions: id-token: write`, Node 24, and a recent npm CLI.
+
+## Release checklist
+
+1. Bump package versions in `packages/*/package.json` as needed
+2. Merge to `main`
+3. Tag and push, for example `git tag v1.0.1 && git push origin v1.0.1`
+4. Confirm the Publish workflow succeeded
+5. `npm view @orbit-id/core version` (and typescript / cli)
+
+## First publish notes
+
+- `@orbit-id/core` and `@orbit-id/typescript` were published manually at `1.0.0`
+- `@orbit-id/cli` may need one manual `npm publish -w @orbit-id/cli --access public` before Trusted Publishing can be attached to that package, unless your npm org UI already allows pre-registration

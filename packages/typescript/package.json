@@ -28,5 +28,21 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ponstream24/orbit-id.git",
+    "directory": "packages/typescript"
+  },
+  "homepage": "https://github.com/ponstream24/orbit-id/tree/main/packages/typescript",
+  "bugs": {
+    "url": "https://github.com/ponstream24/orbit-id/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

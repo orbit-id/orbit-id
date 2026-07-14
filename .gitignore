@@ -28,7 +28,7 @@ target/
 .mvn/
 
 # Go
-bin/
+/bin/
 vendor/
 
 # Rust

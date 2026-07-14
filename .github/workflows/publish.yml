@@ -1,0 +1,44 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Upgrade npm for Trusted Publishing
+        run: npm install -g npm@latest
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run typecheck
+
+      - name: Publish packages
+        run: |
+          set -euo pipefail
+          for pkg in @orbit-id/core @orbit-id/typescript @orbit-id/cli; do
+            name=$(npm pkg get name -w "$pkg" | tr -d '"')
+            ver=$(npm pkg get version -w "$pkg" | tr -d '"')
+            if npm view "${name}@${ver}" version >/dev/null 2>&1; then
+              echo "skip ${name}@${ver} (already on npm)"
+            else
+              echo "publish ${name}@${ver}"
+              npm publish -w "$pkg" --access public
+            fi
+          done

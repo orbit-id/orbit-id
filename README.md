@@ -7,8 +7,8 @@ Each ID embeds the issuance timestamp, entity type, issuing node, and a per-mill
 so those fields can be decoded without querying a database.
 
 > [!IMPORTANT]
-> Orbit ID v1 is stable (`v1.0.0`). See [`@orbit-id/core`](packages/core) and
-> [`@orbit-id/typescript`](packages/typescript).
+> Orbit ID v1 is stable (`v1.0.0`). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
+> or use the [`orbit-id`](https://www.npmjs.com/package/@orbit-id/cli) CLI.
 
 ## Features
 
@@ -72,7 +72,8 @@ is required for external exposure, or as authorization tokens.
 - [Type Registry](docs/en/type-registry.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
-- [Library API (Draft)](docs/en/library-api.md)
+- [Library API](docs/en/library-api.md)
+- [npm Trusted Publishing](docs/en/npm-trusted-publishing.md)
 - [Stable v1 promotion criteria](docs/en/stable-release-criteria.md)
 - [Roadmap](docs/en/roadmap.md)
 - [Contributing](docs/en/contributing.md)
@@ -80,9 +81,16 @@ is required for external exposure, or as authorization tokens.
 
 ## Current Scope
 
-Orbit ID v1 is stable. Start with [`@orbit-id/core`](packages/core) or
-[`@orbit-id/typescript`](packages/typescript). Redis (when used) manages Node leases only — ID
-generation stays local to each Orbit node. See [Roadmap](docs/en/roadmap.md) for remaining packages.
+Orbit ID v1 is stable on npm:
+
+```bash
+npm install @orbit-id/typescript
+npm install -g @orbit-id/cli
+orbit-id parse 140612821619842090
+```
+
+See [`packages/`](packages/) and [npm Trusted Publishing](docs/en/npm-trusted-publishing.md) for
+releases. Redis (when used) manages Node leases only — ID generation stays local to each Orbit node.
 
 ## License
 

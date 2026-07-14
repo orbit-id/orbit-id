@@ -1,18 +1,14 @@
 {
-  "name": "@orbit-id/core",
+  "name": "@orbit-id/cli",
   "version": "1.0.0",
-  "description": "Orbit ID v1 reference core (encode, decode, generator)",
+  "description": "Minimal CLI for Orbit ID v1 (generate / parse)",
   "license": "Apache-2.0",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+  "bin": {
+    "orbit-id": "./bin/orbit-id.js"
   },
   "files": [
+    "bin",
     "dist",
     "LICENSE",
     "NOTICE"
@@ -20,10 +16,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@orbit-id/core": "1.0.0"
   },
   "devDependencies": {
+    "@types/node": "^22.15.30",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
@@ -33,9 +32,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ponstream24/orbit-id.git",
-    "directory": "packages/core"
+    "directory": "packages/cli"
   },
-  "homepage": "https://github.com/ponstream24/orbit-id/tree/main/packages/core",
+  "homepage": "https://github.com/ponstream24/orbit-id/tree/main/packages/cli",
   "bugs": {
     "url": "https://github.com/ponstream24/orbit-id/issues"
   },
