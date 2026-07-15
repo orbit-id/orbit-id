@@ -47,7 +47,7 @@ Notes:
 
 - Prefer a **coordinated** `vX.Y.Z` cut (same number in npm / Java / Rust / Go / PHP tags) for **X** and **Y**.
 - For **Z**, bump **only** that ecosystem’s metadata (and still use a monorepo `vX.Y.Z` tag when you need publish workflows). Other manifests MAY stay unchanged; npm / crates skip already-published versions.
-- The **Release** Action (`.github/workflows/release.yml`) performs a **lockstep** bump of the public cut. Use it for coordinated **X** / **Y** (and intentional lockstep **Z**). For a true language-only **Z**, bump that package manually (or extend the Action later with per-ecosystem toggles).
+- The **Bump release PR** Action (`.github/workflows/release.yml`) opens a lockstep version-bump PR for the public cut. Use it for coordinated **X** / **Y** (and intentional lockstep **Z**). For a true language-only **Z**, bump that package manually (or extend the Action later with per-ecosystem toggles).
 
 ## Version metadata per package
 
@@ -117,26 +117,25 @@ Security reports: repository Security advisories (see [Security](security.md)).
 
 ## Maintainer checklist (coordinated release)
 
-Preferred: run the **Release** GitHub Action (`.github/workflows/release.yml`) via
-**Actions → Release → Run workflow**. It bumps in-tree versions, commits to `main`, creates tags, then
-**dispatches** the existing publish workflows on `vX.Y.Z` (needed because `GITHUB_TOKEN` tag
-pushes do not re-trigger other workflows).
+Preferred: run **Bump release PR** (`.github/workflows/release.yml`) via
+**Actions → Bump release PR → Run workflow**. It bumps in-tree versions and opens a PR.
+After that PR merges, **create a GitHub Release** for `vX.Y.Z` so the existing publish
+workflows run on the tag. Also push `packages/go/vX.Y.Z` when Go should ship.
 
-The `main` ruleset must allow the Release push actor to bypass PR / signed-commit / coverage
-rules. This repo uses a **write deploy key**:
+In-tree bumps (Action / `npm run release:bump`):
 
-1. Org setting: deploy keys enabled for repositories.
-2. Repo deploy key **Release workflow (ruleset bypass)** (read/write) on the ruleset Bypass list
-   (Always).
-3. Private key stored as Actions secret `RELEASE_DEPLOY_KEY` (workflow checks out / pushes over SSH).
-
+| Ecosystem | Files |
+|-----------|--------|
+| npm | root + `packages/{core,typescript,cli}/package.json`, lockfile; `@orbit-id/core` dep in node-lease / playground when present |
+| Maven | `packages/java/pom.xml` |
+| crates.io | `packages/rust/Cargo.toml` |
+| Go | none (subdirectory module — tag only) |
+| PHP | none (Packagist from `v*` via mirror) |
 
 Inputs:
 
 - `version` — SemVer without `v` (example: `1.0.2`)
-- `tag_go` — also create `packages/go/vX.Y.Z` (default on)
-- `create_github_release` — open a GitHub Release for `vX.Y.Z` (default on)
-- `dry_run` — show the bump diff only (no commit/tag)
+- `dry_run` — show the bump diff only (no PR)
 
 Local dry-run / bump without tagging:
 

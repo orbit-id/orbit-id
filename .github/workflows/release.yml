@@ -1,10 +1,8 @@
-name: Release
+name: Bump release PR
 
-# Coordinated release: bump in-tree versions → commit → tag.
-# Existing Publish / Maven / crates / Packagist workflows then run on the new tags.
-#
-# Pushes to main use RELEASE_DEPLOY_KEY (write deploy key on the ruleset bypass list).
-# See cross-registry-versioning docs.
+# Opens a PR that bumps in-tree package versions. After merge, create a GitHub
+# Release (tag vX.Y.Z) to run the publish workflows; also tag packages/go/vX.Y.Z
+# when Go should ship.
 on:
   workflow_dispatch:
     inputs:
@@ -12,40 +10,26 @@ on:
         description: "SemVer without leading v (example: 1.0.2)"
         required: true
         type: string
-      tag_go:
-        description: "Also create packages/go/vX.Y.Z"
-        required: true
-        type: boolean
-        default: true
-      create_github_release:
-        description: "Create a GitHub Release for vX.Y.Z"
-        required: true
-        type: boolean
-        default: true
       dry_run:
-        description: "Bump locally in the runner but do not commit/tag/push"
+        description: "Show diff only; do not open a PR"
         required: true
         type: boolean
         default: false
 
 permissions:
   contents: write
-  actions: write
+  pull-requests: write
 
 concurrency:
-  group: release
+  group: bump-release-pr
   cancel-in-progress: false
 
 jobs:
-  release:
+  bump:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          # SSH deploy key bypasses the main ruleset (PR / signatures / coverage).
-          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
 
       - uses: actions/setup-node@v4
         with:
@@ -65,12 +49,8 @@ jobs:
             echo "::error::Invalid semver: $VERSION"
             exit 1
           fi
-          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
-            echo "::error::Tag v${VERSION} already exists"
-            exit 1
-          fi
-          if [[ "${{ inputs.tag_go }}" == "true" ]] && git rev-parse "packages/go/v${VERSION}" >/dev/null 2>&1; then
-            echo "::error::Tag packages/go/v${VERSION} already exists"
+          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            echo "::error::Tag v${VERSION} already exists on origin"
             exit 1
           fi
 
@@ -83,64 +63,57 @@ jobs:
       - name: Show diff
         run: git diff --stat && git diff
 
-      # Boolean inputs are often the strings "true"/"false"; !"false" is truthy in expressions.
-      - name: Commit, tag, and push
+      - name: Open version-bump PR
         if: ${{ inputs.dry_run != true }}
         env:
           VERSION: ${{ inputs.version }}
-          TAG_GO: ${{ inputs.tag_go }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          branch="chore/release-v${VERSION}"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
           git add -A
           if git diff --cached --quiet; then
             echo "::error::No version changes to commit (already at ${VERSION}?)"
             exit 1
           fi
-          git commit -m "chore: release v${VERSION}"
-          git tag "v${VERSION}"
-          if [[ "$TAG_GO" == "true" ]]; then
-            git tag "packages/go/v${VERSION}"
-          fi
-          git push origin HEAD
-          git push origin "v${VERSION}"
-          if [[ "$TAG_GO" == "true" ]]; then
-            git push origin "packages/go/v${VERSION}"
-          fi
+          git commit -m "chore: bump release metadata to v${VERSION}"
+          git push -u origin "$branch" --force-with-lease
 
-      # Deploy-key tag pushes do not re-trigger workflows either; dispatch explicitly.
-      - name: Dispatch publish workflows
-        if: ${{ inputs.dry_run != true }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ inputs.version }}
-        run: |
-          set -euo pipefail
-          ref="v${VERSION}"
-          for wf in publish.yml publish-maven.yml publish-crates.yml publish-packagist.yml; do
-            echo "dispatch ${wf} @ ${ref}"
-            gh workflow run "$wf" --ref "$ref"
-          done
-
-      - name: Create GitHub Release
-        if: ${{ inputs.dry_run != true && inputs.create_github_release == true }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ inputs.version }}
-        run: |
-          set -euo pipefail
           body="$(cat <<EOF
-          Coordinated monorepo release \`v${VERSION}\`.
+          Lockstep version bump for \`${VERSION}\`.
 
-          Publishers (npm / Maven / crates.io / Packagist mirror) are dispatched on this tag.
-          Go module tag: \`packages/go/v${VERSION}\` (when enabled).
+          ### Files updated by this PR
+          - \`package.json\` (root)
+          - \`packages/core/package.json\`
+          - \`packages/typescript/package.json\`
+          - \`packages/cli/package.json\`
+          - \`packages/node-lease/package.json\` / \`packages/playground/package.json\` (\`@orbit-id/core\` dep, when present)
+          - \`package-lock.json\`
+          - \`packages/java/pom.xml\`
+          - \`packages/rust/Cargo.toml\`
 
-          See [Cross-registry versioning](https://github.com/orbit-id/orbit-id/blob/main/docs/en/cross-registry-versioning.md).
+          ### Not in-tree (tag at release time)
+          - **Go** — create tag \`packages/go/v${VERSION}\` on the same commit as \`v${VERSION}\`
+          - **PHP** — Packagist follows monorepo tag \`v${VERSION}\` via the \`orbit-id/php\` mirror (no \`composer.json\` version field)
+
+          ### After merge
+          1. Create a GitHub Release for \`v${VERSION}\` (tag on \`main\`) so publish workflows run.
+          2. If Go should ship: \`git tag packages/go/v${VERSION} && git push origin packages/go/v${VERSION}\`
           EOF
           )"
-          gh release create "v${VERSION}" --title "v${VERSION}" --notes "$body"
+
+          existing="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [[ -n "$existing" ]]; then
+            gh pr edit "$existing" --title "chore: bump release metadata to v${VERSION}" --body "$body"
+            echo "Updated PR #${existing}"
+          else
+            gh pr create --base main --head "$branch" --title "chore: bump release metadata to v${VERSION}" --body "$body"
+          fi
 
       - name: Dry-run notice
         if: ${{ inputs.dry_run == true }}
-        run: echo "Dry run only — no commit, tag, or release was created."
+        run: echo "Dry run only — no branch or PR was created."
