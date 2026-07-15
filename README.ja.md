@@ -2,6 +2,18 @@
 
 [English](README.md)
 
+[![CI](https://github.com/orbit-id/orbit-id/actions/workflows/ci.yml/badge.svg)](https://github.com/orbit-id/orbit-id/actions/workflows/ci.yml)
+[![npm @orbit-id/core](https://img.shields.io/npm/v/@orbit-id/core?label=%40orbit-id%2Fcore)](https://www.npmjs.com/package/@orbit-id/core)
+[![npm @orbit-id/typescript](https://img.shields.io/npm/v/@orbit-id/typescript?label=%40orbit-id%2Ftypescript)](https://www.npmjs.com/package/@orbit-id/typescript)
+[![npm @orbit-id/cli](https://img.shields.io/npm/v/@orbit-id/cli?label=%40orbit-id%2Fcli)](https://www.npmjs.com/package/@orbit-id/cli)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.orbit-id/orbit-id?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.orbit-id/orbit-id)
+[![crates.io](https://img.shields.io/crates/v/orbit-id)](https://crates.io/crates/orbit-id)
+[![Packagist](https://img.shields.io/packagist/v/orbit-id/php?label=Packagist)](https://packagist.org/packages/orbit-id/php)
+[![Go Reference](https://pkg.go.dev/badge/github.com/orbit-id/orbit-id/packages/go.svg)](https://pkg.go.dev/github.com/orbit-id/orbit-id/packages/go)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
+Playground: [orbit-id.github.io/orbit-id](https://orbit-id.github.io/orbit-id/)
+
 Orbit ID は、分散環境で一意な 64-bit ID を生成するための仕様です。
 ID の中に発行時刻、エンティティ種別、発行ノード、同一ミリ秒内の連番を格納し、
 データベースへ問い合わせずにそれらを解析できます。
