@@ -32,6 +32,23 @@ Do **not** invent separate per-language root tags like `java-v1.0.0` or `rust-v1
 Pre-release / RC tags MAY use SemVer pre-release forms (`v1.1.0-rc.1`). Registry support for
 pre-releases varies; prefer stable `vX.Y.Z` for first Central / crates / Packagist publishes.
 
+## When to increment X.Y.Z
+
+Orbit package versions use SemVer `X.Y.Z` with this project convention (in addition to the
+[v1 wire-format compatibility](stable-release-criteria.md) rules):
+
+| Component | Meaning | Examples |
+| --- | --- | --- |
+| **X** (major) | **Breaking** changes for consumers or for ID / API meaning | Public API removal or incompatible signature change; decode/encode behaviour change that alters existing IDs’ interpretation (normally requires a new major line — see stable-release criteria) |
+| **Y** (minor) | **Cross-cutting** / whole-project changes that are not breaking | Spec clarifying docs that all languages follow; shared conformance fixture updates; feature added across (or for) the monorepo cut; multi-ecosystem bugfix |
+| **Z** (patch) | **Single language / single ecosystem** only | Java-only packaging fix; Rust-only bugfix; PHP README / Packagist mirror tweak; Go tag refresh with no shared change |
+
+Notes:
+
+- Prefer a **coordinated** `vX.Y.Z` cut (same number in npm / Java / Rust / Go / PHP tags) for **X** and **Y**.
+- For **Z**, bump **only** that ecosystem’s metadata (and still use a monorepo `vX.Y.Z` tag when you need publish workflows). Other manifests MAY stay unchanged; npm / crates skip already-published versions.
+- The **Release** Action (`.github/workflows/release.yml`) performs a **lockstep** bump of the public cut. Use it for coordinated **X** / **Y** (and intentional lockstep **Z**). For a true language-only **Z**, bump that package manually (or extend the Action later with per-ecosystem toggles).
+
 ## Version metadata per package
 
 Each package owns its registry version in its own manifest. For a **coordinated** release, bump
