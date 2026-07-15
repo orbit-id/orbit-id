@@ -118,9 +118,10 @@ Security reports: repository Security advisories (see [Security](security.md)).
 ## Maintainer checklist (coordinated release)
 
 Preferred: run the **Release** GitHub Action (`.github/workflows/release.yml`) via
-**Actions → Release → Run workflow**. It bumps in-tree versions, commits, creates tags, then
-**dispatches** the existing publish workflows on `vX.Y.Z` (needed because `GITHUB_TOKEN` tag
-pushes do not re-trigger other workflows).
+**Actions → Release → Run workflow**. It bumps in-tree versions, opens a `release/vX.Y.Z` PR,
+**squash-merges** it (required: `main` ruleset blocks direct pushes / unsigned commits), creates
+tags, then **dispatches** the existing publish workflows on `vX.Y.Z` (needed because
+`GITHUB_TOKEN` tag pushes do not re-trigger other workflows).
 
 Inputs:
 

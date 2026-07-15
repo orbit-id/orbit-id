@@ -1,7 +1,10 @@
 name: Release
 
-# Coordinated release: bump in-tree versions → commit → tag.
+# Coordinated release: bump in-tree versions → release PR (squash) → tag.
 # Existing Publish / Maven / crates / Packagist workflows then run on the new tags.
+#
+# Direct pushes to main are blocked by the repo ruleset (PR + signed commits +
+# code coverage). Squash-merge via the API produces a GitHub-signed commit on main.
 on:
   workflow_dispatch:
     inputs:
@@ -28,6 +31,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: release
@@ -80,26 +84,77 @@ jobs:
         run: git diff --stat && git diff
 
       # Boolean inputs are often the strings "true"/"false"; !"false" is truthy in expressions.
-      - name: Commit, tag, and push
+      - name: Open release PR, merge, and tag
         if: ${{ inputs.dry_run != true }}
         env:
           VERSION: ${{ inputs.version }}
           TAG_GO: ${{ inputs.tag_go }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          branch="release/v${VERSION}"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
           git add -A
           if git diff --cached --quiet; then
             echo "::error::No version changes to commit (already at ${VERSION}?)"
             exit 1
           fi
           git commit -m "chore: release v${VERSION}"
+          git push -u origin "$branch" --force-with-lease
+
+          if gh pr list --head "$branch" --base main --state open --json number --jq 'length' | grep -qx 0; then
+            gh pr create \
+              --base main \
+              --head "$branch" \
+              --title "chore: release v${VERSION}" \
+              --body "$(cat <<EOF
+          Automated lockstep version bump for \`${VERSION}\`.
+
+          Squash-merged by the Release workflow (repo ruleset blocks direct pushes to \`main\`).
+          EOF
+          )"
+          fi
+
+          pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number')"
+          if [[ -z "$pr" || "$pr" == "null" ]]; then
+            echo "::error::Could not find open PR for ${branch}"
+            exit 1
+          fi
+
+          # Prefer immediate squash (GitHub-signed commit on main). If checks are required,
+          # enable auto-merge and wait.
+          if ! gh pr merge "$pr" --squash --delete-branch --subject "chore: release v${VERSION}"; then
+            echo "Immediate merge blocked; enabling auto-merge and waiting for checks…"
+            gh pr merge "$pr" --squash --delete-branch --auto --subject "chore: release v${VERSION}"
+            for _ in $(seq 1 60); do
+              state="$(gh pr view "$pr" --json state --jq .state)"
+              if [[ "$state" == "MERGED" ]]; then
+                break
+              fi
+              if [[ "$state" == "CLOSED" ]]; then
+                echo "::error::Release PR #${pr} was closed without merging"
+                exit 1
+              fi
+              sleep 30
+            done
+            state="$(gh pr view "$pr" --json state --jq .state)"
+            if [[ "$state" != "MERGED" ]]; then
+              echo "::error::Timed out waiting for release PR #${pr} to merge"
+              exit 1
+            fi
+          fi
+
+          git fetch origin main --tags
+          git checkout main
+          git reset --hard origin/main
+
           git tag "v${VERSION}"
           if [[ "$TAG_GO" == "true" ]]; then
             git tag "packages/go/v${VERSION}"
           fi
-          git push origin HEAD
           git push origin "v${VERSION}"
           if [[ "$TAG_GO" == "true" ]]; then
             git push origin "packages/go/v${VERSION}"

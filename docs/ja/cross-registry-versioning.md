@@ -115,8 +115,10 @@ GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/orbit-id/
 ## メンテナ checklist（同時リリース）
 
 推奨: GitHub Actions の **Release**（`.github/workflows/release.yml`）を
-**Actions → Release → Run workflow** で実行する。ツリー内バージョンを bump → commit → タグ作成のあと、
-既存の Publish workflow を同じタグ ref で明示的に dispatch する。
+**Actions → Release → Run workflow** で実行する。ツリー内バージョンを bump し、
+`release/vX.Y.Z` PR を開いて **squash merge** する（`main` の ruleset が直接 push /
+未署名 commit を拒否するため）。その後タグを打ち、既存の Publish workflow を同じタグ ref で
+明示的に dispatch する。
 
 入力:
 
