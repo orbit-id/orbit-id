@@ -3,8 +3,8 @@ name: Release
 # Coordinated release: bump in-tree versions → commit → tag.
 # Existing Publish / Maven / crates / Packagist workflows then run on the new tags.
 #
-# Requires the `main` ruleset to allow GitHub Actions (or an org-admin RELEASE_TOKEN)
-# to bypass PR / signed-commit / coverage rules. See cross-registry-versioning docs.
+# Pushes to main use RELEASE_DEPLOY_KEY (write deploy key on the ruleset bypass list).
+# See cross-registry-versioning docs.
 on:
   workflow_dispatch:
     inputs:
@@ -44,8 +44,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # Prefer RELEASE_TOKEN (org-admin PAT) when GitHub Actions is not a bypass actor.
-          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          # SSH deploy key bypasses the main ruleset (PR / signatures / coverage).
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
 
       - uses: actions/setup-node@v4
         with:
@@ -109,7 +109,7 @@ jobs:
             git push origin "packages/go/v${VERSION}"
           fi
 
-      # GITHUB_TOKEN pushes do not re-trigger tag workflows; dispatch explicitly on the new tag.
+      # Deploy-key tag pushes do not re-trigger workflows either; dispatch explicitly.
       - name: Dispatch publish workflows
         if: ${{ inputs.dry_run != true }}
         env:

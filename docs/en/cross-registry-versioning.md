@@ -122,10 +122,13 @@ Preferred: run the **Release** GitHub Action (`.github/workflows/release.yml`) v
 **dispatches** the existing publish workflows on `vX.Y.Z` (needed because `GITHUB_TOKEN` tag
 pushes do not re-trigger other workflows).
 
-The `main` ruleset must allow the Release actor to bypass PR / signed-commit / coverage rules:
+The `main` ruleset must allow the Release push actor to bypass PR / signed-commit / coverage
+rules. This repo uses a **write deploy key**:
 
-1. Prefer: Rules → **main** → Bypass list → add **GitHub Actions** (mode: Always).
-2. Fallback: org-admin classic or fine-grained PAT as repo secret `RELEASE_TOKEN` (Contents: Read and write). Organization admins are already on the bypass list.
+1. Org setting: deploy keys enabled for repositories.
+2. Repo deploy key **Release workflow (ruleset bypass)** (read/write) on the ruleset Bypass list
+   (Always).
+3. Private key stored as Actions secret `RELEASE_DEPLOY_KEY` (workflow checks out / pushes over SSH).
 
 
 Inputs:

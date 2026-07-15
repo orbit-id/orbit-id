@@ -118,10 +118,12 @@ GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/orbit-id/
 **Actions → Release → Run workflow** で実行する。ツリー内バージョンを bump → `main` へ commit →
 タグ作成のあと、既存の Publish workflow を同じタグ ref で明示的に dispatch する。
 
-`main` の ruleset で Release 実行主体が PR / 署名必須 / coverage を bypass できること:
+`main` の ruleset で Release の push 主体が PR / 署名必須 / coverage を bypass できること。
+このリポジトリは **書き込み Deploy key** を使う:
 
-1. 推奨: Rules → **main** → Bypass list に **GitHub Actions**（Always）を追加。
-2. 代替: org admin の PAT を repo secret `RELEASE_TOKEN`（Contents read/write）。Organization admin は bypass 済み。
+1. Org で Deploy keys をリポジトリ向けに有効化。
+2. リポジトリ Deploy key **Release workflow (ruleset bypass)**（read/write）を ruleset Bypass list（Always）へ。
+3. 秘密鍵を Actions secret `RELEASE_DEPLOY_KEY` に保存（workflow が SSH で checkout / push）。
 
 
 入力:
