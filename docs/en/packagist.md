@@ -29,8 +29,11 @@ Do **not** open feature PRs against `orbit-id/php` — change `packages/php` in 
 
 1. Mirror repo exists: [`orbit-id/php`](https://github.com/orbit-id/php) (created empty for force-sync).
 2. Create a GitHub PAT (or fine-grained token) with **Contents: Read and write** on `orbit-id/php`.
+   Do **not** put `GITHUB_TOKEN` here — that can only write to the current repo.
 3. Add Actions secret `PHP_SPLIT_TOKEN` on `orbit-id/orbit-id`.
 4. Run **Publish Packagist mirror** (`workflow_dispatch`) once to populate `main`.
+   The workflow sets `persist-credentials: false` on checkout so the split push uses
+   `PHP_SPLIT_TOKEN` (not the job’s `GITHUB_TOKEN` credential helper).
 5. On [packagist.org](https://packagist.org/packages/submit):
    - Submit `https://github.com/orbit-id/php`
    - Claim vendor namespace `orbit-id` if prompted

@@ -29,8 +29,11 @@ packagist.org/packages/orbit-id/php
 
 1. ミラー [`orbit-id/php`](https://github.com/orbit-id/php) があること。
 2. `orbit-id/php` に **Contents: Read and write** がある PAT を作成。
+   `GITHUB_TOKEN` を入れないこと（カレントリポジトリ以外には書けない）。
 3. `orbit-id/orbit-id` の Actions シークレットに `PHP_SPLIT_TOKEN` を追加。
 4. **Publish Packagist mirror** を一度手動実行して `main` を埋める。
+   checkout は `persist-credentials: false` なので、split の push は
+   `PHP_SPLIT_TOKEN` を使う（ジョブの `GITHUB_TOKEN` 資格情報で上書きされない）。
 5. [packagist.org](https://packagist.org/packages/submit) で `https://github.com/orbit-id/php` を登録。
 6. 任意: `PACKAGIST_USERNAME` / `PACKAGIST_TOKEN`（タグ後の update API 用）。
 

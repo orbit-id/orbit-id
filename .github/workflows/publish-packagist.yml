@@ -13,9 +13,11 @@ jobs:
   split:
     runs-on: ubuntu-latest
     steps:
+      # Disable checkout credential helper so PHP_SPLIT_TOKEN is not overridden by GITHUB_TOKEN.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Require split token
         env:

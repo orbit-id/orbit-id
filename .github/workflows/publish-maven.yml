@@ -34,7 +34,23 @@ jobs:
           done
           exit "$missing"
 
+      - name: Skip if version already on Maven Central
+        id: skip
+        working-directory: packages/java
+        run: |
+          set -euo pipefail
+          ver="$(sed -n 's/^[[:space:]]*<version>\([^<]*\)<\/version>.*/\1/p' pom.xml | head -1)"
+          echo "pom version=$ver"
+          url="https://repo1.maven.org/maven2/io/github/orbit-id/orbit-id/${ver}/orbit-id-${ver}.pom"
+          if curl -fsSI -A 'orbit-id-ci' "$url" >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip io.github.orbit-id:orbit-id:${ver} (already on Maven Central)"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-java@v4
+        if: steps.skip.outputs.skip != 'true'
         with:
           distribution: temurin
           java-version: "11"
@@ -46,6 +62,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Publish to Maven Central
+        if: steps.skip.outputs.skip != 'true'
         working-directory: packages/java
         run: mvn -B -Prelease deploy -DskipTests=false
         env:
