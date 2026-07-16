@@ -4,7 +4,7 @@
 
 Orbit ID v1 実装は、以下の値を同じ unsigned 64-bit ID に encode し、その ID から元の field を
 decode できなければなりません。日時表記は UTC、16 進表記は big-endian の数値表現です。
-Test vector 内の Type 値は bit layout の検証用であり、registry 上の正式割当を意味しません。
+Test vector 内の Type 値は bit layout の検証用であり、特定の意味割当を示すものではありません。
 
 機械可読な fixture は [`spec/conformance/`](../../spec/conformance/) にあります。自動テストは
 それらの JSON を読むべきです。この文書は人間向けの説明です。
@@ -58,7 +58,7 @@ Calculation:
 | Decimal ID | `18446744073709551615` |
 | Hex ID | `0xffffffffffffffff` |
 
-この vector は bit layout の境界検証用です。Type `63` は registry 上の正式割当を意味しません。
+この vector は bit layout の境界検証用です。Type `63` も layout 検証用の値です。
 
 ## Vector 4: 最小の非ゼロ Timestamp
 

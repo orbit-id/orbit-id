@@ -4,8 +4,7 @@
 
 Orbit ID v1 implementations MUST encode the following values to the same unsigned 64-bit ID and
 decode that ID back to the original fields. Timestamps are UTC. Hex values are big-endian numeric
-forms. Type values in these vectors are for bit-layout verification only and do not imply
-official registry assignments.
+forms. Type values in these vectors are for bit-layout verification only.
 
 Machine-readable fixtures live in [`spec/conformance/`](../../spec/conformance/). Automated tests
 SHOULD load those JSON files; this document is the human-readable companion.
@@ -59,7 +58,7 @@ Calculation:
 | Decimal ID | `18446744073709551615` |
 | Hex ID | `0xffffffffffffffff` |
 
-This vector is for bit-layout boundary checks. Type `63` is not an official registry assignment.
+This vector is for bit-layout boundary checks. Type `63` is for layout verification only.
 
 ## Vector 4: Minimum non-zero timestamp
 

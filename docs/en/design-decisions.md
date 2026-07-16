@@ -19,8 +19,8 @@ A custom epoch later than the Unix epoch saves bits.
 ## 3. Type is an entity kind
 
 Type is a logical entity kind, not a table number. This avoids breaking ID meaning when databases
-are split, merged, or roles change. 6 bits (64 kinds) are considered enough with careful registry
-governance.
+are split, merged, or roles change. 6 bits (64 kinds) are enough when each deployment assigns
+meanings carefully and does not repurpose values already present in durable data.
 
 ## 4. 7-bit Node and 10-bit Sequence
 

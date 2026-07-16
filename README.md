@@ -81,7 +81,6 @@ is required for external exposure, or as authorization tokens.
 
 - [Orbit ID v1 Specification](docs/en/orbit-id-v1.md)
 - [Canonical Test Vectors](docs/en/test-vectors.md)
-- [Type Registry](docs/en/type-registry.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
 - [Library API](docs/en/library-api.md)

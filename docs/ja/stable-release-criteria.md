@@ -20,8 +20,7 @@
 次をすべて満たす必要があります。
 
 1. **ライセンス** — OSS ライセンスファイルがあり、README に記載されている。
-2. **Type registry** — draft-official な Type 割当が記録され、freeze 前の最終変更は migration 注記付きで
-   マージされている。
+2. **Type field** — Type の規則（`0` 予約、意味は deployer 所有）が v1 仕様で規範的である。
 3. **Node 割当** — 本番の割当方式と再利用 quarantine の既定が Node Management で規範的である。
 4. **時計巻き戻し** — 既定許容と fail closed が v1 仕様で規範的である。
 5. **Conformance suite** — `spec/conformance/` が参照実装に必要な encode/decode・拒否・generator
@@ -46,4 +45,5 @@ stable `v1.0.0` を切るとき（本リポジトリでは完了済み）:
 
 ## stable 以降
 
-追加 Type、運用ガイド、ライブラリ機能は、既発行 ID の意味を変えなければ minor / patch で出せます。
+Type フィールドの追加ガイダンス、運用ガイド、ライブラリ機能は、あるデプロイで既発行 ID の意味を
+変えなければ minor / patch で出せます。

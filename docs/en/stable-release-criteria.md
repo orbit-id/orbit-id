@@ -20,8 +20,8 @@ Draft releases before that tag MAY still change.
 All of the following MUST be true:
 
 1. **License** — An OSS license file is present and documented (see README).
-2. **Type registry** — Draft-official Type assignments are recorded; any last changes before freeze
-   are merged with migration notes.
+2. **Type field** — Type rules (`0` reserved, deployer-owned meanings) are normative in the v1
+   specification.
 3. **Node allocation** — Production allocation strategy and reuse quarantine defaults are normative
    in Node Management.
 4. **Clock rollback** — Default tolerance and fail-closed behavior are normative in the v1 spec.
@@ -50,5 +50,5 @@ When cutting stable `v1.0.0` (completed for this repository):
 
 ## After stable
 
-Additional Types, operational guidance, and library features MAY ship in minor / patch releases
-without changing the meaning of already-issued IDs.
+Additional Type-field guidance, operational docs, and library features MAY ship in minor / patch
+releases without changing the meaning of already-issued IDs within a deployment.

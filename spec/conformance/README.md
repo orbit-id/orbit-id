@@ -58,5 +58,4 @@ them.
 - Prefer loading these JSON files directly from each language package’s test suite.
 - Do not fork divergent copies of the vectors inside packages; if docs and fixtures disagree,
   fixtures win for automated conformance and docs MUST be updated in the same change.
-- Type values in fixtures verify the bit layout. They do not by themselves grant Type Registry
-  meaning unless the registry assigns them.
+- Type values in fixtures verify the bit layout only.

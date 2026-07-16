@@ -52,9 +52,14 @@ timestamp = floor(current_unix_time_ms) - 1767225600000
 
 ### 3.2 Type
 
-Type is the logical entity kind the ID belongs to. It MUST NOT represent attributes that can change
-later, such as physical table name, permissions, or state. Assignments follow the
-[Type Registry](type-registry.md).
+Type is the logical entity kind the ID belongs to (`0..63`). Value `0` is reserved; implementations
+MUST reject `generate(0)`. Values `1..63` are available for application assignment.
+
+Type MUST NOT represent attributes that can change later, such as physical table name, permissions,
+roles, or state. Each deployer / organization chooses numeric meanings. Within a deployment, once a
+value has been used in durable data, its meaning MUST NOT be changed or reused. If an entity later
+needs a different identity boundary, issue a new ID under a different Type and relate the two in
+the data model.
 
 ### 3.3 Node
 
@@ -106,7 +111,7 @@ them.
 Each generator retains at least `node_id`, `last_timestamp`, and `sequence`.
 `generate(type)` MUST be serialized within the same generator.
 
-1. Confirm Type is issuable in the registry and Node is in range.
+1. Confirm Type is in `1..63` (not reserved `0`) and Node is in range.
 2. Obtain the current Timestamp in milliseconds.
 3. Fail if the value is before the Epoch or beyond the 41-bit maximum.
 4. If the current value is less than `last_timestamp`, follow section 7.
@@ -201,9 +206,6 @@ incompatible format, identify it via storage column, API field, prefix, or exter
 Existing IDs MUST NOT be reinterpreted as a new format.
 
 ## 14. Normative companion documents
-
-Official Type assignments live in the [Type Registry](type-registry.md). Assigned meanings MUST NOT
-change within v1.
 
 Default clock-rollback tolerance is defined in §7 (`5_000` ms).
 
