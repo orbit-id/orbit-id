@@ -101,6 +101,14 @@ jobs:
           if [[ -n "$existing" ]]; then
             gh pr edit "$existing" --title "chore: bump release metadata to v${VERSION}" --body "$body"
             echo "Updated PR #${existing}"
-          else
-            gh pr create --base main --head "$branch" --title "chore: bump release metadata to v${VERSION}" --body "$body"
+            exit 0
           fi
+
+          if ! out="$(gh pr create --base main --head "$branch" --title "chore: bump release metadata to v${VERSION}" --body "$body" 2>&1)"; then
+            echo "$out"
+            if echo "$out" | grep -qi 'not permitted to create or approve pull requests'; then
+              echo "::error::GITHUB_TOKEN cannot open PRs. Enable org setting: Actions → General → Workflow permissions → Read and write permissions, and check “Allow GitHub Actions to create and approve pull requests”. Then re-run, or open: https://github.com/${{ github.repository }}/compare/main...${branch}?expand=1"
+            fi
+            exit 1
+          fi
+          echo "$out"

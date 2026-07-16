@@ -122,6 +122,10 @@ Preferred: run **Bump release PR** (`.github/workflows/bump-release-pr.yml`) via
 After that PR merges, **create a GitHub Release** for `vX.Y.Z` so the existing publish
 workflows run on the tag. Also push `packages/go/vX.Y.Z` when Go should ship.
 
+Prerequisite (org): **Actions → General → Workflow permissions** must allow **Read and write**
+and **Allow GitHub Actions to create and approve pull requests**. Otherwise
+`GITHUB_TOKEN` cannot call `createPullRequest`.
+
 In-tree bumps (Action / `npm run release:bump`):
 
 | Ecosystem | Files |

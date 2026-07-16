@@ -119,6 +119,10 @@ GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/orbit-id/
 マージ後は GitHub Release（タグ `vX.Y.Z`）を作成して既存の Publish workflow を動かす。
 Go を出すときは同じコミットに `packages/go/vX.Y.Z` も打つ。
 
+前提（org）: **Actions → General → Workflow permissions** で **Read and write** と
+**Allow GitHub Actions to create and approve pull requests** を有効にする。
+オフだと `GITHUB_TOKEN` が `createPullRequest` できない。
+
 ツリー内 bump（Action / `npm run release:bump`）:
 
 | エコシステム | 対象 |
