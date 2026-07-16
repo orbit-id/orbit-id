@@ -1,0 +1,11 @@
+name: Rust quality check
+description: Run Cargo tests for packages/rust
+
+runs:
+  using: composite
+  steps:
+    - uses: dtolnay/rust-toolchain@stable
+
+    - shell: bash
+      working-directory: packages/rust
+      run: cargo test

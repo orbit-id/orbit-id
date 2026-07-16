@@ -1,0 +1,17 @@
+name: PHP quality check
+description: Install Composer deps and run PHPUnit for packages/php
+
+runs:
+  using: composite
+  steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: "8.3"
+
+    - shell: bash
+      working-directory: packages/php
+      run: composer install --no-interaction
+
+    - shell: bash
+      working-directory: packages/php
+      run: composer test

@@ -1,0 +1,13 @@
+name: Go quality check
+description: Run Go tests for packages/go
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v5
+      with:
+        go-version: "1.22.x"
+
+    - shell: bash
+      working-directory: packages/go
+      run: go test ./...

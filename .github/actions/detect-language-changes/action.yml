@@ -1,0 +1,138 @@
+name: Detect language changes
+description: >-
+  Decide which language quality checks to run from a git diff (or force all).
+
+inputs:
+  force_all:
+    description: If true, mark every language as changed
+    required: false
+    default: "false"
+  base_sha:
+    description: Base commit for the diff (PR base SHA). Ignored when force_all is true.
+    required: false
+    default: ""
+  head_sha:
+    description: Head commit for the diff. Defaults to HEAD.
+    required: false
+    default: "HEAD"
+
+outputs:
+  node:
+    description: Whether Node/TypeScript packages changed
+    value: ${{ steps.detect.outputs.node }}
+  go:
+    description: Whether the Go package changed
+    value: ${{ steps.detect.outputs.go }}
+  rust:
+    description: Whether the Rust package changed
+    value: ${{ steps.detect.outputs.rust }}
+  java:
+    description: Whether the Java package changed
+    value: ${{ steps.detect.outputs.java }}
+  php:
+    description: Whether the PHP package changed
+    value: ${{ steps.detect.outputs.php }}
+  any:
+    description: Whether any language package changed
+    value: ${{ steps.detect.outputs.any }}
+  matrix:
+    description: JSON object of language -> boolean for debugging
+    value: ${{ steps.detect.outputs.matrix }}
+
+runs:
+  using: composite
+  steps:
+    - id: detect
+      shell: bash
+      env:
+        FORCE_ALL: ${{ inputs.force_all }}
+        BASE_SHA: ${{ inputs.base_sha }}
+        HEAD_SHA: ${{ inputs.head_sha }}
+      run: |
+        set -euo pipefail
+
+        set_all() {
+          local value="$1"
+          echo "node=${value}" >> "$GITHUB_OUTPUT"
+          echo "go=${value}" >> "$GITHUB_OUTPUT"
+          echo "rust=${value}" >> "$GITHUB_OUTPUT"
+          echo "java=${value}" >> "$GITHUB_OUTPUT"
+          echo "php=${value}" >> "$GITHUB_OUTPUT"
+          echo "any=${value}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"node\":${value},\"go\":${value},\"rust\":${value},\"java\":${value},\"php\":${value}}" >> "$GITHUB_OUTPUT"
+        }
+
+        if [[ "${FORCE_ALL}" == "true" ]]; then
+          echo "force_all=true — marking every language as changed"
+          set_all true
+          exit 0
+        fi
+
+        if [[ -z "${BASE_SHA}" ]]; then
+          echo "::error::base_sha is required unless force_all=true"
+          exit 1
+        fi
+
+        head_ref="${HEAD_SHA:-HEAD}"
+        mapfile -t files < <(git diff --name-only "${BASE_SHA}...${head_ref}" | sed '/^$/d')
+
+        echo "Changed files (${#files[@]}):"
+        printf '  %s\n' "${files[@]:-}"
+
+        node=false
+        go=false
+        rust=false
+        java=false
+        php=false
+
+        # Shared surfaces that affect every language conformance / CI entrypoint.
+        for f in "${files[@]}"; do
+          case "$f" in
+            .github/workflows/ci.yml|\
+            .github/actions/*|\
+            spec/*)
+              echo "shared change: $f — marking every language as changed"
+              set_all true
+              exit 0
+              ;;
+          esac
+        done
+
+        for f in "${files[@]}"; do
+          case "$f" in
+            package.json|package-lock.json|\
+            packages/core/*|packages/typescript/*|packages/cli/*|\
+            packages/node-lease/*|packages/playground/*|benchmark/*)
+              node=true
+              ;;
+            packages/go/*)
+              go=true
+              ;;
+            packages/rust/*)
+              rust=true
+              ;;
+            packages/java/*)
+              java=true
+              ;;
+            packages/php/*)
+              php=true
+              ;;
+          esac
+        done
+
+        any=false
+        if [[ "$node" == true || "$go" == true || "$rust" == true || "$java" == true || "$php" == true ]]; then
+          any=true
+        fi
+
+        {
+          echo "node=${node}"
+          echo "go=${go}"
+          echo "rust=${rust}"
+          echo "java=${java}"
+          echo "php=${php}"
+          echo "any=${any}"
+          echo "matrix={\"node\":${node},\"go\":${go},\"rust\":${rust},\"java\":${java},\"php\":${php}}"
+        } >> "$GITHUB_OUTPUT"
+
+        echo "Detected languages: node=${node} go=${go} rust=${rust} java=${java} php=${php}"
