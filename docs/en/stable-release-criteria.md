@@ -20,8 +20,8 @@ Draft releases before that tag MAY still change.
 All of the following MUST be true:
 
 1. **License** — An OSS license file is present and documented (see README).
-2. **Type field** — Public rules for the Type field are documented; product-specific assignment
-   maps stay outside this repository.
+2. **Type field** — Public rules for the Type field are documented; numeric assignments are
+   deployer-owned rather than a global Orbit catalog.
 3. **Node allocation** — Production allocation strategy and reuse quarantine defaults are normative
    in Node Management.
 4. **Clock rollback** — Default tolerance and fail-closed behavior are normative in the v1 spec.

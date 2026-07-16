@@ -20,8 +20,8 @@
 次をすべて満たす必要があります。
 
 1. **ライセンス** — OSS ライセンスファイルがあり、README に記載されている。
-2. **Type field** — Type フィールドの公開規則が文書化されている。プロダクト固有の割当マップはこの
-   リポジトリの外に置く。
+2. **Type field** — Type フィールドの公開規則が文書化されている。数値の割当はグローバルな Orbit
+   カタログではなく、deployer が所有する。
 3. **Node 割当** — 本番の割当方式と再利用 quarantine の既定が Node Management で規範的である。
 4. **時計巻き戻し** — 既定許容と fail closed が v1 仕様で規範的である。
 5. **Conformance suite** — `spec/conformance/` が参照実装に必要な encode/decode・拒否・generator

@@ -7,15 +7,14 @@ Do not encode implementation details such as state, permissions, roles, or table
 
 ## Ownership
 
-**Orbit ID does not ship a global catalog of entity names.**
+**Orbit ID does not define a global catalog of entity names.**
 
-Each deployer / organization owns its own Type map (which numeric values mean what). Keep that map
-in private product documentation or internal config. Do not publish product-specific Type names or
-assignment tables in this repository.
+Each deployer / organization chooses which numeric values mean what. Whether to publish that map
+is up to them.
 
-Interoperability of the **wire format** does not require a shared vocabulary of Type names — only
-that encoded values stay in `0..63` and that a given deployment never reassigns a meaning once IDs
-exist in durable storage.
+Wire-format interoperability does not require a shared vocabulary of Type names — only that encoded
+values stay in `0..63` and that a given deployment never reassigns a meaning once IDs exist in
+durable storage.
 
 ## Spec rules (public)
 
