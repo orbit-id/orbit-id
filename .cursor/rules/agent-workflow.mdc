@@ -1,0 +1,20 @@
+---
+description: Agent workflow rules for orbit-id (Issue/PR, minimal diffs, no direct main, coverage, public repo, no settings changes)
+alwaysApply: true
+---
+
+# Agent workflow (orbit-id)
+
+Follow these rules when working in this repository:
+
+1. **Issue + PR required.** Open an Issue for the change, then implement on a branch and open a Pull Request for review. Do not land work without that flow.
+
+2. **Minimal diffs.** Keep changes as small as possible. Do not refactor or touch unrelated files. Do not skip necessary fixes when they are required for a correct change.
+
+3. **Never work on `main`.** Always create a branch. Do not commit, push, or modify `main` directly (except when the user explicitly asks for a specific git operation on `main`).
+
+4. **Maintain 100% coverage.** Do not merge or finish work that drops test coverage below 100%.
+
+5. **Public repository.** Do not commit secrets, credentials, tokens, private keys, or other sensitive material. Assume everything is public.
+
+6. **Do not change repository settings.** Do not modify GitHub org/repo settings, rulesets, Actions permissions, secrets, deploy keys, or similar infrastructure unless the user explicitly requests that ops work in the current task.
