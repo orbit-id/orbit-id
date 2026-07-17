@@ -31,7 +31,7 @@ Do **not** open feature PRs against `orbit-id/php` — change `packages/php` in 
 2. Create a GitHub PAT (or fine-grained token) with **Contents: Read and write** on `orbit-id/php`.
    Do **not** put `GITHUB_TOKEN` here — that can only write to the current repo.
 3. Add Actions secret `PHP_SPLIT_TOKEN` on `orbit-id/orbit-id`.
-4. Run **Publish Packagist mirror** (`workflow_dispatch`) once to populate `main`.
+4. Run the **Publish** workflow `packagist` job (`workflow_dispatch`) once to populate `main`.
    The workflow sets `persist-credentials: false` on checkout so the split push uses
    `PHP_SPLIT_TOKEN` (not the job’s `GITHUB_TOKEN` credential helper).
 5. On [packagist.org](https://packagist.org/packages/submit):
@@ -42,7 +42,8 @@ Do **not** open feature PRs against `orbit-id/php` — change `packages/php` in 
 
 ## Workflow
 
-[`.github/workflows/publish-packagist.yml`](../../.github/workflows/publish-packagist.yml):
+The `packagist` job in [`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)
+(via [`.github/actions/publish-packagist`](../../.github/actions/publish-packagist/action.yml)):
 
 - On `v*` tags: subtree-split `packages/php` → force-push `main` + the same tag on `orbit-id/php`
 - On `workflow_dispatch`: force-push `main` only (no tag unless the run is a tag event)

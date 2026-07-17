@@ -11,7 +11,7 @@ npm details live in [npm Trusted Publishing](npm-trusted-publishing.md). This do
 ## Goals
 
 - One monorepo release cut is easy to reason about.
-- Align with the existing npm workflow (`.github/workflows/publish.yml` on `v*` tags).
+- Align with the unified Publish workflow (`.github/workflows/publish.yml` on `v*` tags).
 - Allow a single ecosystem to ship a packaging-only fix without forcing every registry.
 
 ## Monorepo tagging (decision)

@@ -1,0 +1,60 @@
+name: Publish Packagist mirror
+description: Subtree-split packages/php to orbit-id/php and optionally ping Packagist
+
+inputs:
+  php-split-token:
+    description: PAT with contents:write on orbit-id/php
+    required: true
+  packagist-username:
+    description: Optional Packagist username for API update hook
+    required: false
+    default: ""
+  packagist-token:
+    description: Optional Packagist API token for update hook
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Require split token
+      shell: bash
+      env:
+        PHP_SPLIT_TOKEN: ${{ inputs.php-split-token }}
+      run: |
+        if [ -z "${PHP_SPLIT_TOKEN}" ]; then
+          echo "::error::Missing secret PHP_SPLIT_TOKEN (PAT with contents:write on orbit-id/php). See docs/en/packagist.md"
+          exit 1
+        fi
+
+    - name: Subtree-split packages/php → orbit-id/php
+      shell: bash
+      env:
+        PHP_SPLIT_TOKEN: ${{ inputs.php-split-token }}
+      run: |
+        set -euo pipefail
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        SHA="$(git subtree split --prefix=packages/php)"
+        echo "split sha=$SHA"
+        REMOTE="https://x-access-token:${PHP_SPLIT_TOKEN}@github.com/orbit-id/php.git"
+        git push --force "${REMOTE}" "${SHA}:refs/heads/main"
+        if [ "${{ github.ref_type }}" = "tag" ]; then
+          git push --force "${REMOTE}" "${SHA}:refs/tags/${{ github.ref_name }}"
+          echo "pushed tag ${{ github.ref_name }}"
+        fi
+
+    - name: Ping Packagist update hook
+      shell: bash
+      env:
+        PACKAGIST_USERNAME: ${{ inputs.packagist-username }}
+        PACKAGIST_TOKEN: ${{ inputs.packagist-token }}
+      run: |
+        if [ -z "${PACKAGIST_USERNAME}" ] || [ -z "${PACKAGIST_TOKEN}" ]; then
+          echo "PACKAGIST_USERNAME / PACKAGIST_TOKEN not set — skip API ping (GitHub hook is enough after submit)"
+          exit 0
+        fi
+        curl -fsS -X POST "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
+          -H 'Content-Type: application/json' \
+          -d '{"repository":{"url":"https://github.com/orbit-id/php"}}'
+        echo "packagist update requested"

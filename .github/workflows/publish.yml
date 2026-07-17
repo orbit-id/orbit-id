@@ -1,5 +1,7 @@
 name: Publish
 
+# Single entry for all registry publishes. Logic lives in
+# .github/actions/publish-*.
 on:
   push:
     tags:
@@ -11,36 +13,14 @@ permissions:
   id-token: write
 
 jobs:
-  prepare:
+  npm-prepare:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: ./.github/actions/publish-npm-prepare
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: "24"
-          cache: npm
-
-      - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@latest
-
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm run typecheck
-
-      - name: Upload package build outputs
-        uses: actions/upload-artifact@v7
-        with:
-          name: package-dists
-          path: |
-            packages/core/dist
-            packages/typescript/dist
-            packages/cli/dist
-          retention-days: 1
-
-  publish:
-    needs: prepare
+  npm:
+    needs: npm-prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -51,31 +31,39 @@ jobs:
           - packages/cli
     steps:
       - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
+      - uses: ./.github/actions/publish-npm
         with:
-          node-version: "24"
-          cache: npm
+          package: ${{ matrix.package }}
 
-      - name: Upgrade npm for Trusted Publishing
-        run: npm install -g npm@latest
-
-      - run: npm ci
-
-      - name: Download package build outputs
-        uses: actions/download-artifact@v8
+  crates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/publish-crates
         with:
-          name: package-dists
+          cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
-      - name: Publish package
-        run: |
-          set -euo pipefail
-          dir="${{ matrix.package }}"
-          name="$(node -p "require('./${dir}/package.json').name")"
-          ver="$(node -p "require('./${dir}/package.json').version")"
-          if npm view "${name}@${ver}" version >/dev/null 2>&1; then
-            echo "skip ${name}@${ver} (already on npm)"
-          else
-            echo "publish ${name}@${ver}"
-            npm publish -w "${name}" --access public
-          fi
+  maven:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/publish-maven
+        with:
+          maven-central-username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          maven-central-password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          maven-gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          maven-gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+  packagist:
+    runs-on: ubuntu-latest
+    steps:
+      # Disable checkout credential helper so PHP_SPLIT_TOKEN is not overridden by GITHUB_TOKEN.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/publish-packagist
+        with:
+          php-split-token: ${{ secrets.PHP_SPLIT_TOKEN }}
+          packagist-username: ${{ secrets.PACKAGIST_USERNAME }}
+          packagist-token: ${{ secrets.PACKAGIST_TOKEN }}

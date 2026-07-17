@@ -1,0 +1,74 @@
+name: Publish Maven Central
+description: Deploy packages/java to Maven Central (skip if version already published)
+
+inputs:
+  maven-central-username:
+    description: Sonatype Central username
+    required: true
+  maven-central-password:
+    description: Sonatype Central password / token
+    required: true
+  maven-gpg-private-key:
+    description: ASCII-armored GPG private key for signing
+    required: true
+  maven-gpg-passphrase:
+    description: Passphrase for the GPG private key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Require Central secrets
+      shell: bash
+      env:
+        MAVEN_CENTRAL_USERNAME: ${{ inputs.maven-central-username }}
+        MAVEN_CENTRAL_PASSWORD: ${{ inputs.maven-central-password }}
+        MAVEN_GPG_PRIVATE_KEY: ${{ inputs.maven-gpg-private-key }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.maven-gpg-passphrase }}
+      run: |
+        missing=0
+        for name in MAVEN_CENTRAL_USERNAME MAVEN_CENTRAL_PASSWORD MAVEN_GPG_PRIVATE_KEY MAVEN_GPG_PASSPHRASE; do
+          if [ -z "${!name}" ]; then
+            echo "::error::Missing secret $name — see docs/en/maven-central.md"
+            missing=1
+          fi
+        done
+        exit "$missing"
+
+    - name: Skip if version already on Maven Central
+      id: skip
+      shell: bash
+      working-directory: packages/java
+      run: |
+        set -euo pipefail
+        ver="$(sed -n 's/^[[:space:]]*<version>\([^<]*\)<\/version>.*/\1/p' pom.xml | head -1)"
+        echo "pom version=$ver"
+        url="https://repo1.maven.org/maven2/io/github/orbit-id/orbit-id/${ver}/orbit-id-${ver}.pom"
+        if curl -fsSI -A 'orbit-id-ci' "$url" >/dev/null 2>&1; then
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "skip io.github.orbit-id:orbit-id:${ver} (already on Maven Central)"
+        else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - uses: actions/setup-java@v5
+      if: steps.skip.outputs.skip != 'true'
+      with:
+        distribution: temurin
+        java-version: "17"
+        cache: maven
+        server-id: central
+        server-username: MAVEN_CENTRAL_USERNAME
+        server-password: MAVEN_CENTRAL_PASSWORD
+        gpg-private-key: ${{ inputs.maven-gpg-private-key }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+    - name: Publish to Maven Central
+      if: steps.skip.outputs.skip != 'true'
+      shell: bash
+      working-directory: packages/java
+      env:
+        MAVEN_CENTRAL_USERNAME: ${{ inputs.maven-central-username }}
+        MAVEN_CENTRAL_PASSWORD: ${{ inputs.maven-central-password }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.maven-gpg-passphrase }}
+      run: mvn -B -Prelease deploy -DskipTests=false

@@ -31,7 +31,8 @@ Shared tagging: [Cross-registry versioning](cross-registry-versioning.md). Track
 
 ## Workflow
 
-[`.github/workflows/publish-maven.yml`](../../.github/workflows/publish-maven.yml) runs on:
+The `maven` job in [`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)
+(via [`.github/actions/publish-maven`](../../.github/actions/publish-maven/action.yml)) runs on:
 
 - tag push matching `v*` (same release cut as npm)
 - manual **workflow_dispatch**
@@ -50,7 +51,7 @@ If Central secrets are missing, the job fails with a clear message (no partial p
 2. Merge to `main`; confirm `mvn -B test` (CI `test-java`).
 3. Ensure the four secrets above are set.
 4. Tag and push `vX.Y.Z` (see [Cross-registry versioning](cross-registry-versioning.md)).
-5. Confirm **Publish Maven** workflow succeeded.
+5. Confirm the **Publish** workflow `maven` job succeeded.
 6. Check [Central search](https://central.sonatype.com/) for `io.github.orbit-id:orbit-id`.
 
 Local dry-run (requires local GPG + `~/.m2/settings.xml` with server `central`):

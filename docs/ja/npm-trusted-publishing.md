@@ -35,7 +35,8 @@ Orbit ID パッケージは [npm Trusted Publishing](https://docs.npmjs.com/trus
 - `v*` タグの push（例: `v1.0.1`）
 - 手動の **workflow_dispatch**
 
-`permissions: id-token: write`、Node 24、新しい npm CLI を使います。
+npm / crates.io / Maven Central / Packagist ミラーを並列 job で公開します
+（`.github/actions/publish-*`）。npm は `permissions: id-token: write`、Node 24、新しい npm CLI を使います。
 
 ## リリース checklist
 

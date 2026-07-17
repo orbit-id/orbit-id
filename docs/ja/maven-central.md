@@ -31,7 +31,8 @@ io.github.orbit-id:orbit-id:<version>
 
 ## Workflow
 
-[`.github/workflows/publish-maven.yml`](../../.github/workflows/publish-maven.yml) は次で動きます。
+[`.github/workflows/publish.yml`](../../.github/workflows/publish.yml) の `maven` job
+（[`.github/actions/publish-maven`](../../.github/actions/publish-maven/action.yml)）は次で動きます。
 
 - `v*` タグの push（npm と同じリリースカット）
 - 手動の **workflow_dispatch**
@@ -47,7 +48,7 @@ Central 用シークレットが無い場合はジョブが失敗します（途
 2. `main` へマージし CI `test-java` を確認。
 3. 上記 4 シークレットが設定済みであること。
 4. `vX.Y.Z` を push（[横断の version / tagging 方針](cross-registry-versioning.md)）。
-5. **Publish Maven** workflow の成功を確認。
+5. **Publish** workflow の `maven` job 成功を確認。
 6. [Central search](https://central.sonatype.com/) で `io.github.orbit-id:orbit-id` を確認。
 
 ## 利用例

@@ -35,7 +35,9 @@ Do this for `@orbit-id/core`, `@orbit-id/typescript`, and `@orbit-id/cli`.
 - tag push matching `v*` (for example `v1.0.1`)
 - manual **workflow_dispatch**
 
-It uses `permissions: id-token: write`, Node 24, and a recent npm CLI.
+It publishes npm, crates.io, Maven Central, and the Packagist mirror in parallel jobs
+(composite actions under `.github/actions/publish-*`). npm jobs use
+`permissions: id-token: write`, Node 24, and a recent npm CLI.
 
 ## Release checklist
 

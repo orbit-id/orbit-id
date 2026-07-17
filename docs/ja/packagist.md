@@ -31,7 +31,7 @@ packagist.org/packages/orbit-id/php
 2. `orbit-id/php` に **Contents: Read and write** がある PAT を作成。
    `GITHUB_TOKEN` を入れないこと（カレントリポジトリ以外には書けない）。
 3. `orbit-id/orbit-id` の Actions シークレットに `PHP_SPLIT_TOKEN` を追加。
-4. **Publish Packagist mirror** を一度手動実行して `main` を埋める。
+4. **Publish** workflow の `packagist` job を一度手動実行して `main` を埋める。
    checkout は `persist-credentials: false` なので、split の push は
    `PHP_SPLIT_TOKEN` を使う（ジョブの `GITHUB_TOKEN` 資格情報で上書きされない）。
 5. [packagist.org](https://packagist.org/packages/submit) で `https://github.com/orbit-id/php` を登録。
@@ -39,7 +39,8 @@ packagist.org/packages/orbit-id/php
 
 ## Workflow
 
-[`.github/workflows/publish-packagist.yml`](../../.github/workflows/publish-packagist.yml)
+[`.github/workflows/publish.yml`](../../.github/workflows/publish.yml) の `packagist` job
+（[`.github/actions/publish-packagist`](../../.github/actions/publish-packagist/action.yml)）
 が `packages/php` を subtree-split し、`orbit-id/php` の `main` と（タグ時は）同名タグへ force-push します。
 
 ## メンテナ checklist
