@@ -76,5 +76,4 @@ orbit-id/
 
 ## Stable release
 
-Criteria for promoting `draft` to `v1.0.0` are documented in
-[Stable v1 promotion criteria](docs/en/stable-release-criteria.md). Stable `v1.0.0` is tagged.
+Stable `v1.0.0` is tagged. The wire format is frozen in [Orbit ID v1](docs/en/orbit-id-v1.md).

@@ -35,11 +35,11 @@ pre-releases varies; prefer stable `vX.Y.Z` for first Central / crates / Packagi
 ## When to increment X.Y.Z
 
 Orbit package versions use SemVer `X.Y.Z` with this project convention (in addition to the
-[v1 wire-format compatibility](stable-release-criteria.md) rules):
+[v1 wire-format](orbit-id-v1.md) compatibility rules):
 
 | Component | Meaning | Examples |
 | --- | --- | --- |
-| **X** (major) | **Breaking** changes for consumers or for ID / API meaning | Public API removal or incompatible signature change; decode/encode behaviour change that alters existing IDs’ interpretation (normally requires a new major line — see stable-release criteria) |
+| **X** (major) | **Breaking** changes for consumers or for ID / API meaning | Public API removal or incompatible signature change; decode/encode behaviour change that alters existing IDs’ interpretation (normally requires a new major line — see the frozen v1 wire format) |
 | **Y** (minor) | **Cross-cutting** / whole-project changes that are not breaking | Spec clarifying docs that all languages follow; shared conformance fixture updates; feature added across (or for) the monorepo cut; multi-ecosystem bugfix |
 | **Z** (patch) | **Single language / single ecosystem** only | Java-only packaging fix; Rust-only bugfix; PHP README / Packagist mirror tweak; Go tag refresh with no shared change |
 

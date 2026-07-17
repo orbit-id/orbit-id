@@ -75,5 +75,4 @@ orbit-id/
 
 ## Stable release
 
-`draft` から `v1.0.0` への昇格基準は [Stable v1 昇格基準](stable-release-criteria.md) を参照。
-stable `v1.0.0` はタグ済みです。
+stable `v1.0.0` はタグ済みです。ワイヤ形式は [Orbit ID v1](orbit-id-v1.md) で凍結されています。
