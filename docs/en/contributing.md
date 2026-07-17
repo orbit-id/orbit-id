@@ -35,3 +35,5 @@ minor / patch releases.
 - [ ] Checked impact on clock rollback, overflow, and concurrency
 - [ ] Checked impact on storage / JSON interoperability
 - [ ] Updated the required specification and docs
+
+<!-- ci-smoke: docs (do not merge) -->
