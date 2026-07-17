@@ -49,6 +49,9 @@ jobs:
             exit 1
           fi
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Bump release metadata
         run: node scripts/bump-release-version.mjs "${{ inputs.version }}"
 
@@ -85,7 +88,7 @@ jobs:
           - \`packages/node-lease/package.json\` / \`packages/playground/package.json\` (\`@orbit-id/core\` dep, when present)
           - \`package-lock.json\`
           - \`packages/java/pom.xml\`
-          - \`packages/rust/Cargo.toml\`
+          - \`packages/rust/Cargo.toml\` / \`packages/rust/Cargo.lock\`
 
           ### Not in-tree (tag at release time)
           - **Go** — create tag \`packages/go/v${VERSION}\` on the same commit as \`v${VERSION}\`

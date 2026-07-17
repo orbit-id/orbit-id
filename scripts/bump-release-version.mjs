@@ -6,9 +6,10 @@
  *   node scripts/bump-release-version.mjs 1.0.2
  *   node scripts/bump-release-version.mjs 1.0.2 --dry-run
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -111,5 +112,36 @@ if (nextCargo === cargo) {
 }
 writeText(cargoPath, nextCargo);
 console.log(`packages/rust/Cargo.toml -> ${version}`);
+
+// Keep packages/rust/Cargo.lock in sync so `cargo publish` is not dirty.
+const lockPath = resolve(root, "packages/rust/Cargo.lock");
+if (existsSync(lockPath)) {
+  if (dryRun) {
+    console.log(`dry-run would refresh ${lockPath}`);
+  } else {
+    const gen = spawnSync("cargo", ["generate-lockfile"], {
+      cwd: resolve(root, "packages/rust"),
+      encoding: "utf8",
+    });
+    if (gen.status === 0) {
+      console.log(`packages/rust/Cargo.lock refreshed via cargo generate-lockfile`);
+    } else {
+      // Fallback when cargo is unavailable (e.g. local dry environments).
+      const lock = readFileSync(lockPath, "utf8");
+      const nextLock = lock.replace(
+        /(\[\[package\]\]\nname = "orbit-id"\nversion = ")[^"]+(")/,
+        `$1${version}$2`,
+      );
+      if (nextLock === lock) {
+        console.error(
+          `Failed to refresh Cargo.lock (cargo: ${gen.stderr?.trim() || gen.error || "unavailable"})`,
+        );
+        process.exit(1);
+      }
+      writeText(lockPath, nextLock);
+      console.log(`packages/rust/Cargo.lock package version -> ${version} (regex fallback)`);
+    }
+  }
+}
 
 console.log(dryRun ? "Dry run complete." : `Bumped release metadata to ${version}.`);
