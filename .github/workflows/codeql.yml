@@ -1,0 +1,157 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      node: ${{ steps.changes.outputs.node }}
+      go: ${{ steps.changes.outputs.go }}
+      rust: ${{ steps.changes.outputs.rust }}
+      java: ${{ steps.changes.outputs.java }}
+      actions: ${{ steps.changes.outputs.actions }}
+      any: ${{ steps.changes.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: changes
+        uses: ./.github/actions/detect-language-changes
+        with:
+          force_all: ${{ github.event_name != 'pull_request' }}
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          head_sha: ${{ github.sha }}
+
+  analyze-actions:
+    name: Analyze (actions)
+    needs: detect
+    if: needs.detect.outputs.actions == 'true' || needs.detect.outputs.any != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: actions
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:actions"
+
+  analyze-go:
+    name: Analyze (go)
+    needs: detect
+    if: needs.detect.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
+
+  analyze-java:
+    name: Analyze (java-kotlin)
+    needs: detect
+    if: needs.detect.outputs.java == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java-kotlin"
+
+  analyze-javascript:
+    name: Analyze (javascript-typescript)
+    needs: detect
+    if: needs.detect.outputs.node == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
+  analyze-rust:
+    name: Analyze (rust)
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: rust
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:rust"
