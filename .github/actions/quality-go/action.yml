@@ -10,4 +10,7 @@ runs:
 
     - shell: bash
       working-directory: packages/go
-      run: go test ./...
+      run: |
+        set -euo pipefail
+        mkdir -p ../../coverage
+        go test ./... -coverprofile=../../coverage/go.out -covermode=atomic

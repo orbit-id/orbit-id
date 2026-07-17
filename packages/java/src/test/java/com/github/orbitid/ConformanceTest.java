@@ -85,11 +85,62 @@ class ConformanceTest {
     }
 
     @Test
-    void generatorRejectsTypeZero() {
-        OrbitGenerator generator = new OrbitGenerator(7);
-        OrbitError error = assertThrows(OrbitError.class, () -> generator.generate(0));
-        assertEquals(OrbitError.INVALID_TYPE, error.getCode());
+    void coversGenerateGettersAndEncodeHelpers() {
+        long[] ticks = {1000L, 1000L, 1001L, 1001L};
+        int[] index = {0};
+        OrbitGenerator generator = new OrbitGenerator(GeneratorOptions.builder(7)
+                .clock(() -> ticks[Math.min(index[0]++, ticks.length - 1)])
+                .onSequenceExhausted(SequenceExhaustedMode.WAIT)
+                .build());
+        assertEquals(7, generator.getNode());
+        assertEquals(0L, generator.getLastTimestamp());
+        assertEquals(0, generator.getSequence());
+
+        long id = generator.generate(1);
+        assertTrue(id != 0L);
+        assertTrue(generator.getLastTimestamp() > 0L);
+
+        int[] waitIndex = {0};
+        long[] waitTicks = {1000L, 1000L, 1001L, 1001L};
+        OrbitGenerator waiter = new OrbitGenerator(GeneratorOptions.builder(7)
+                .clock(() -> waitTicks[Math.min(waitIndex[0]++, waitTicks.length - 1)])
+                .onSequenceExhausted(SequenceExhaustedMode.WAIT)
+                .build());
+        waiter.restoreState(1000L, 1023);
+        long waited = waiter.generate(1);
+        assertTrue(waited != 0L);
+        assertEquals(1001L, waiter.getLastTimestamp());
+
+        long sample = OrbitId.encode(new OrbitFields(16762354567L, 2, 7, 42));
+        assertEquals(16762354567L, OrbitId.getTimestamp(sample));
+        assertEquals(2, OrbitId.getType(sample));
+        assertEquals(7, OrbitId.getNode(sample));
+        assertEquals(42, OrbitId.getSequence(sample));
+        assertEquals(16762354567L, OrbitId.getTimestamp(OrbitId.toDecimalString(sample)));
+        assertEquals(2, OrbitId.getType(OrbitId.toDecimalString(sample)));
+        assertEquals(7, OrbitId.getNode(OrbitId.toDecimalString(sample)));
+        assertEquals(42, OrbitId.getSequence(OrbitId.toDecimalString(sample)));
+        assertEquals(OrbitId.decode(sample), OrbitId.parse(sample));
+        assertTrue(OrbitId.isValid((Object) sample));
+        assertFalse(OrbitId.isValid((Object) Boolean.TRUE));
+        assertEquals(0L, OrbitId.fromUnixTimeMs(OrbitId.toUnixTimeMs(0L)));
+
+        assertThrows(OrbitError.class, () -> OrbitId.encode(-1L, 1, 1, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1L, 99, 1, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1L, 1, 999, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1L, 1, 1, 9999));
+
+        OrbitError typeZero = assertThrows(OrbitError.class, () -> new OrbitGenerator(7).generate(0));
+        assertEquals(OrbitError.INVALID_TYPE, typeZero.getCode());
+
+        OrbitGenerator lost = new OrbitGenerator(GeneratorOptions.builder(1)
+                .clock(() -> 5L)
+                .confirmOwnership(() -> false)
+                .build());
+        assertThrows(OrbitError.class, () -> lost.generate(1));
     }
+
+
 
     private static JsonNode fixture(String fileName) throws IOException {
         return JSON.readTree(FIXTURES.resolve(fileName).toFile());

@@ -99,6 +99,74 @@ final class ConformanceTest extends TestCase
         ], $generator->decide(1, 1000));
     }
 
+    public function testGenerateHelpersAndFunctions(): void
+    {
+        $ticks = [1000, 1000, 1001, 1001];
+        $index = 0;
+        $generator = new OrbitGenerator([
+            'node' => 7,
+            'onSequenceExhausted' => 'wait',
+            'clock' => static function () use (&$ticks, &$index): int {
+                $value = $ticks[min($index, count($ticks) - 1)];
+                $index++;
+                return $value;
+            },
+        ]);
+        self::assertSame(0, $generator->getSequence());
+        $id = $generator->generate(1);
+        self::assertNotSame('', $id);
+        self::assertGreaterThan('0', $generator->getLastTimestamp());
+
+        $waitIndex = 0;
+        $waitTicks = [1000, 1000, 1001, 1001];
+        $waiter = new OrbitGenerator([
+            'node' => 7,
+            'onSequenceExhausted' => 'wait',
+            'clock' => static function () use (&$waitTicks, &$waitIndex): int {
+                $value = $waitTicks[min($waitIndex, count($waitTicks) - 1)];
+                $waitIndex++;
+                return $value;
+            },
+        ]);
+        $waiter->restoreState(1000, 1023);
+        self::assertNotSame('', $waiter->generate(1));
+        self::assertSame('1001', (string) $waiter->getLastTimestamp());
+
+        $sample = '140612821619842090';
+        self::assertSame('16762354567', \OrbitId\getTimestamp($sample));
+        self::assertSame(2, \OrbitId\getType($sample));
+        self::assertSame(7, \OrbitId\getNode($sample));
+        self::assertSame(42, \OrbitId\getSequence($sample));
+        self::assertTrue(\OrbitId\isValid($sample));
+        self::assertSame($sample, \OrbitId\toDecimalString($sample));
+        self::assertSame($sample, \OrbitId\fromDecimalString($sample));
+        self::assertSame(strtolower(OrbitId::toHexString($sample)), \OrbitId\toHexString($sample));
+        self::assertSame(OrbitId::decode($sample), \OrbitId\decode($sample));
+        self::assertSame(OrbitId::parse($sample), \OrbitId\parse($sample));
+        self::assertSame(OrbitId::encode([
+            'timestamp' => '16762354567',
+            'type' => 2,
+            'node' => 7,
+            'sequence' => 42,
+        ]), \OrbitId\encode([
+            'timestamp' => '16762354567',
+            'type' => 2,
+            'node' => 7,
+            'sequence' => 42,
+        ]));
+        $unix = \OrbitId\toUnixTimeMs(0);
+        self::assertSame('0', \OrbitId\fromUnixTimeMs($unix));
+        self::assertIsCallable(\OrbitId\systemOrbitClock());
+
+        $lost = new OrbitGenerator([
+            'node' => 1,
+            'clock' => static fn(): int => 5,
+            'confirmOwnership' => static fn(): bool => false,
+        ]);
+        $this->expectException(OrbitError::class);
+        $lost->generate(1);
+    }
+
     /** @return array<string, mixed> */
     private function fixture(string $name): array
     {

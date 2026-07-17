@@ -16,7 +16,17 @@ runs:
       run: npm run build
 
     - shell: bash
-      run: npm test
+      run: |
+        set -euo pipefail
+        npm run test -w @orbit-id/core -- --coverage
+        npm run test -w @orbit-id/typescript -- --coverage
+        npm run test -w @orbit-id/cli -- --coverage
+        npm run test -w @orbit-id/node-lease -- --coverage
+        # Vitest LCOV SF paths are package-relative; rewrite to git-root paths for octocov.
+        sed -i 's|^SF:src/|SF:packages/core/src/|' coverage/node-core/lcov.info
+        sed -i 's|^SF:src/|SF:packages/typescript/src/|' coverage/node-typescript/lcov.info
+        sed -i 's|^SF:src/|SF:packages/cli/src/|' coverage/node-cli/lcov.info
+        sed -i 's|^SF:src/|SF:packages/node-lease/src/|' coverage/node-lease/lcov.info
 
     - shell: bash
       run: npm run typecheck

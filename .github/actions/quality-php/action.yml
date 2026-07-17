@@ -7,6 +7,7 @@ runs:
     - uses: shivammathur/setup-php@v2
       with:
         php-version: "8.3"
+        coverage: pcov
 
     - shell: bash
       working-directory: packages/php
@@ -14,4 +15,7 @@ runs:
 
     - shell: bash
       working-directory: packages/php
-      run: composer test
+      run: |
+        set -euo pipefail
+        mkdir -p ../../coverage
+        composer test -- --coverage-clover ../../coverage/php-clover.xml

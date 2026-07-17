@@ -202,3 +202,86 @@ func TestGeneratorWaitModeAndReservedType(t *testing.T) {
 		t.Fatal("Generate(0) accepted")
 	}
 }
+
+func TestGeneratorGenerateAndHelpers(t *testing.T) {
+	clock := &tickingClock{values: []int64{1000, 1000, 1001, 1001}}
+	generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 7, Clock: clock, OnSequenceExhausted: orbitid.SequenceExhaustedWait,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if generator.Node() != 7 {
+		t.Fatalf("node = %d", generator.Node())
+	}
+	if generator.GetLastTimestamp() != 0 || generator.GetSequence() != 0 {
+		t.Fatalf("initial state = %d/%d", generator.GetLastTimestamp(), generator.GetSequence())
+	}
+	id, err := generator.Generate(1)
+	if err != nil || id == 0 {
+		t.Fatalf("generate = %d, %v", id, err)
+	}
+	if generator.GetLastTimestamp() == 0 {
+		t.Fatal("expected last timestamp to update")
+	}
+
+	waitClock := &tickingClock{values: []int64{1000, 1000, 1001, 1001}}
+	waiter, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 7, Clock: waitClock, OnSequenceExhausted: orbitid.SequenceExhaustedWait,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := waiter.RestoreState(1000, 1023); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := waiter.Generate(1); err != nil {
+		t.Fatalf("wait generate: %v", err)
+	}
+	if waiter.GetLastTimestamp() != 1001 {
+		t.Fatalf("wait last = %d", waiter.GetLastTimestamp())
+	}
+
+	if _, err := orbitid.Encode(orbitid.Fields{Timestamp: orbitid.MaxTimestamp + 1, Type: 1, Node: 1, Sequence: 0}); err == nil {
+		t.Fatal("expected timestamp overflow")
+	}
+	if _, err := orbitid.Encode(orbitid.Fields{Timestamp: 1, Type: 99, Node: 1, Sequence: 0}); err == nil {
+		t.Fatal("expected type overflow")
+	}
+	if _, err := orbitid.Encode(orbitid.Fields{Timestamp: 1, Type: 1, Node: 999, Sequence: 0}); err == nil {
+		t.Fatal("expected node overflow")
+	}
+	if _, err := orbitid.Encode(orbitid.Fields{Timestamp: 1, Type: 1, Node: 1, Sequence: 9999}); err == nil {
+		t.Fatal("expected sequence overflow")
+	}
+
+	unix := orbitid.ToUnixTimeMs(0)
+	if orbitid.FromUnixTimeMs(int64(unix)) != 0 {
+		t.Fatal("unix roundtrip failed")
+	}
+	_ = orbitid.SystemClock().CurrentOrbitTimestampMs()
+
+	lost, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 1, Clock: fixedClock{now: 5}, ConfirmOwnership: func() bool { return false },
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := lost.Generate(1); err == nil {
+		t.Fatal("expected ownership loss")
+	}
+}
+
+type tickingClock struct {
+	values []int64
+	index  int
+}
+
+func (c *tickingClock) CurrentOrbitTimestampMs() int64 {
+	if c.index >= len(c.values) {
+		return c.values[len(c.values)-1]
+	}
+	v := c.values[c.index]
+	c.index++
+	return v
+}

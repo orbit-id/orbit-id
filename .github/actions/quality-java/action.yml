@@ -12,4 +12,8 @@ runs:
 
     - shell: bash
       working-directory: packages/java
-      run: mvn -B test
+      run: |
+        set -euo pipefail
+        mvn -B test
+        mkdir -p ../../coverage
+        cp target/site/jacoco/jacoco.xml ../../coverage/java-jacoco.xml

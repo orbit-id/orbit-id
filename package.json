@@ -17,6 +17,9 @@
     "playground": "npm run dev -w @orbit-id/playground",
     "release:bump": "node scripts/bump-release-version.mjs"
   },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.10"
+  },
   "engines": {
     "node": ">=20"
   }

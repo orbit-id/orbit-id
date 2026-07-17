@@ -1,0 +1,24 @@
+# Base config for local runs / documentation.
+# CI generates `.octocov.ci.yml` with only the coverage files present for the jobs that ran.
+coverage:
+  exclude:
+    - "**/*.d.ts"
+    - "**/test/**"
+    - "**/tests/**"
+    - "**/*_test.go"
+    - "**/src/test/**"
+
+diff:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+
+comment:
+  if: is_pull_request
+
+summary:
+  if: true
+
+report:
+  if: is_default_branch
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}

@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   detect:
     runs-on: ubuntu-latest
@@ -33,6 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-node
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-node
+          path: coverage/
+          if-no-files-found: error
 
   test-go:
     needs: detect
@@ -41,6 +49,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-go
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-go
+          path: coverage/
+          if-no-files-found: error
 
   test-rust:
     needs: detect
@@ -49,6 +62,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-rust
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-rust
+          path: coverage/
+          if-no-files-found: error
 
   test-java:
     needs: detect
@@ -57,6 +75,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-java
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-java
+          path: coverage/
+          if-no-files-found: error
 
   test-php:
     needs: detect
@@ -65,3 +88,87 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-php
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-php
+          path: coverage/
+          if-no-files-found: error
+
+  octocov:
+    needs: [detect, test, test-go, test-rust, test-java, test-php]
+    if: |
+      always() &&
+      !cancelled() &&
+      (needs.test.result == 'success' ||
+       needs.test-go.result == 'success' ||
+       needs.test-rust.result == 'success' ||
+       needs.test-java.result == 'success' ||
+       needs.test-php.result == 'success') &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.test-go.result == 'success' || needs.test-go.result == 'skipped') &&
+      (needs.test-rust.result == 'success' || needs.test-rust.result == 'skipped') &&
+      (needs.test-java.result == 'success' || needs.test-java.result == 'skipped') &&
+      (needs.test-php.result == 'success' || needs.test-php.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Build octocov coverage paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find coverage -type f \( \
+            -name 'lcov.info' -o \
+            -name 'go.out' -o \
+            -name 'rust.lcov' -o \
+            -name 'java-jacoco.xml' -o \
+            -name 'php-clover.xml' \
+          \) | sort)
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "No coverage reports found"
+            exit 1
+          fi
+          {
+            echo "coverage:"
+            echo "  exclude:"
+            echo "    - '**/*.d.ts'"
+            echo "    - '**/test/**'"
+            echo "    - '**/tests/**'"
+            echo "    - '**/*_test.go'"
+            echo "    - '**/src/test/**'"
+            echo "  paths:"
+            for f in "${files[@]}"; do
+              echo "    - ${f}"
+            done
+            echo
+            echo "diff:"
+            echo "  datastores:"
+            echo "    - artifact://\${GITHUB_REPOSITORY}"
+            echo
+            echo "comment:"
+            echo "  if: is_pull_request"
+            echo
+            echo "summary:"
+            echo "  if: true"
+            echo
+            echo "report:"
+            echo "  if: is_default_branch"
+            echo "  datastores:"
+            echo "    - artifact://\${GITHUB_REPOSITORY}"
+          } > .octocov.ci.yml
+          echo "Generated .octocov.ci.yml:"
+          cat .octocov.ci.yml
+
+      - uses: k1LoW/octocov-action@v1
+        with:
+          config: .octocov.ci.yml
