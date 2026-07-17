@@ -32,6 +32,9 @@ outputs:
   php:
     description: Whether the PHP package changed
     value: ${{ steps.detect.outputs.php }}
+  actions:
+    description: Whether GitHub Actions workflows changed
+    value: ${{ steps.detect.outputs.actions }}
   any:
     description: Whether any language package changed
     value: ${{ steps.detect.outputs.any }}
@@ -58,8 +61,9 @@ runs:
           echo "rust=${value}" >> "$GITHUB_OUTPUT"
           echo "java=${value}" >> "$GITHUB_OUTPUT"
           echo "php=${value}" >> "$GITHUB_OUTPUT"
+          echo "actions=${value}" >> "$GITHUB_OUTPUT"
           echo "any=${value}" >> "$GITHUB_OUTPUT"
-          echo "matrix={\"node\":${value},\"go\":${value},\"rust\":${value},\"java\":${value},\"php\":${value}}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"node\":${value},\"go\":${value},\"rust\":${value},\"java\":${value},\"php\":${value},\"actions\":${value}}" >> "$GITHUB_OUTPUT"
         }
 
         if [[ "${FORCE_ALL}" == "true" ]]; then
@@ -84,6 +88,7 @@ runs:
         rust=false
         java=false
         php=false
+        actions=false
 
         # Shared surfaces that affect every language conformance / CI entrypoint.
         for f in "${files[@]}"; do
@@ -117,6 +122,9 @@ runs:
             packages/php/*)
               php=true
               ;;
+            .github/workflows/*|.github/actions/*)
+              actions=true
+              ;;
           esac
         done
 
@@ -131,8 +139,9 @@ runs:
           echo "rust=${rust}"
           echo "java=${java}"
           echo "php=${php}"
+          echo "actions=${actions}"
           echo "any=${any}"
-          echo "matrix={\"node\":${node},\"go\":${go},\"rust\":${rust},\"java\":${java},\"php\":${php}}"
+          echo "matrix={\"node\":${node},\"go\":${go},\"rust\":${rust},\"java\":${java},\"php\":${php},\"actions\":${actions}}"
         } >> "$GITHUB_OUTPUT"
 
-        echo "Detected languages: node=${node} go=${go} rust=${rust} java=${java} php=${php}"
+        echo "Detected languages: node=${node} go=${go} rust=${rust} java=${java} php=${php} actions=${actions}"
