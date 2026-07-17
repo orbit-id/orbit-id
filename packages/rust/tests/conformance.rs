@@ -172,3 +172,89 @@ fn generator_rejects_type_zero() {
     let error = generator.generate(0).unwrap_err();
     assert_eq!(error.code, OrbitErrorCode::InvalidType);
 }
+
+#[test]
+fn generate_helpers_and_getters() {
+    use orbit_id::{
+        encode, from_unix_time_ms, get_node, get_sequence, get_timestamp, get_type, to_unix_time_ms,
+        OrbitErrorCode,
+    };
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    let ticks = Arc::new(Mutex::new(vec![1000_i64, 1000, 1001, 1001]));
+    let index = Arc::new(AtomicUsize::new(0));
+    let ticks_c = ticks.clone();
+    let index_c = index.clone();
+    let generator = OrbitGenerator::new(GeneratorOptions {
+        node: 7,
+        clock: Arc::new(move || {
+            let i = index_c.fetch_add(1, Ordering::SeqCst);
+            let values = ticks_c.lock().unwrap();
+            values[i.min(values.len() - 1)]
+        }),
+        clock_rollback_tolerance_ms: 5_000,
+        on_sequence_exhausted: SequenceExhaustedMode::Wait,
+        confirm_ownership: None,
+    })
+    .unwrap();
+    assert_eq!(generator.node(), 7);
+    assert_eq!(generator.last_timestamp(), 0);
+    assert_eq!(generator.sequence(), 0);
+    let id = generator.generate(1).unwrap();
+    assert_ne!(id, 0);
+    assert!(generator.last_timestamp() > 0);
+
+    let wait_ticks = Arc::new(Mutex::new(vec![1000_i64, 1000, 1001, 1001]));
+    let wait_index = Arc::new(AtomicUsize::new(0));
+    let wait_ticks_c = wait_ticks.clone();
+    let wait_index_c = wait_index.clone();
+    let waiter = OrbitGenerator::new(GeneratorOptions {
+        node: 7,
+        clock: Arc::new(move || {
+            let i = wait_index_c.fetch_add(1, Ordering::SeqCst);
+            let values = wait_ticks_c.lock().unwrap();
+            values[i.min(values.len() - 1)]
+        }),
+        clock_rollback_tolerance_ms: 5_000,
+        on_sequence_exhausted: SequenceExhaustedMode::Wait,
+        confirm_ownership: None,
+    })
+    .unwrap();
+    waiter.restore_state(1000, 1023).unwrap();
+    assert!(waiter.generate(1).unwrap() != 0);
+    assert_eq!(waiter.last_timestamp(), 1001);
+
+    let fields = OrbitFields {
+        timestamp: 16_762_354_567,
+        r#type: 2,
+        node: 7,
+        sequence: 42,
+    };
+    let sample = encode(fields).unwrap();
+    assert_eq!(get_timestamp(sample), 16_762_354_567);
+    assert_eq!(get_type(sample), 2);
+    assert_eq!(get_node(sample), 7);
+    assert_eq!(get_sequence(sample), 42);
+    assert_eq!(from_unix_time_ms(to_unix_time_ms(0)).unwrap(), 0);
+
+    assert!(encode(OrbitFields {
+        timestamp: 1,
+        r#type: 99,
+        node: 1,
+        sequence: 0
+    })
+    .unwrap_err()
+    .code
+        == OrbitErrorCode::InvalidType);
+
+    let lost = OrbitGenerator::new(GeneratorOptions {
+        node: 1,
+        clock: Arc::new(|| 5),
+        clock_rollback_tolerance_ms: 5_000,
+        on_sequence_exhausted: SequenceExhaustedMode::Fail,
+        confirm_ownership: Some(Arc::new(|| false)),
+    })
+    .unwrap();
+    assert_eq!(lost.generate(1).unwrap_err().code, OrbitErrorCode::NodeOwnershipLost);
+}
