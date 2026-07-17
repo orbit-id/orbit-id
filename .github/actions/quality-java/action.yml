@@ -1,0 +1,15 @@
+name: Java quality check
+description: Run Maven tests for packages/java
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "11"
+        cache: maven
+
+    - shell: bash
+      working-directory: packages/java
+      run: mvn -B test
