@@ -76,4 +76,4 @@ orbit-id/
 
 ## Stable release
 
-Stable `v1.0.0` is tagged. The wire format is frozen in [Orbit ID v1](docs/en/orbit-id-v1.md).
+Current stable release is `v1.1.0`. The wire format is frozen in [Orbit ID v1](docs/en/orbit-id-v1.md).

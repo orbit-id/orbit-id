@@ -2,7 +2,7 @@
 
 [日本語](../ja/library-api.md)
 
-Status: Stable (`v1.0.0`) — implemented in `@orbit-id/core` / `@orbit-id/typescript`.
+Status: Stable (`v1.1.0`) — implemented in `@orbit-id/core` / `@orbit-id/typescript`.
 
 This document describes the common API surface for Orbit ID libraries.
 

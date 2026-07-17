@@ -19,7 +19,7 @@ Each ID embeds the issuance timestamp, entity type, issuing node, and a per-mill
 so those fields can be decoded without querying a database.
 
 > [!IMPORTANT]
-> Orbit ID v1 is stable (`v1.0.0`). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
+> Orbit ID v1 is stable (`v1.1.0`). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
 > or use the [`orbit-id`](https://www.npmjs.com/package/@orbit-id/cli) CLI.
 
 ## Features

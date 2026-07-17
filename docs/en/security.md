@@ -9,7 +9,8 @@ point.
 
 | Version | Supported |
 | --- | --- |
-| `v1.0.0` | Yes |
+| `v1.1.x` | Yes |
+| `v1.0.x` | Yes |
 
 ## Reporting a vulnerability
 

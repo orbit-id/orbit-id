@@ -21,7 +21,7 @@ packages. Stable v1 interpretation is frozen; see the compatibility section belo
 
 ## Compatibility
 
-Stable `v1.0.0` is released. Interpretation of existing 64-bit values MUST NOT change within the
+Stable `v1.1.0` is the current release. Interpretation of existing 64-bit values MUST NOT change within the
 v1 major line. Additive docs, Types (unassigned values only), and library features MAY land in
 minor / patch releases.
 

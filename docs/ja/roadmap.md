@@ -75,4 +75,4 @@ orbit-id/
 
 ## Stable release
 
-stable `v1.0.0` はタグ済みです。ワイヤ形式は [Orbit ID v1](orbit-id-v1.md) で凍結されています。
+現行の stable リリースは `v1.1.0` です。ワイヤ形式は [Orbit ID v1](orbit-id-v1.md) で凍結されています。
