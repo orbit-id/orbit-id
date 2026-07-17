@@ -53,7 +53,7 @@ jobs:
         if: steps.skip.outputs.skip != 'true'
         with:
           distribution: temurin
-          java-version: "11"
+          java-version: "17"
           cache: maven
           server-id: central
           server-username: MAVEN_CENTRAL_USERNAME

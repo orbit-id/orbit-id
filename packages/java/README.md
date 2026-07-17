@@ -1,6 +1,6 @@
 # Orbit ID for Java
 
-Java 11+ implementation of the Orbit ID v1 format (Java package `com.github.orbitid`).
+Java 17+ implementation of the Orbit ID v1 format (Java package `com.github.orbitid`).
 
 Coordinates after Maven Central publish ([#54](https://github.com/orbit-id/orbit-id/issues/54)):
 
