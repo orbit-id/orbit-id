@@ -370,3 +370,5 @@ impl OrbitGenerator {
         self.state.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 }
+
+// ci-smoke: rust (do not merge)
