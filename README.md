@@ -83,6 +83,7 @@ is required for external exposure, or as authorization tokens.
 - [Canonical Test Vectors](docs/en/test-vectors.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
+- [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md)
 - [Library API](docs/en/library-api.md)
 - [npm Trusted Publishing](docs/en/npm-trusted-publishing.md)
 - [Cross-registry versioning](docs/en/cross-registry-versioning.md)
