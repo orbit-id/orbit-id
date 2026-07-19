@@ -9,7 +9,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.orbit-id/orbit-id?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.orbit-id/orbit-id)
 [![crates.io](https://img.shields.io/crates/v/orbit-id)](https://crates.io/crates/orbit-id)
 [![Packagist](https://img.shields.io/packagist/v/orbit-id/php?label=Packagist)](https://packagist.org/packages/orbit-id/php)
-[![Go Reference](https://pkg.go.dev/badge/github.com/orbit-id/go.svg)](https://pkg.go.dev/github.com/orbit-id/go)
+[![Go](https://img.shields.io/github/v/tag/orbit-id/go?filter=v*&label=go&logo=go)](https://pkg.go.dev/github.com/orbit-id/go)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 Playground: [orbit-id.github.io/orbit-id](https://orbit-id.github.io/orbit-id/)
@@ -19,7 +19,9 @@ Each ID embeds the issuance timestamp, entity type, issuing node, and a per-mill
 so those fields can be decoded without querying a database.
 
 > [!IMPORTANT]
-> Orbit ID v1 is stable (`v1.1.0`). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
+> Orbit ID v1 is stable (`v1.1.0`) and in **maintenance mode**: bug fixes and documentation only;
+> new features are not added by default. Next major work is v2 (128-bit) — see the
+> [Roadmap](docs/en/roadmap.md). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
 > or use the [`orbit-id`](https://www.npmjs.com/package/@orbit-id/cli) CLI.
 
 ## Features
@@ -97,7 +99,7 @@ is required for external exposure, or as authorization tokens.
 
 ## Current Scope
 
-Orbit ID v1 is stable on npm:
+Orbit ID v1 is stable and in maintenance mode. Install from npm (and other registries):
 
 ```bash
 npm install @orbit-id/typescript
