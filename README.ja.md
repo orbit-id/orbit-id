@@ -9,7 +9,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.orbit-id/orbit-id?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.orbit-id/orbit-id)
 [![crates.io](https://img.shields.io/crates/v/orbit-id)](https://crates.io/crates/orbit-id)
 [![Packagist](https://img.shields.io/packagist/v/orbit-id/php?label=Packagist)](https://packagist.org/packages/orbit-id/php)
-[![Go Reference](https://pkg.go.dev/badge/github.com/orbit-id/orbit-id/packages/go.svg)](https://pkg.go.dev/github.com/orbit-id/orbit-id/packages/go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/orbit-id/go.svg)](https://pkg.go.dev/github.com/orbit-id/go)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 Playground: [orbit-id.github.io/orbit-id](https://orbit-id.github.io/orbit-id/)

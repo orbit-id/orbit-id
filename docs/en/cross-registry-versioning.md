@@ -20,14 +20,12 @@ Use **repository-wide SemVer tags** of the form `vX.Y.Z` (example: `v1.0.1`).
 
 | Tag | Role |
 | --- | --- |
-| `vX.Y.Z` | Release cut tag on [`orbit-id/orbit-id`](https://github.com/orbit-id/orbit-id). Triggers npm Publish when it matches `v*`. Marks a known tree for all ecosystems. |
-| `packages/go/vX.Y.Z` | **Additional** Go module version tag (required for the subdirectory module path — see Go below). MUST match the intended Go module SemVer. |
+| `vX.Y.Z` | Release cut tag on [`orbit-id/orbit-id`](https://github.com/orbit-id/orbit-id). Triggers Publish (npm / Maven / crates / Packagist mirror / Go mirror). Marks a known tree for all ecosystems. |
 
 Do **not** invent separate per-language root tags like `java-v1.0.0` or `rust-v1.0.0`. Prefer:
 
 1. Bump that package’s in-tree version metadata.
 2. Push `vX.Y.Z` when the monorepo cut should include it (or a packaging-only bump that still uses one tag).
-3. For Go, also push `packages/go/vX.Y.Z` for the same `X.Y.Z`.
 
 Pre-release / RC tags MAY use SemVer pre-release forms (`v1.1.0-rc.1`). Registry support for
 pre-releases varies; prefer stable `vX.Y.Z` for first Central / crates / Packagist publishes.
@@ -58,7 +56,7 @@ those fields to the **same** `X.Y.Z` before tagging.
 | --- | --- | --- | --- |
 | npm | `packages/{core,typescript,cli}/package.json` | `"version"` | npm (`@orbit-id/*`) |
 | Java | `packages/java/pom.xml` (`io.github.orbit-id:orbit-id`) | `<version>` | Maven Central ([docs](maven-central.md)) |
-| Go | (Git tag only; no version in `go.mod` for v0/v1) | tag `packages/go/vX.Y.Z` | `proxy.golang.org` |
+| Go | (Git tag on mirror; no version in `go.mod` for v0/v1) | monorepo `vX.Y.Z` → mirrored to [`orbit-id/go`](https://github.com/orbit-id/go) | `proxy.golang.org` |
 | Rust | `packages/rust/Cargo.toml` | `version` | crates.io |
 | PHP | `packages/php/composer.json` | no fixed version; Packagist uses Git tags | Packagist |
 
@@ -66,8 +64,8 @@ Optional / local-only packages (`node-lease`, `playground`, `benchmark`) are **n
 public multi-registry release cut unless explicitly called out later.
 
 Independent bumps: if only one ecosystem needs a packaging fix, bump **that** manifest’s version,
-tag a new `vX.Y.Z` (and Go subdirectory tag if Go changes), and let other workflows skip already
-published versions where supported (npm already skips existing `name@version`).
+tag a new `vX.Y.Z`, and let other workflows skip already published versions where supported
+(npm already skips existing `name@version`).
 
 ## Mapping Git tags → registries
 
@@ -75,7 +73,7 @@ published versions where supported (npm already skips existing `name@version`).
 | --- | --- | --- |
 | **npm** | `package.json` `"version"` at the tagged commit | Workflow publishes each workspace if that version is not already on npm. Tag `v1.0.1` does **not** have to equal every package version, but coordinated releases SHOULD. |
 | **Maven Central** | `pom.xml` `<version>` | Publish job / manual release should use the same `X.Y.Z` as the release cut when shipping together (#54). |
-| **Go** | Git tag `packages/go/vX.Y.Z` | Module path: `github.com/orbit-id/orbit-id/packages/go`. Consumers: `go get github.com/orbit-id/orbit-id/packages/go@vX.Y.Z`. Root-only `vX.Y.Z` is **not** enough for this subdirectory module. Details: [Go module publishing](go-module.md). |
+| **Go** | Git tag on mirror [`orbit-id/go`](https://github.com/orbit-id/go) | Module path: `github.com/orbit-id/go`. Consumers: `go get github.com/orbit-id/go@vX.Y.Z`. CI subtree-splits `packages/go` on monorepo `v*`. Details: [Go module publishing](go-module.md). |
 | **crates.io** | `Cargo.toml` `version` | `cargo publish` from `packages/rust` ([docs](crates-io.md)). Prefer matching `vX.Y.Z`. |
 | **Packagist** | Git tag on mirror [`orbit-id/php`](https://github.com/orbit-id/php) | Prefer root `vX.Y.Z`; CI subtree-splits `packages/php`. Details: [Packagist publishing](packagist.md). |
 
@@ -84,22 +82,22 @@ published versions where supported (npm already skips existing `name@version`).
 Canonical module path (must match `packages/go/go.mod`):
 
 ```text
-github.com/orbit-id/orbit-id/packages/go
+github.com/orbit-id/go
 ```
 
-Tagging checklist for a Go-visible release:
+Tagging checklist:
 
 ```bash
 # after merging version bumps to main
-git tag v1.0.1
-git tag packages/go/v1.0.1
-git push origin v1.0.1 packages/go/v1.0.1
+git tag v1.1.0
+git push origin v1.1.0
+# Publish workflow mirrors packages/go → orbit-id/go (+ same tag)
 ```
 
 Then verify:
 
 ```bash
-GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/orbit-id/packages/go@v1.0.1
+GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.1.0
 ```
 
 ## Security / provenance expectations
@@ -108,7 +106,7 @@ GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/orbit-id/
 | --- | --- |
 | **npm** | Trusted Publishing (OIDC) + provenance from public GitHub; see [npm Trusted Publishing](npm-trusted-publishing.md). No long-lived `NPM_TOKEN` in secrets for steady-state publishes. |
 | **Maven Central** | Signed artifacts (as required by Central). Credentials / signing keys only via GitHub Environments or OIDC where available; document in #54. |
-| **Go** | Integrity via Git + module checksum database (`sum.golang.org`). No separate upload credentials. |
+| **Go** | Integrity via Git + module checksum database (`sum.golang.org`). Mirror push uses `GO_SPLIT_TOKEN` (same pattern as Packagist). |
 | **crates.io** | crate token or Trusted Publishing if used; never commit tokens. Document in #56. |
 | **Packagist** | GitHub integration / update hook; no package payload upload secrets beyond repo access. Document in #57. |
 
@@ -120,7 +118,7 @@ Security reports: repository Security advisories (see [Security](security.md)).
 Preferred: run **Bump release PR** (`.github/workflows/bump-release-pr.yml`) via
 **Actions → Bump release PR → Run workflow**. It bumps in-tree versions and opens a PR.
 After that PR merges, **create a GitHub Release** for `vX.Y.Z` so the existing publish
-workflows run on the tag. Also push `packages/go/vX.Y.Z` when Go should ship.
+workflows run on the tag. Go and PHP mirrors update from the same `vX.Y.Z` via the Publish workflow.
 
 Prerequisite (org): **Actions → General → Workflow permissions** must allow **Read and write**
 and **Allow GitHub Actions to create and approve pull requests**. Otherwise
@@ -133,7 +131,7 @@ In-tree bumps (Action / `npm run release:bump`):
 | npm | root + `packages/{core,typescript,cli}/package.json`, lockfile; `@orbit-id/core` dep in node-lease / playground when present |
 | Maven | `packages/java/pom.xml` |
 | crates.io | `packages/rust/Cargo.toml` |
-| Go | none (subdirectory module — tag only) |
+| Go | none (mirror of `packages/go` on `v*` — see [go-module.md](go-module.md)) |
 | PHP | none (Packagist from `v*` via mirror) |
 
 Inputs:
@@ -151,18 +149,14 @@ npm install --package-lock-only
 Manual checklist (if not using the Action):
 
 1. Confirm Spec / Library API compatibility for the `X.Y.Z` bump (especially major).
-2. Bump in-tree versions for packages you intend to publish (npm / Java / Rust; PHP via tag; Go via subdirectory tag).
+2. Bump in-tree versions for packages you intend to publish (npm / Java / Rust; PHP / Go via tag + mirrors).
 3. Run CI green on `main` (`npm` test/build/typecheck/bench + language jobs).
-4. Tag and push:
-   - always: `vX.Y.Z`
-   - if Go should update: `packages/go/vX.Y.Z`
+4. Tag and push `vX.Y.Z`.
 5. Confirm:
-   - npm Publish workflow (if any npm package version is new)
-   - Maven / crates / Packagist workflows
+   - Publish workflow (npm / Maven / crates / Packagist / Go jobs)
 6. Spot-check install commands for each registry that shipped.
 
-Packaging-only release (one ecosystem): bump that ecosystem only, still use a new `vX.Y.Z`, and
-create `packages/go/vX.Y.Z` only if Go changed.
+Packaging-only release (one ecosystem): bump that ecosystem only, still use a new `vX.Y.Z`.
 
 Do **not** rewrite versions after an existing tag: publishers check out the tagged commit.
 

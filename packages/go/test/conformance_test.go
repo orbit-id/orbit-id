@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"testing"
 
-	orbitid "github.com/orbit-id/orbit-id/packages/go"
+	orbitid "github.com/orbit-id/go"
 )
 
 type encodeDecodeFixture struct {

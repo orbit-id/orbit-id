@@ -67,3 +67,15 @@ jobs:
           php-split-token: ${{ secrets.PHP_SPLIT_TOKEN }}
           packagist-username: ${{ secrets.PACKAGIST_USERNAME }}
           packagist-token: ${{ secrets.PACKAGIST_TOKEN }}
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      # Disable checkout credential helper so GO_SPLIT_TOKEN is not overridden by GITHUB_TOKEN.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/publish-go
+        with:
+          go-split-token: ${{ secrets.GO_SPLIT_TOKEN }}

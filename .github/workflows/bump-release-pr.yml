@@ -1,8 +1,8 @@
 name: Bump release PR
 
 # Opens a PR that bumps in-tree package versions. After merge, create a GitHub
-# Release (tag vX.Y.Z) to run the publish workflows; also tag packages/go/vX.Y.Z
-# when Go should ship.
+# Release (tag vX.Y.Z) to run the publish workflows (npm / Maven / crates /
+# Packagist mirror / Go mirror).
 on:
   workflow_dispatch:
     inputs:
@@ -90,13 +90,13 @@ jobs:
           - \`packages/java/pom.xml\`
           - \`packages/rust/Cargo.toml\` / \`packages/rust/Cargo.lock\`
 
-          ### Not in-tree (tag at release time)
-          - **Go** — create tag \`packages/go/v${VERSION}\` on the same commit as \`v${VERSION}\`
+          ### Not in-tree (tag / mirror at release time)
+          - **Go** — Publish \`go\` job mirrors \`packages/go\` → [\`orbit-id/go\`](https://github.com/orbit-id/go) on monorepo tag \`v${VERSION}\`
           - **PHP** — Packagist follows monorepo tag \`v${VERSION}\` via the \`orbit-id/php\` mirror (no \`composer.json\` version field)
 
           ### After merge
           1. Create a GitHub Release for \`v${VERSION}\` (tag on \`main\`) so publish workflows run.
-          2. If Go should ship: \`git tag packages/go/v${VERSION} && git push origin packages/go/v${VERSION}\`
+          2. Confirm \`GO_SPLIT_TOKEN\` / \`PHP_SPLIT_TOKEN\` are set so mirror jobs succeed.
           EOF
           )"
 

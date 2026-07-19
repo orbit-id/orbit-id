@@ -8,7 +8,7 @@
 | [`@orbit-id/node-lease`](node-lease/) | Optional Node lease control plane (memory / Redis) | monorepo |
 | [`playground`](playground/) | Browser encode / decode UI | local Vite app + GitHub Pages |
 | [`java`](java/) | Java reference library (`io.github.orbit-id:orbit-id`) | monorepo → Maven Central (#54) |
-| [`go`](go/) | Go reference library (`github.com/orbit-id/orbit-id/packages/go`) | monorepo → Go module tags (#55) |
+| [`go`](go/) | Go reference library (`github.com/orbit-id/go` via mirror) | monorepo → [`orbit-id/go`](https://github.com/orbit-id/go) (#55 / #124) |
 | [`rust`](rust/) | Rust reference crate (`orbit-id` on crates.io) | monorepo → crates.io (#56) |
 | [`php`](php/) | PHP reference library (`orbit-id/php` on Packagist via mirror) | monorepo → Packagist (#57) |
 

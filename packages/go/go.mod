@@ -1,3 +1,3 @@
-module github.com/orbit-id/orbit-id/packages/go
+module github.com/orbit-id/go
 
 go 1.22

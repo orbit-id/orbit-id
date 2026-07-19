@@ -2,16 +2,14 @@
 
 Go implementation of the Orbit ID v1 unsigned 64-bit format.
 
+Source of truth lives in the monorepo under `packages/go`. Published module path is
+the [`orbit-id/go`](https://github.com/orbit-id/go) mirror (same pattern as Packagist /
+`orbit-id/php`).
+
 ## Install
 
-Module path (must match `go.mod`):
-
-```text
-github.com/orbit-id/orbit-id/packages/go
-```
-
 ```bash
-go get github.com/orbit-id/orbit-id/packages/go@v1.0.1
+go get github.com/orbit-id/go@v1.1.0
 ```
 
 Import as package `orbitid`:
@@ -20,7 +18,7 @@ Import as package `orbitid`:
 import (
     "fmt"
 
-    orbitid "github.com/orbit-id/orbit-id/packages/go"
+    orbitid "github.com/orbit-id/go"
 )
 
 func main() {
@@ -38,8 +36,9 @@ func main() {
 
 ## Version tags
 
-This is a **subdirectory module**. Published versions are Git tags of the form
-`packages/go/vX.Y.Z` (not only the root `vX.Y.Z` tag).
+On each monorepo `vX.Y.Z` release, CI mirrors `packages/go` to
+[`orbit-id/go`](https://github.com/orbit-id/go) and pushes the same tag there.
+Consumers use that mirror tag via [`proxy.golang.org`](https://proxy.golang.org/).
 
 See [Cross-registry versioning](../../docs/en/cross-registry-versioning.md) and
 [Go module publishing](../../docs/en/go-module.md).

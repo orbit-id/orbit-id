@@ -1,0 +1,37 @@
+name: Publish Go module mirror
+description: Subtree-split packages/go to orbit-id/go for proxy.golang.org
+
+inputs:
+  go-split-token:
+    description: PAT with contents:write on orbit-id/go
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Require split token
+      shell: bash
+      env:
+        GO_SPLIT_TOKEN: ${{ inputs.go-split-token }}
+      run: |
+        if [ -z "${GO_SPLIT_TOKEN}" ]; then
+          echo "::error::Missing secret GO_SPLIT_TOKEN (PAT with contents:write on orbit-id/go). See docs/en/go-module.md"
+          exit 1
+        fi
+
+    - name: Subtree-split packages/go → orbit-id/go
+      shell: bash
+      env:
+        GO_SPLIT_TOKEN: ${{ inputs.go-split-token }}
+      run: |
+        set -euo pipefail
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        SHA="$(git subtree split --prefix=packages/go)"
+        echo "split sha=$SHA"
+        REMOTE="https://x-access-token:${GO_SPLIT_TOKEN}@github.com/orbit-id/go.git"
+        git push --force "${REMOTE}" "${SHA}:refs/heads/main"
+        if [ "${{ github.ref_type }}" = "tag" ]; then
+          git push --force "${REMOTE}" "${SHA}:refs/tags/${{ github.ref_name }}"
+          echo "pushed tag ${{ github.ref_name }}"
+        fi
