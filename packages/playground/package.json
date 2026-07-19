@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@orbit-id/core": "1.1.0"
+    "@orbit-id/core": "1.1.1"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

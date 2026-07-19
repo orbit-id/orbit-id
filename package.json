@@ -1,7 +1,7 @@
 {
   "name": "orbit-id",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Orbit ID monorepo",
   "license": "Apache-2.0",
   "workspaces": [

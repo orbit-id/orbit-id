@@ -23,7 +23,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orbit-id/core": "1.1.0"
+    "@orbit-id/core": "1.1.1"
   },
   "peerDependencies": {
     "ioredis": "^5.6.0"
