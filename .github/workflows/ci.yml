@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-node
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-node
           path: coverage/
@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-go
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-go
           path: coverage/
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-rust
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-rust
           path: coverage/
@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-java
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-java
           path: coverage/
@@ -88,7 +88,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/quality-php
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-php
           path: coverage/
@@ -117,7 +117,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: coverage-*
           path: coverage
