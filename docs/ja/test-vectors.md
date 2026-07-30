@@ -126,3 +126,51 @@ Calculation:
 | Sequence 枯渇 | `(1000, 1023)` | `1000` | 次 ms 待ち **または** `SEQUENCE_EXHAUSTED` |
 | 許容内の巻き戻り | `(1000, 10)` | `995` | timestamp `1000` まで待機 |
 | 許容超過の巻き戻り | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
+
+## Orbit ID v2（Draft スタブ）
+
+規範 Draft: [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
+[Design Decisions（v2）](design-decisions-v2.md)。
+
+機械可読な v2 fixture は **まだ未投入**。予定ファイル名（[`spec/conformance/`](../../spec/conformance/)）:
+
+- `encode-decode.v2.json`
+- `decode-reject.v2.json`
+- `generator.v2.json`
+
+投入までの間、次の手計算ベクトルで alpha ビット配分（`FormatVersion=1`、`Reserved=0`）を確認する。
+
+### v2 Vector 1: Epoch
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:00.000Z` |
+| Timestamp | `0` |
+| Type | `1` |
+| Node | `7` |
+| Sequence | `42` |
+| Reserved | `0` |
+| Decimal ID | `21267647932558653967613957625668960256` |
+| Hex ID | `0x100000000000000010007002a0000000` |
+
+```text
+(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | 0
+```
+
+### v2 Vector 2: Representative timestamp
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-07-14T00:12:34.567Z` |
+| Timestamp | `16,762,354,567` |
+| Type | `2` |
+| Node | `7` |
+| Sequence | `42` |
+| Reserved | `0` |
+| Decimal ID | `21268914460260752812362294599660601344` |
+| Hex ID | `0x10003e71d3b8700020007002a0000000` |
+
+v2 の 10 進 decoder は `2^128 - 1` 超と未知の `FormatVersion` を拒否 MUST。完全な拒否表は
+JSON fixture と一緒に投入する。

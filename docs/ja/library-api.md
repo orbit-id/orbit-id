@@ -99,3 +99,23 @@ currentOrbitTimestampMs() -> unsigned integer
 - lease 方式の場合、Node 所有権を確認できないときは fail closed する
 
 Node 割当（静的設定または Redis lease）は `generate` の hot path の外です。
+
+## Orbit ID v2 差分（予定）
+
+Status: パッケージ実装は **まだなし**。仕様 Draft:
+[Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
+[Design Decisions（v2）](design-decisions-v2.md)。
+
+操作名は同じ（`generate` / `parse` / フィールド取得 / `isValid`）だが:
+
+| 観点 | v1 | v2（alpha Draft） |
+| --- | --- | --- |
+| 値幅 | 64-bit | 128-bit |
+| メモリ上（JS/TS） | `bigint` | `bigint`（128-bit 全体） |
+| JSON / HTTP | 符号なし 10 進 | 符号なし 10 進（桁が増える） |
+| Binary | 8-byte BE | **16-byte BE** |
+| Type / Node / Sequence | 6 / 7 / 10 bit | 16 / 16 / 16 bit |
+| 追加フィールド | — | `FormatVersion`（MUST `1`）、`Reserved`（encode は MUST `0`） |
+
+v1 の 64-bit ID を v2 として再解釈してはならない。v2 実装時は別型・メジャー版・明示的な
+API 名前空間などで分離する。

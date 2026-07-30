@@ -98,3 +98,23 @@ A generator that implements `generate` MUST:
 - Fail closed when Node ownership cannot be confirmed (if lease-based)
 
 Node allocation (static config or Redis lease) is outside the hot path of `generate`.
+
+## Orbit ID v2 delta (planned)
+
+Status: **not implemented** in packages yet. Spec Draft:
+[Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
+[Design Decisions (v2)](design-decisions-v2.md).
+
+Operations stay the same (`generate` / `parse` / field getters / `isValid`), but:
+
+| Aspect | v1 | v2 (alpha Draft) |
+| --- | --- | --- |
+| Value width | 64-bit | 128-bit |
+| In-memory (JS/TS) | `bigint` | `bigint` (full 128-bit) |
+| JSON / HTTP | unsigned decimal | unsigned decimal (longer strings) |
+| Binary | 8-byte BE | **16-byte BE** |
+| Type / Node / Sequence ranges | 6 / 7 / 10 bits | 16 / 16 / 16 bits |
+| Extra fields | — | `FormatVersion` (MUST `1`), `Reserved` (MUST `0` on encode) |
+
+Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Prefer separate types, package major
+versions, or explicit API namespaces when v2 support ships.

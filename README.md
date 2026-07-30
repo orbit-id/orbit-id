@@ -82,9 +82,11 @@ is required for external exposure, or as authorization tokens.
 ## Documentation
 
 - [Orbit ID v1 Specification](docs/en/orbit-id-v1.md)
+- [Orbit ID v2 Specification](docs/en/orbit-id-v2.md) (Draft)
 - [Canonical Test Vectors](docs/en/test-vectors.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
+- [Design Decisions (v2)](docs/en/design-decisions-v2.md)
 - [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md)
 - [Library API](docs/en/library-api.md)
 - [npm Trusted Publishing](docs/en/npm-trusted-publishing.md)

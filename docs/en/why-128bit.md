@@ -60,3 +60,8 @@ In practice, systems already store UUIDs widely, so these costs are usually acce
 Orbit ID v2 adopts 128-bit because 64-bit cannot simultaneously satisfy Type capacity,
 extensibility, distributed throughput, and long-horizon compatibility. 128-bit is the
 foundation for a format intended to last.
+
+## Related
+
+- [Design Decisions (v2)](design-decisions-v2.md) — locked alpha layout and interchange choices
+- [Orbit ID v2 Specification](orbit-id-v2.md) — Draft (`v2.0.0-alpha.0`)

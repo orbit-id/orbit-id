@@ -65,7 +65,9 @@ npm / Maven / Go modules / crates.io / Packagist publishing is live. Shared tagg
 | **v2.0.0-beta.\*** | Spec and API are nearly frozen. |
 | **v2.0.0** | Stable 128-bit Orbit ID. |
 
-Why 128-bit: [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md).
+Why 128-bit: [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md).  
+Draft spec: [Orbit ID v2 Specification](docs/en/orbit-id-v2.md).  
+Locked alpha decisions: [Design Decisions (v2)](docs/en/design-decisions-v2.md).
 
 ## Repository layout (monorepo)
 

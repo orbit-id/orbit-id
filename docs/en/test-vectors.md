@@ -126,3 +126,53 @@ in [`generator.v1.json`](../../spec/conformance/generator.v1.json).
 | Sequence exhausted | `(1000, 1023)` | `1000` | Wait for next ms **or** `SEQUENCE_EXHAUSTED` |
 | Rollback within tolerance | `(1000, 10)` | `995` | Wait until timestamp `1000` |
 | Rollback beyond tolerance | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
+
+## Orbit ID v2 (Draft stub)
+
+Normative Draft: [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
+[Design Decisions (v2)](design-decisions-v2.md).
+
+Machine-readable v2 fixtures are **not** checked in yet. Planned names under
+[`spec/conformance/`](../../spec/conformance/):
+
+- `encode-decode.v2.json`
+- `decode-reject.v2.json`
+- `generator.v2.json`
+
+Until those land, the following hand vectors verify the alpha bit layout
+(`FormatVersion=1`, `Reserved=0`).
+
+### v2 Vector 1: Epoch
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:00.000Z` |
+| Timestamp | `0` |
+| Type | `1` |
+| Node | `7` |
+| Sequence | `42` |
+| Reserved | `0` |
+| Decimal ID | `21267647932558653967613957625668960256` |
+| Hex ID | `0x100000000000000010007002a0000000` |
+
+```text
+(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | 0
+```
+
+### v2 Vector 2: Representative timestamp
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-07-14T00:12:34.567Z` |
+| Timestamp | `16,762,354,567` |
+| Type | `2` |
+| Node | `7` |
+| Sequence | `42` |
+| Reserved | `0` |
+| Decimal ID | `21268914460260752812362294599660601344` |
+| Hex ID | `0x10003e71d3b8700020007002a0000000` |
+
+v2 decimal decoders MUST reject values greater than `2^128 - 1` and unknown
+`FormatVersion` values. Full rejection tables ship with the JSON fixtures.
