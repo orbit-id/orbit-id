@@ -1,7 +1,7 @@
 # Orbit ID Conformance Suite
 
 Language-agnostic fixtures for Orbit ID v1 implementations. Human-readable explanations remain in
-[Canonical Test Vectors](../docs/en/test-vectors.md); this directory is the machine-readable source
+[Canonical Test Vectors](../../docs/en/test-vectors.md); this directory is the machine-readable source
 implementations SHOULD load in automated tests.
 
 ## Layout
@@ -25,7 +25,7 @@ Orbit ID v2 Draft fixtures are not checked in yet. When added, use:
 - `generator.v2.json`
 
 with `spec: "orbit-id/v2"` (and an appropriate `version` string). Until then, human-readable
-stubs live in [Canonical Test Vectors](../docs/en/test-vectors.md#orbit-id-v2-draft-stub).
+stubs live in [Canonical Test Vectors](../../docs/en/test-vectors.md#orbit-id-v2-draft-stub).
 
 ## Common envelope
 
