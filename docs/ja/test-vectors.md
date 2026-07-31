@@ -127,18 +127,18 @@ Calculation:
 | 許容内の巻き戻り | `(1000, 10)` | `995` | timestamp `1000` まで待機 |
 | 許容超過の巻き戻り | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
 
-## Orbit ID v2（Draft スタブ）
+## Orbit ID v2（Draft）
 
 規範 Draft: [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
 [Design Decisions（v2）](design-decisions-v2.md)。
 
-機械可読な v2 fixture は **まだ未投入**。予定ファイル名（[`spec/conformance/`](../../spec/conformance/)）:
+機械可読 fixture（自動化の正）:
 
-- `encode-decode.v2.json`
-- `decode-reject.v2.json`
-- `generator.v2.json`
+- [`encode-decode.v2.json`](../../spec/conformance/encode-decode.v2.json)
+- [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
+- [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-投入までの間、次の手計算ベクトルで alpha ビット配分（`FormatVersion=1`、`Reserved=0`）を確認する。
+alpha レイアウト: `FormatVersion=1`、`Reserved=0`。言語パッケージはまだ読み込まない。
 
 ### v2 Vector 1: Epoch
 
@@ -172,5 +172,38 @@ Calculation:
 | Decimal ID | `21268914460260752812362294599660601344` |
 | Hex ID | `0x10003e71d3b8700020007002a0000000` |
 
-v2 の 10 進 decoder は `2^128 - 1` 超と未知の `FormatVersion` を拒否 MUST。完全な拒否表は
-JSON fixture と一緒に投入する。
+### v2 Vector 3: Sequence max
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `1` |
+| Node | `1` |
+| Sequence | `65,535` |
+| Reserved | `0` |
+| Decimal ID | `21267647932634211831339783976615149568` |
+| Hex ID | `0x10000000003e800010001ffff0000000` |
+
+### v2 decoder 拒否（抜粋）
+
+| Input | Reason |
+| --- | --- |
+| `-1` | Negative value |
+| `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
+| `01` | Leading zeros are not canonical |
+
+完全な表: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)。
+
+### v2 generator behavior（抜粋）
+
+時計巻き戻しの既定許容: `5_000` ms。Sequence 枯渇は最大 `65,535`。
+
+| Case | 事前状態 `(lastTimestamp, sequence)` | `nowTimestamp` | 要求される結果 |
+| --- | --- | ---: | --- |
+| 同一 ms で Sequence 増加 | `(1000, 0)` | `1000` | sequence `1` で発行 |
+| Sequence 枯渇 | `(1000, 65535)` | `1000` | 次 ms 待ち **または** `SEQUENCE_EXHAUSTED` |
+| 許容超過の巻き戻り | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
+
+完全な表: [`generator.v2.json`](../../spec/conformance/generator.v2.json)。

@@ -127,20 +127,18 @@ in [`generator.v1.json`](../../spec/conformance/generator.v1.json).
 | Rollback within tolerance | `(1000, 10)` | `995` | Wait until timestamp `1000` |
 | Rollback beyond tolerance | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
 
-## Orbit ID v2 (Draft stub)
+## Orbit ID v2 (Draft)
 
 Normative Draft: [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
 [Design Decisions (v2)](design-decisions-v2.md).
 
-Machine-readable v2 fixtures are **not** checked in yet. Planned names under
-[`spec/conformance/`](../../spec/conformance/):
+Machine-readable fixtures (canonical for automation):
 
-- `encode-decode.v2.json`
-- `decode-reject.v2.json`
-- `generator.v2.json`
+- [`encode-decode.v2.json`](../../spec/conformance/encode-decode.v2.json)
+- [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
+- [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-Until those land, the following hand vectors verify the alpha bit layout
-(`FormatVersion=1`, `Reserved=0`).
+Alpha layout: `FormatVersion=1`, `Reserved=0`. Language packages do not load these yet.
 
 ### v2 Vector 1: Epoch
 
@@ -174,5 +172,38 @@ Until those land, the following hand vectors verify the alpha bit layout
 | Decimal ID | `21268914460260752812362294599660601344` |
 | Hex ID | `0x10003e71d3b8700020007002a0000000` |
 
-v2 decimal decoders MUST reject values greater than `2^128 - 1` and unknown
-`FormatVersion` values. Full rejection tables ship with the JSON fixtures.
+### v2 Vector 3: Sequence max
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:01.000Z` |
+| Timestamp | `1,000` |
+| Type | `1` |
+| Node | `1` |
+| Sequence | `65,535` |
+| Reserved | `0` |
+| Decimal ID | `21267647932634211831339783976615149568` |
+| Hex ID | `0x10000000003e800010001ffff0000000` |
+
+### v2 decoder rejection (highlights)
+
+| Input | Reason |
+| --- | --- |
+| `-1` | Negative value |
+| `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
+| `01` | Leading zeros are not canonical |
+
+Full table: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json).
+
+### v2 generator behavior (highlights)
+
+Default clock-rollback tolerance: `5_000` ms. Sequence exhaustion uses max `65,535`.
+
+| Case | Prior `(lastTimestamp, sequence)` | `nowTimestamp` | Required outcome |
+| --- | --- | ---: | --- |
+| Same ms increments sequence | `(1000, 0)` | `1000` | Issue with sequence `1` |
+| Sequence exhausted | `(1000, 65535)` | `1000` | Wait for next ms **or** `SEQUENCE_EXHAUSTED` |
+| Rollback beyond tolerance | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
+
+Full table: [`generator.v2.json`](../../spec/conformance/generator.v2.json).

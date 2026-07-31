@@ -198,7 +198,7 @@ Orbit ID は秘密ではない。発行時刻、Type、Node、FormatVersion、�
 - [Design Decisions（v2）](design-decisions-v2.md)
 - [Node Management](node-management.md)
 - [Library API](library-api.md)（v2 差分節）
-- [Canonical Test Vectors](test-vectors.md)（v2 スタブ）
-- [`spec/conformance/`](../../spec/conformance/)（v2 fixture は TBD）
+- [Canonical Test Vectors](test-vectors.md)（v2 節）
+- [`spec/conformance/`](../../spec/conformance/)（`*.v2.json` fixture）
 - [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)
 - [Orbit ID v1 Specification](orbit-id-v1.md)
