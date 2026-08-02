@@ -57,6 +57,8 @@ JSON 例:
 | `INVALID_SEQUENCE` | fields の encode 時に Sequence が `0..1023` 外 |
 | `INVALID_TIMESTAMP` | fields の encode 時に Timestamp が 41-bit 範囲外 |
 | `INVALID_DECIMAL` | 非正規または範囲外の 10 進文字列 |
+| `INVALID_FORMAT_VERSION` | 未知 / 予約の FormatVersion（v2） |
+| `INVALID_RESERVED` | encode 時の非 0 Reserved、または strict decode での拒否（v2） |
 | `CLOCK_ROLLBACK` | 壁時計が許容を超えて `last_timestamp` より後ろ |
 | `SEQUENCE_EXHAUSTED` | 同一 ms の容量超過で、待機ではなく失敗を選んだ場合 |
 | `NODE_OWNERSHIP_LOST` | lease / 所有権を確認できず fail closed |
@@ -100,9 +102,10 @@ currentOrbitTimestampMs() -> unsigned integer
 
 Node 割当（静的設定または Redis lease）は `generate` の hot path の外です。
 
-## Orbit ID v2 差分（予定）
+## Orbit ID v2 差分
 
-Status: パッケージ実装は **まだなし**。仕様 Draft:
+Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import * as v2 from
+"@orbit-id/core/v2"` または `import { v2 } from "@orbit-id/core"`）。仕様 Draft:
 [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
 [Design Decisions（v2）](design-decisions-v2.md)。
 
@@ -116,6 +119,8 @@ Status: パッケージ実装は **まだなし**。仕様 Draft:
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence | 6 / 7 / 10 bit | 16 / 16 / 16 bit |
 | 追加フィールド | — | `FormatVersion`（MUST `1`）、`Reserved`（encode は MUST `0`） |
+| パッケージ入口 | `@orbit-id/core` | `@orbit-id/core/v2`（ルートの `v2` 名前空間でも可） |
 
-v1 の 64-bit ID を v2 として再解釈してはならない。v2 実装時は別型・メジャー版・明示的な
-API 名前空間などで分離する。
+v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_RESERVED`。
+
+v1 の 64-bit ID を v2 として再解釈してはならない。他言語パッケージの v2 実装はまだない。
