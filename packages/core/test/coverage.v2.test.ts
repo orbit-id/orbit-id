@@ -3,7 +3,7 @@ import { OrbitError } from "../src/errors.js";
 import * as v2 from "../src/v2/index.js";
 
 describe("v2 generator coverage", () => {
-  it("generate issues ids and exposes state getters", () => {
+  it("generate issues IDs and exposes state getters", () => {
     let now = 1_000n;
     const generator = new v2.OrbitGeneratorV2({
       node: 7,
