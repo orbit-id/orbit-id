@@ -56,6 +56,8 @@ Libraries SHOULD expose these stable code strings (or language enums mapping to 
 | `INVALID_SEQUENCE` | Sequence outside `0..1023` when encoding fields |
 | `INVALID_TIMESTAMP` | Timestamp outside the 41-bit range when encoding fields |
 | `INVALID_DECIMAL` | Non-canonical or out-of-range decimal string |
+| `INVALID_FORMAT_VERSION` | Unknown / reserved FormatVersion (v2) |
+| `INVALID_RESERVED` | Non-zero Reserved on encode, or rejected on strict decode (v2) |
 | `CLOCK_ROLLBACK` | Wall clock behind `last_timestamp` beyond tolerance |
 | `SEQUENCE_EXHAUSTED` | Same-ms capacity exceeded and the implementation chooses to fail instead of waiting |
 | `NODE_OWNERSHIP_LOST` | Lease / ownership cannot be confirmed; fail closed |
@@ -99,9 +101,10 @@ A generator that implements `generate` MUST:
 
 Node allocation (static config or Redis lease) is outside the hot path of `generate`.
 
-## Orbit ID v2 delta (planned)
+## Orbit ID v2 delta
 
-Status: **not implemented** in packages yet. Spec Draft:
+Status: **implemented** in `@orbit-id/core` as an additive namespace (`import * as v2 from
+"@orbit-id/core/v2"` or `import { v2 } from "@orbit-id/core"`). Spec Draft:
 [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
 [Design Decisions (v2)](design-decisions-v2.md).
 
@@ -115,6 +118,9 @@ Operations stay the same (`generate` / `parse` / field getters / `isValid`), but
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence ranges | 6 / 7 / 10 bits | 16 / 16 / 16 bits |
 | Extra fields | — | `FormatVersion` (MUST `1`), `Reserved` (MUST `0` on encode) |
+| Package entry | `@orbit-id/core` | `@orbit-id/core/v2` (also `v2` namespace on root) |
 
-Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Prefer separate types, package major
-versions, or explicit API namespaces when v2 support ships.
+Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_RESERVED`.
+
+Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Other language packages do not implement v2
+yet.

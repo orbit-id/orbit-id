@@ -138,7 +138,8 @@ Calculation:
 - [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-alpha レイアウト: `FormatVersion=1`、`Reserved=0`。言語パッケージはまだ読み込まない。
+alpha レイアウト: `FormatVersion=1`、`Reserved=0`。`@orbit-id/core` は
+`test/conformance.v2.test.ts` で読み込む。他言語パッケージはまだ未対応。
 
 ### v2 Vector 1: Epoch
 
