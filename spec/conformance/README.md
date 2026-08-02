@@ -1,6 +1,6 @@
 # Orbit ID Conformance Suite
 
-Language-agnostic fixtures for Orbit ID v1 implementations. Human-readable explanations remain in
+Language-agnostic fixtures for Orbit ID implementations. Human-readable explanations remain in
 [Canonical Test Vectors](../../docs/en/test-vectors.md); this directory is the machine-readable source
 implementations SHOULD load in automated tests.
 
@@ -9,23 +9,20 @@ implementations SHOULD load in automated tests.
 ```text
 spec/conformance/
 ├── README.md                 # this file
-├── encode-decode.v1.json     # round-trip encode / decode cases
-├── decode-reject.v1.json     # decimal-string rejection cases
-└── generator.v1.json         # generator behavior cases (clock / sequence)
+├── encode-decode.v1.json     # v1 round-trip encode / decode
+├── decode-reject.v1.json     # v1 decimal-string rejection
+├── generator.v1.json         # v1 generator behavior (clock / sequence)
+├── encode-decode.v2.json     # v2 Draft round-trip encode / decode
+├── decode-reject.v2.json     # v2 Draft decimal-string rejection
+└── generator.v2.json         # v2 Draft generator behavior
 ```
 
-Additional files MAY be added with the same naming pattern: `<category>.v1.json`.
+Naming pattern: `<category>.v1.json` / `<category>.v2.json`.
 
-### v2 (planned)
-
-Orbit ID v2 Draft fixtures are not checked in yet. When added, use:
-
-- `encode-decode.v2.json`
-- `decode-reject.v2.json`
-- `generator.v2.json`
-
-with `spec: "orbit-id/v2"` (and an appropriate `version` string). Until then, human-readable
-stubs live in [Canonical Test Vectors](../../docs/en/test-vectors.md#orbit-id-v2-draft-stub).
+| File set | `spec` field | Status |
+| --- | --- | --- |
+| `*.v1.json` | `"orbit-id/v1"` | Stable — loaded by language packages today |
+| `*.v2.json` | `"orbit-id/v2"` | Draft (`v2.0.0-alpha`) — fixtures only; packages do not load yet |
 
 ## Common envelope
 
@@ -33,13 +30,25 @@ Every fixture file is a JSON object:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `version` | string | Fixture format version. Current: `"orbit-conformance/v1"` |
-| `spec` | string | Target specification id. Current: `"orbit-id/v1"` |
+| `version` | string | Fixture **envelope** format. Current: `"orbit-conformance/v1"` |
+| `spec` | string | Target wire format (`"orbit-id/v1"` or `"orbit-id/v2"`) |
 | `cases` | array | Ordered list of test cases |
+| `defaults` | object | Optional defaults for generator fixtures |
 
 IDs and numeric fields that may exceed JavaScript `Number.MAX_SAFE_INTEGER` MUST be JSON strings of
-unsigned decimal integers (for example `"18446744073709551615"`). Bit widths and small counters MAY
-be JSON numbers.
+unsigned decimal integers. Bit widths and small counters MAY be JSON numbers.
+
+### v2 encode-decode fields
+
+In addition to v1’s `timestamp` / `type` / `node` / `sequence`, each v2 case includes:
+
+| Field | Meaning |
+| --- | --- |
+| `formatVersion` | In-band version (alpha issues use `1`) |
+| `reserved` | Lower 28 bits (alpha encode MUST be `0`) |
+
+`time` MAY be `null` when the Timestamp is beyond portable calendar libraries (see
+`timestamp-max`).
 
 ## Case categories
 
@@ -47,13 +56,16 @@ be JSON numbers.
 
 Each case provides fields and the expected ID. Implementations MUST:
 
-1. Encode `timestamp`, `type`, `node`, `sequence` to `idDecimal` / `idHex`
+1. Encode fields to `idDecimal` / `idHex`
 2. Decode `idDecimal` back to the same fields
 
 ### `decode-reject`
 
 Each case provides a decimal string `input` that MUST be rejected by a canonical decimal decoder.
 `reason` is informative only.
+
+- v1 bound: greater than `2^64 - 1`
+- v2 bound: greater than `2^128 - 1`
 
 ### `generator`
 
@@ -62,11 +74,13 @@ Each case describes generator inputs (clock readings, prior state) and the requi
 tests; asserting the decided action and resulting state is enough.
 
 Optional top-level `defaults` (for example `clockRollbackToleranceMs`) apply unless a case overrides
-them.
+them. v2 Sequence exhaustion uses max `65535` (not v1’s `1023`).
 
 ## Consumption guidance
 
 - Prefer loading these JSON files directly from each language package’s test suite.
+- Load by **explicit filename** (`encode-decode.v1.json`, etc.). Do not glob all `*.json` unless the
+  harness understands both `orbit-id/v1` and `orbit-id/v2`.
 - Do not fork divergent copies of the vectors inside packages; if docs and fixtures disagree,
   fixtures win for automated conformance and docs MUST be updated in the same change.
 - Type values in fixtures verify the bit layout only.

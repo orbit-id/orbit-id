@@ -1,0 +1,91 @@
+{
+  "version": "orbit-conformance/v1",
+  "spec": "orbit-id/v2",
+  "cases": [
+    {
+      "id": "epoch",
+      "time": "2026-01-01T00:00:00.000Z",
+      "formatVersion": 1,
+      "timestamp": "0",
+      "type": 1,
+      "node": 7,
+      "sequence": 42,
+      "reserved": 0,
+      "idDecimal": "21267647932558653967613957625668960256",
+      "idHex": "0x100000000000000010007002a0000000"
+    },
+    {
+      "id": "representative",
+      "time": "2026-07-14T00:12:34.567Z",
+      "formatVersion": 1,
+      "timestamp": "16762354567",
+      "type": 2,
+      "node": 7,
+      "sequence": 42,
+      "reserved": 0,
+      "idDecimal": "21268914460260752812362294599660601344",
+      "idHex": "0x10003e71d3b8700020007002a0000000"
+    },
+    {
+      "id": "min-nonzero-timestamp",
+      "time": "2026-01-01T00:00:00.001Z",
+      "formatVersion": 1,
+      "timestamp": "1",
+      "type": 1,
+      "node": 0,
+      "sequence": 0,
+      "reserved": 0,
+      "idDecimal": "21267647932558729525477560383415779328",
+      "idHex": "0x10000000000010001000000000000000"
+    },
+    {
+      "id": "node-max-seq-zero",
+      "time": "2026-01-01T00:00:01.000Z",
+      "formatVersion": 1,
+      "timestamp": "1000",
+      "type": 10,
+      "node": 65535,
+      "sequence": 0,
+      "reserved": 0,
+      "idDecimal": "21267647932634211842868946246393921536",
+      "idHex": "0x10000000003e8000affff00000000000"
+    },
+    {
+      "id": "sequence-max",
+      "time": "2026-01-01T00:00:01.000Z",
+      "formatVersion": 1,
+      "timestamp": "1000",
+      "type": 1,
+      "node": 1,
+      "sequence": 65535,
+      "reserved": 0,
+      "idDecimal": "21267647932634211831339783976615149568",
+      "idHex": "0x10000000003e800010001ffff0000000"
+    },
+    {
+      "id": "fields-max-at-epoch",
+      "time": "2026-01-01T00:00:00.000Z",
+      "formatVersion": 1,
+      "timestamp": "0",
+      "type": 65535,
+      "node": 65535,
+      "sequence": 65535,
+      "reserved": 0,
+      "idDecimal": "21267647932558729524324638878540496896",
+      "idHex": "0x1000000000000ffffffffffff0000000"
+    },
+    {
+      "id": "timestamp-max",
+      "time": null,
+      "note": "48-bit max; wall-clock year is beyond typical calendar libraries",
+      "formatVersion": 1,
+      "timestamp": "281474976710655",
+      "type": 65535,
+      "node": 65535,
+      "sequence": 65535,
+      "reserved": 0,
+      "idDecimal": "42535295865117307932921825928702590976",
+      "idHex": "0x1ffffffffffffffffffffffff0000000"
+    }
+  ]
+}
