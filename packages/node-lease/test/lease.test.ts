@@ -69,4 +69,28 @@ describe("MemoryLeaseStore + NodeLeaseClient", () => {
     await lease.release();
     expect(() => generator.generate(1)).toThrow(/NODE_OWNERSHIP_LOST/);
   });
+
+  it("supports the v2 Node range without pre-allocating every slot", async () => {
+    const maxNode = 65_535;
+    const store = new MemoryLeaseStore(maxNode);
+    const a = new NodeLeaseClient({
+      store,
+      maxNode,
+      ttlMs: 5_000,
+      quarantineMs: 1_000,
+      createOwnerToken: () => "a",
+    });
+    const b = new NodeLeaseClient({
+      store,
+      maxNode,
+      ttlMs: 5_000,
+      quarantineMs: 1_000,
+      createOwnerToken: () => "b",
+    });
+    const ha = await a.acquire();
+    const hb = await b.acquire();
+    expect(ha.nodeId).toBe(0);
+    expect(hb.nodeId).toBe(1);
+    expect(ha.nodeId).not.toBe(hb.nodeId);
+  });
 });
