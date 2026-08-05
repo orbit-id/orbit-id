@@ -25,6 +25,12 @@ Options:
 
 ```bash
 node benchmark/run.mjs --duration-ms 3000 --warmup-ms 500 --node 1 --type 1
+node benchmark/run.mjs --id-version 2 --duration-ms 3000 --warmup-ms 500 --node 1 --type 1
 ```
 
-Output is JSON with `measuredIdsPerMs` / `measuredIdsPerSec` plus the formal capacity reminder.
+| Flag | Default | Meaning |
+| --- | --- | --- |
+| `--id-version` | `1` | `1` = Orbit ID v1 (`OrbitGenerator`); `2` = v2 (`OrbitGeneratorV2`) |
+
+Output is JSON with `idVersion`, `measuredIdsPerMs` / `measuredIdsPerSec`, plus the formal capacity reminder.
+Other language benches land with those packages’ v2 implementations (#141–#144).
