@@ -86,13 +86,19 @@ export class MemoryLeaseStore implements LeaseStore {
   }
 
   private takeFree(limit: number): number | null {
+    const deferred: number[] = [];
     while (this.free.length > 0) {
       const nodeId = this.free.pop()!;
-      if (nodeId > limit) continue;
+      if (nodeId > limit) {
+        deferred.push(nodeId);
+        continue;
+      }
       const slot = this.slots.get(nodeId);
       if (slot) continue;
+      this.free.push(...deferred);
       return nodeId;
     }
+    this.free.push(...deferred);
     return null;
   }
 

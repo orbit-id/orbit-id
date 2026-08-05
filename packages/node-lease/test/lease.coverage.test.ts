@@ -153,11 +153,16 @@ describe("RedisLeaseStore", () => {
     await expect(
       store.renew({ nodeId: 3, ownerToken: "tok", ttlMs: 500, nowMs: 1_200 }),
     ).resolves.toBe(true);
+    // Unified renew always passes prefix + node id.
+    expect(evalMock.mock.calls.at(-1)![2]).toBe("orbit:test:");
+    expect(evalMock.mock.calls.at(-1)![3]).toBe("3");
 
     evalMock.mockResolvedValueOnce(0);
     await expect(
       store.release({ nodeId: 3, ownerToken: "tok", nowMs: 1_300, quarantineMs: 1_000 }),
     ).resolves.toBe(false);
+    expect(evalMock.mock.calls.at(-1)![2]).toBe("orbit:test:");
+    expect(evalMock.mock.calls.at(-1)![3]).toBe("3");
 
     hgetallMock.mockResolvedValueOnce({ state: "held", owner: "tok", expires: "2000" });
     await expect(store.get(3)).resolves.toEqual({
@@ -186,11 +191,11 @@ describe("RedisLeaseStore", () => {
       quarantineMs: 1_000,
     });
     expect(String(evalMock.mock.calls[0]![0])).toContain("held-exp");
+    expect(String(evalMock.mock.calls[0]![0])).toContain("free-pool");
 
     evalMock.mockResolvedValueOnce(1);
     await store.renew({ nodeId: 0, ownerToken: "tok", ttlMs: 500, nowMs: 1_200 });
     expect(String(evalMock.mock.calls[1]![0])).toContain("held-exp");
-    // free-pool renew passes prefix as KEYS[1] and node as ARGV[1]
     expect(evalMock.mock.calls[1]![2]).toBe("orbit:wide:");
     expect(evalMock.mock.calls[1]![3]).toBe("0");
 
@@ -202,5 +207,24 @@ describe("RedisLeaseStore", () => {
       quarantineMs: 1_000,
     });
     expect(String(evalMock.mock.calls[2]![0])).toContain("quarantine");
+  });
+
+  it("rejects linear-scan acquire after free-pool mode is set on the prefix", async () => {
+    const evalMock = vi.fn();
+    const redis: RedisLike = {
+      eval: evalMock,
+      hgetall: vi.fn(),
+    };
+    const store = new RedisLeaseStore(redis, "orbit:mixed:", 1_000);
+    evalMock.mockResolvedValueOnce(["ERR_FREE_POOL_MODE"]);
+    await expect(
+      store.tryAcquire({
+        ownerToken: "tok",
+        ttlMs: 500,
+        nowMs: 1_000,
+        maxNode: 3,
+        quarantineMs: 1_000,
+      }),
+    ).rejects.toThrow(/NODE_LEASE_MODE/);
   });
 });
