@@ -32,6 +32,38 @@ describe("MemoryLeaseStore renew/get", () => {
     ).toBe(false);
     expect(await store.get(999)).toBeNull();
   });
+
+  it("reclaims expired held leases into quarantine before reuse", async () => {
+    let now = 1_000;
+    const store = new MemoryLeaseStore(0);
+    const first = await store.tryAcquire({
+      ownerToken: "a",
+      ttlMs: 500,
+      nowMs: now,
+      maxNode: 0,
+      quarantineMs: 1_000,
+    });
+    expect(first).not.toBeNull();
+    now = 1_600; // past ttl → reclaim should quarantine
+    await expect(
+      store.tryAcquire({
+        ownerToken: "b",
+        ttlMs: 500,
+        nowMs: now,
+        maxNode: 0,
+        quarantineMs: 1_000,
+      }),
+    ).resolves.toBeNull();
+    now = 2_700; // past quarantine
+    const again = await store.tryAcquire({
+      ownerToken: "b",
+      ttlMs: 500,
+      nowMs: now,
+      maxNode: 0,
+      quarantineMs: 1_000,
+    });
+    expect(again?.nodeId).toBe(0);
+  });
 });
 
 describe("NodeLeaseClient renew/auto-renew", () => {
@@ -60,6 +92,28 @@ describe("NodeLeaseClient renew/auto-renew", () => {
     expect(await client.renew()).toBe(false);
     expect(client.getHeld()).toBeNull();
     expect(await client.release()).toBe(false);
+  });
+
+  it("fires auto-renew on the interval", async () => {
+    vi.useFakeTimers();
+    try {
+      const store = new MemoryLeaseStore(0);
+      const client = new NodeLeaseClient({
+        store,
+        maxNode: 0,
+        ttlMs: 3_000,
+        quarantineMs: 1_000,
+        createOwnerToken: () => "auto",
+      });
+      await client.acquire();
+      const renewSpy = vi.spyOn(client, "renew");
+      client.startAutoRenew();
+      await vi.advanceTimersByTimeAsync(1_000);
+      expect(renewSpy).toHaveBeenCalled();
+      client.stopAutoRenew();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
@@ -113,5 +167,40 @@ describe("RedisLeaseStore", () => {
     });
     hgetallMock.mockResolvedValueOnce({ state: "quarantine" });
     await expect(store.get(3)).resolves.toBeNull();
+  });
+
+  it("uses the free-pool Lua path when maxNode exceeds the v1 range", async () => {
+    const evalMock = vi.fn();
+    const redis: RedisLike = {
+      eval: evalMock,
+      hgetall: vi.fn(),
+    };
+    const store = new RedisLeaseStore(redis, "orbit:wide:", 1_000);
+
+    evalMock.mockResolvedValueOnce(["0", "tok", "1500"]);
+    await store.tryAcquire({
+      ownerToken: "tok",
+      ttlMs: 500,
+      nowMs: 1_000,
+      maxNode: 65_535,
+      quarantineMs: 1_000,
+    });
+    expect(String(evalMock.mock.calls[0]![0])).toContain("held-exp");
+
+    evalMock.mockResolvedValueOnce(1);
+    await store.renew({ nodeId: 0, ownerToken: "tok", ttlMs: 500, nowMs: 1_200 });
+    expect(String(evalMock.mock.calls[1]![0])).toContain("held-exp");
+    // free-pool renew passes prefix as KEYS[1] and node as ARGV[1]
+    expect(evalMock.mock.calls[1]![2]).toBe("orbit:wide:");
+    expect(evalMock.mock.calls[1]![3]).toBe("0");
+
+    evalMock.mockResolvedValueOnce(1);
+    await store.release({
+      nodeId: 0,
+      ownerToken: "tok",
+      nowMs: 1_300,
+      quarantineMs: 1_000,
+    });
+    expect(String(evalMock.mock.calls[2]![0])).toContain("quarantine");
   });
 });

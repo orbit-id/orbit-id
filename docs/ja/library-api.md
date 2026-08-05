@@ -124,3 +124,16 @@ Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import
 v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_RESERVED`。
 
 v1 の 64-bit ID を v2 として再解釈してはならない。他言語パッケージの v2 実装はまだない。
+
+### 言語ごとの入口（1.x → 2.0.0）
+
+方針: [横断 versioning](cross-registry-versioning.md) · [#150](https://github.com/orbit-id/orbit-id/issues/150)。
+
+| 言語 | 1.x 既定（v1） | 1.x の加算 v2 | 2.0.0 既定（v2） | 2.0.0 で残る v1 |
+| --- | --- | --- | --- | --- |
+| TypeScript | `@orbit-id/core` ルート | `v2` / `@orbit-id/core/v2` | ルート → v2 | `v1` 名前空間 |
+| Java | `dev.orbitid` | `dev.orbitid.v2` | `dev.orbitid` → v2 | `dev.orbitid.v1` |
+| Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
+| PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
+| Go | module `github.com/orbit-id/go` | 非公開（alpha は `internal/v2`） | module `/v2` path | 前 major の module |
+| CLI | v1 既定 | 加算の v2 フラグ（CLI Issue 参照） | 既定 → v2 | 明示的 v1 モード |

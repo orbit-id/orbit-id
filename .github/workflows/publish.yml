@@ -2,6 +2,8 @@ name: Publish
 
 # Single entry for all registry publishes. Logic lives in
 # .github/actions/publish-*.
+# Pre-release tags (SemVer with `-`, e.g. v2.0.0-beta.1) do NOT publish —
+# alpha/beta are development-phase labels only; registries get stable cuts.
 on:
   push:
     tags:
@@ -13,14 +15,42 @@ permissions:
   id-token: write
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+    steps:
+      - id: check
+        name: Skip pre-release tags
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual dispatch — publish allowed."
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          REF="${{ github.ref_name }}"
+          # SemVer pre-release forms contain '-' (v1.2.3-rc.1, v2.0.0-beta.1).
+          if [[ "$REF" == *-* ]]; then
+            echo "Skipping publish for pre-release tag: $REF"
+            echo "Pre-release tags are not distributed to registries (see cross-registry-versioning.md)."
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Stable tag $REF — publish allowed."
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
   npm-prepare:
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/publish-npm-prepare
 
   npm:
-    needs: npm-prepare
+    needs: [gate, npm-prepare]
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -36,6 +66,8 @@ jobs:
           package: ${{ matrix.package }}
 
   crates:
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -44,6 +76,8 @@ jobs:
           cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
   maven:
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -55,6 +89,8 @@ jobs:
           maven-gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
   packagist:
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       # Disable checkout credential helper so PHP_SPLIT_TOKEN is not overridden by GITHUB_TOKEN.
@@ -69,6 +105,8 @@ jobs:
           packagist-token: ${{ secrets.PACKAGIST_TOKEN }}
 
   go:
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       # Disable checkout credential helper so GO_SPLIT_TOKEN is not overridden by GITHUB_TOKEN.

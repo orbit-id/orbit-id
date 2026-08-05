@@ -37,7 +37,10 @@ export type NodeLeaseOptions = {
   ttlMs?: number;
   /** Quarantine after release. Default 120_000 ms (Node Management). */
   quarantineMs?: number;
-  /** Max inclusive Node ID. Default 127. */
+  /**
+   * Max inclusive Node ID. Default 127 (v1).
+   * For Orbit ID v2 pass `65535` (or `v2.MAX_NODE` from `@orbit-id/core`).
+   */
   maxNode?: number;
   /** Clock for lease expiry. Default Date.now. */
   now?: () => number;
