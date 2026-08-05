@@ -4,8 +4,9 @@
 
 Measure **single-Node** generator throughput using `@orbit-id/core`.
 
-Spec and top-level README numbers such as **1,024 IDs/ms per node** are **formal capacity**
-(bit-field limits). They are not claims about this harness or any particular machine.
+Spec and top-level README numbers such as **1,024 IDs/ms per node** (v1) or **65,536 IDs/ms**
+(v2 sequence width) are **formal capacity** (bit-field limits). They are not claims about this
+harness or any particular machine.
 
 ## Run
 
