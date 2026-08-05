@@ -111,3 +111,22 @@ TypeScript の control-plane ヘルパーは [`@orbit-id/node-lease`](../../pack
 lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` を渡し fail closed
 にしてください。`generate` ごとに Redis を呼ばないでください。
 
+## Orbit ID v2（Draft）
+
+規範 Draft: [Orbit ID v2 Specification](orbit-id-v2.md)。Node 幅は **16 bit**（`0..65535`）。
+上記の本番既定・quarantine 規則はそのまま適用し、利用中の形式に合わせて Node 範囲だけ差し替える。
+
+| 形式 | Node 範囲 | 注記 |
+| --- | --- | --- |
+| v1（1.x の既定） | `0..127` | 上記セクション |
+| v2（Draft） | `0..65535` | `@orbit-id/node-lease` に `maxNode: 65535`（または `v2.MAX_NODE`）を渡す |
+
+`@orbit-id/node-lease` の **既定 `maxNode` は 127**（v1）のまま。v2 ジェネレーターでは明示的に
+`maxNode` を設定する。現状の Redis acquire は `0..maxNode` を線形スキャンする実装のままなので、
+v1 範囲では問題ないが **`65535` では実用的ではない**。広い範囲向けの空きプール / O(1) 経路は
+[#149](https://github.com/orbit-id/orbit-id/issues/149) で追跡する。それが入るまで、Redis 上で
+16-bit の `maxNode` を本番想定にしてはならない。
+
+広い範囲用ストアのキー配置が定義され cutover されるまでは、v1 と v2 の lease プールは
+**別の Redis キー接頭辞**に置く（形式をまたいで接頭辞を共有しない）。
+
