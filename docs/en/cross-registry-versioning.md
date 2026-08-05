@@ -37,6 +37,23 @@ mirror. Alpha / beta name **development phases**, not registry dist-tags.
 (for example `v2.0.0-beta.1`). Manual `workflow_dispatch` is unchanged. Prefer stable `vX.Y.Z` for
 all registry cuts. See [#148](https://github.com/orbit-id/orbit-id/issues/148).
 
+## Root API swap at major `2.0.0` (decision)
+
+Across TypeScript, Java, Rust, PHP, Go, and the CLI:
+
+| Line | Public default | How to use the other format |
+| --- | --- | --- |
+| **1.x** | v1 at the package root | v2 as an additive namespace / submodule only (non-breaking) |
+| **2.0.0** | **v2** at the package root | v1 remains bundled under a `v1` namespace / module |
+
+“Use v2” does **not** require a separate product line — raising the package major swaps the root
+default to v2 while keeping v1 importable. Details and per-language entry points:
+[Library API](library-api.md) · tracker [#150](https://github.com/orbit-id/orbit-id/issues/150).
+
+**Go exception:** Go modules require a `/v2` path suffix for module major ≥ 2, so a public v2 API
+cannot ship under the v1 module path. During alpha, keep Go v2 under `internal/v2`; publish it when
+the module path moves to `/v2` at package `2.0.0` (see Go implementation issues).
+
 ## When to increment X.Y.Z
 
 Orbit package versions use SemVer `X.Y.Z` with this project convention (in addition to the
@@ -170,6 +187,8 @@ Do **not** rewrite versions after an existing tag: publishers check out the tagg
 ## Related
 
 - [npm Trusted Publishing](npm-trusted-publishing.md)
+- [Library API](library-api.md) (per-language v1 / v2 entry points)
 - Registry publishing tracker [#42](https://github.com/orbit-id/orbit-id/issues/42)
 - Child issues: [#54](https://github.com/orbit-id/orbit-id/issues/54) Maven · [#55](https://github.com/orbit-id/orbit-id/issues/55) Go · [#56](https://github.com/orbit-id/orbit-id/issues/56) crates.io · [#57](https://github.com/orbit-id/orbit-id/issues/57) Packagist
 - Pre-release publish guard: [#148](https://github.com/orbit-id/orbit-id/issues/148)
+- Root API swap at 2.0.0: [#150](https://github.com/orbit-id/orbit-id/issues/150)
