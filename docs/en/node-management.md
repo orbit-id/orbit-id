@@ -127,8 +127,10 @@ Node range for the format in use:
 | v2 (Draft) | `0..65535` | Pass `maxNode: 65535` (or `v2.MAX_NODE`) into `@orbit-id/node-lease` |
 
 `@orbit-id/node-lease` keeps **default `maxNode = 127`** (v1). For v2 generators, set `maxNode`
-explicitly. Redis acquire uses an O(1) free-pool path when `maxNode > 127` so a 16-bit range stays
-practical; the v1 path (`maxNode ≤ 127`) keeps the previous linear scan and key layout.
+explicitly. Today’s Redis acquire still linearly scans `0..maxNode`; that is fine for the v1 range
+but is **not** practical at `65535`. A free-pool / O(1) path for the wide range is tracked in
+[#149](https://github.com/orbit-id/orbit-id/issues/149) — do not treat a 16-bit `maxNode` as
+production-ready on Redis until that lands.
 
-Do not mix v1 and v2 Node pools that share a Redis key prefix unless the union of assigned IDs remains
-exclusive for every concurrent generator of either format.
+Until key layouts for a wide-range store are defined and cut over, keep v1 and v2 lease pools on
+**separate Redis key prefixes** (do not share a prefix across formats).

@@ -122,9 +122,11 @@ lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` 
 | v2（Draft） | `0..65535` | `@orbit-id/node-lease` に `maxNode: 65535`（または `v2.MAX_NODE`）を渡す |
 
 `@orbit-id/node-lease` の **既定 `maxNode` は 127**（v1）のまま。v2 ジェネレーターでは明示的に
-`maxNode` を設定する。Redis の acquire は `maxNode > 127` のとき O(1) の空きプール経路を使うため
-16-bit 範囲でも実用的。v1 経路（`maxNode ≤ 127`）は従来の線形スキャンとキー配置を維持する。
+`maxNode` を設定する。現状の Redis acquire は `0..maxNode` を線形スキャンする実装のままなので、
+v1 範囲では問題ないが **`65535` では実用的ではない**。広い範囲向けの空きプール / O(1) 経路は
+[#149](https://github.com/orbit-id/orbit-id/issues/149) で追跡する。それが入るまで、Redis 上で
+16-bit の `maxNode` を本番想定にしてはならない。
 
-同一 Redis キー接頭辞で v1 / v2 の Node プールを共有する場合は、いずれの形式の同時稼働
-ジェネレーター間でも割当 ID の和集合が排他的であること。
+広い範囲用ストアのキー配置が定義され cutover されるまでは、v1 と v2 の lease プールは
+**別の Redis キー接頭辞**に置く（形式をまたいで接頭辞を共有しない）。
 
