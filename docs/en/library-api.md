@@ -132,7 +132,7 @@ Policy: [Cross-registry versioning](cross-registry-versioning.md) · [#150](http
 | Language | 1.x default (v1) | 1.x additive v2 | 2.0.0 default (v2) | 2.0.0 retained v1 |
 | --- | --- | --- | --- | --- |
 | TypeScript | `@orbit-id/core` root | `v2` / `@orbit-id/core/v2` | root → v2 | `v1` namespace |
-| Java | `dev.orbitid` | `dev.orbitid.v2` | `dev.orbitid` → v2 | `dev.orbitid.v1` |
+| Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
 | Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
 | PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
 | Go | module `github.com/orbit-id/go` | not public (`internal/v2` in alpha) | module `/v2` path | prior major module |

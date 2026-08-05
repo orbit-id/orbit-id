@@ -39,11 +39,12 @@ all registry cuts. See [#148](https://github.com/orbit-id/orbit-id/issues/148).
 
 ## Root API swap at major `2.0.0` (decision)
 
-Across TypeScript, Java, Rust, PHP, Go, and the CLI:
+Across TypeScript, Java, Rust, PHP, and the CLI (Go follows the same **2.0.0** root swap, but
+**1.x** cannot expose a public additive v2 — see the exception below):
 
 | Line | Public default | How to use the other format |
 | --- | --- | --- |
-| **1.x** | v1 at the package root | v2 as an additive namespace / submodule only (non-breaking) |
+| **1.x** | v1 at the package root | v2 as an additive namespace / submodule only (non-breaking; **not** for Go — see below) |
 | **2.0.0** | **v2** at the package root | v1 remains bundled under a `v1` namespace / module |
 
 “Use v2” does **not** require a separate product line — raising the package major swaps the root
@@ -52,7 +53,7 @@ default to v2 while keeping v1 importable. Details and per-language entry points
 
 **Go exception:** Go modules require a `/v2` path suffix for module major ≥ 2, so a public v2 API
 cannot ship under the v1 module path. During alpha, keep Go v2 under `internal/v2`; publish it when
-the module path moves to `/v2` at package `2.0.0` (see Go implementation issues).
+the module path moves to `/v2` at package `2.0.0` (see [#142](https://github.com/orbit-id/orbit-id/issues/142)).
 
 ## When to increment X.Y.Z
 

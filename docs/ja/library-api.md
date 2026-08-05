@@ -132,7 +132,7 @@ v1 の 64-bit ID を v2 として再解釈してはならない。他言語パ�
 | 言語 | 1.x 既定（v1） | 1.x の加算 v2 | 2.0.0 既定（v2） | 2.0.0 で残る v1 |
 | --- | --- | --- | --- | --- |
 | TypeScript | `@orbit-id/core` ルート | `v2` / `@orbit-id/core/v2` | ルート → v2 | `v1` 名前空間 |
-| Java | `dev.orbitid` | `dev.orbitid.v2` | `dev.orbitid` → v2 | `dev.orbitid.v1` |
+| Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
 | Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
 | PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
 | Go | module `github.com/orbit-id/go` | 非公開（alpha は `internal/v2`） | module `/v2` path | 前 major の module |
