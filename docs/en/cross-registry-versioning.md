@@ -27,8 +27,15 @@ Do **not** invent separate per-language root tags like `java-v1.0.0` or `rust-v1
 1. Bump that package’s in-tree version metadata.
 2. Push `vX.Y.Z` when the monorepo cut should include it (or a packaging-only bump that still uses one tag).
 
-Pre-release / RC tags MAY use SemVer pre-release forms (`v1.1.0-rc.1`). Registry support for
-pre-releases varies; prefer stable `vX.Y.Z` for first Central / crates / Packagist publishes.
+### Pre-release tags do **not** publish to registries (decision)
+
+`vX.Y.Z-alpha.*` / `vX.Y.Z-beta.*` / other SemVer pre-release tags (`v*-*`) MAY exist on Git for
+tracking, but **MUST NOT** be distributed to npm, Maven Central, crates.io, Packagist, or the Go
+mirror. Alpha / beta name **development phases**, not registry dist-tags.
+
+`.github/workflows/publish.yml` skips every publish job when the pushed tag contains `-`
+(for example `v2.0.0-beta.1`). Manual `workflow_dispatch` is unchanged. Prefer stable `vX.Y.Z` for
+all registry cuts. See [#148](https://github.com/orbit-id/orbit-id/issues/148).
 
 ## When to increment X.Y.Z
 
@@ -165,3 +172,4 @@ Do **not** rewrite versions after an existing tag: publishers check out the tagg
 - [npm Trusted Publishing](npm-trusted-publishing.md)
 - Registry publishing tracker [#42](https://github.com/orbit-id/orbit-id/issues/42)
 - Child issues: [#54](https://github.com/orbit-id/orbit-id/issues/54) Maven · [#55](https://github.com/orbit-id/orbit-id/issues/55) Go · [#56](https://github.com/orbit-id/orbit-id/issues/56) crates.io · [#57](https://github.com/orbit-id/orbit-id/issues/57) Packagist
+- Pre-release publish guard: [#148](https://github.com/orbit-id/orbit-id/issues/148)

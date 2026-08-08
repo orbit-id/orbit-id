@@ -27,8 +27,15 @@ npm の詳細は [npm Trusted Publishing](npm-trusted-publishing.md) を参照�
 1. 対象パッケージのツリー内バージョンを上げる。
 2. 含めるリリースなら `vX.Y.Z` を push。
 
-プレリリースは `v1.1.0-rc.1` 形式を可とする。初回の Central / crates / Packagist 公開は安定版
-`vX.Y.Z` を推奨。
+### プレリリースタグはレジストリへ公開しない（決定）
+
+`vX.Y.Z-alpha.*` / `vX.Y.Z-beta.*` など SemVer プレリリース（`v*-*`）は Git 上の追跡用途として
+打ってよいが、npm・Maven Central・crates.io・Packagist・Go ミラーへ **配布してはならない**。
+alpha / beta は**開発フェーズの呼称**であり、レジストリの dist-tag ではない。
+
+`.github/workflows/publish.yml` は、push されたタグに `-` が含まれるとき（例: `v2.0.0-beta.1`）
+すべての publish job をスキップする。手動の `workflow_dispatch` は従来どおり。レジストリ向けカットは
+安定版 `vX.Y.Z` のみ。詳細: [#148](https://github.com/orbit-id/orbit-id/issues/148)。
 
 ## いつ X.Y.Z を上げるか
 
@@ -157,3 +164,4 @@ Action を使わない場合の手順:
 - [npm Trusted Publishing](npm-trusted-publishing.md)
 - [#42](https://github.com/orbit-id/orbit-id/issues/42)
 - [#54](https://github.com/orbit-id/orbit-id/issues/54) Maven · [#55](https://github.com/orbit-id/orbit-id/issues/55) Go · [#56](https://github.com/orbit-id/orbit-id/issues/56) crates.io · [#57](https://github.com/orbit-id/orbit-id/issues/57) Packagist
+- プレリリース publish ガード: [#148](https://github.com/orbit-id/orbit-id/issues/148)
