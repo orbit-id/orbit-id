@@ -69,4 +69,76 @@ describe("MemoryLeaseStore + NodeLeaseClient", () => {
     await lease.release();
     expect(() => generator.generate(1)).toThrow(/NODE_OWNERSHIP_LOST/);
   });
+
+  it("supports the v2 Node range without pre-allocating every slot", async () => {
+    const maxNode = 65_535;
+    const store = new MemoryLeaseStore(maxNode);
+    const a = new NodeLeaseClient({
+      store,
+      maxNode,
+      ttlMs: 5_000,
+      quarantineMs: 1_000,
+      createOwnerToken: () => "a",
+    });
+    const b = new NodeLeaseClient({
+      store,
+      maxNode,
+      ttlMs: 5_000,
+      quarantineMs: 1_000,
+      createOwnerToken: () => "b",
+    });
+    const ha = await a.acquire();
+    const hb = await b.acquire();
+    expect(ha.nodeId).toBe(0);
+    expect(hb.nodeId).toBe(1);
+    expect(ha.nodeId).not.toBe(hb.nodeId);
+  });
+
+  it("keeps out-of-range free ids when maxNode shrinks then widens", async () => {
+    let now = 1_000;
+    const store = new MemoryLeaseStore(5);
+    const wide = await store.tryAcquire({
+      ownerToken: "a",
+      ttlMs: 5_000,
+      nowMs: now,
+      maxNode: 5,
+      quarantineMs: 10,
+    });
+    expect(wide?.nodeId).toBe(0);
+    // Allocate and release a high id so it lands on the free list.
+    const high = await store.tryAcquire({
+      ownerToken: "b",
+      ttlMs: 5_000,
+      nowMs: now,
+      maxNode: 5,
+      quarantineMs: 10,
+    });
+    expect(high?.nodeId).toBe(1);
+    await store.release({
+      nodeId: high!.nodeId,
+      ownerToken: "b",
+      nowMs: now,
+      quarantineMs: 10,
+    });
+    now += 11;
+    // Shrink: only node 0 is in range and held; free list still has 1 deferred.
+    await expect(
+      store.tryAcquire({
+        ownerToken: "c",
+        ttlMs: 5_000,
+        nowMs: now,
+        maxNode: 0,
+        quarantineMs: 10,
+      }),
+    ).resolves.toBeNull();
+    // Widen again: deferred id 1 must still be reusable.
+    const again = await store.tryAcquire({
+      ownerToken: "c",
+      ttlMs: 5_000,
+      nowMs: now,
+      maxNode: 5,
+      quarantineMs: 10,
+    });
+    expect(again?.nodeId).toBe(1);
+  });
 });
