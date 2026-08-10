@@ -4,8 +4,9 @@
 
 Measure **single-Node** generator throughput using `@orbit-id/core`.
 
-Spec and top-level README numbers such as **1,024 IDs/ms per node** are **formal capacity**
-(bit-field limits). They are not claims about this harness or any particular machine.
+Spec and top-level README numbers such as **1,024 IDs/ms per node** (v1) or **65,536 IDs/ms**
+(v2 sequence width) are **formal capacity** (bit-field limits). They are not claims about this
+harness or any particular machine.
 
 ## Run
 
@@ -25,6 +26,12 @@ Options:
 
 ```bash
 node benchmark/run.mjs --duration-ms 3000 --warmup-ms 500 --node 1 --type 1
+node benchmark/run.mjs --id-version 2 --duration-ms 3000 --warmup-ms 500 --node 1 --type 1
 ```
 
-Output is JSON with `measuredIdsPerMs` / `measuredIdsPerSec` plus the formal capacity reminder.
+| Flag | Default | Meaning |
+| --- | --- | --- |
+| `--id-version` | `1` | `1` = Orbit ID v1 (`OrbitGenerator`); `2` = v2 (`OrbitGeneratorV2`) |
+
+Output is JSON with `idVersion`, `measuredIdsPerMs` / `measuredIdsPerSec`, plus the formal capacity reminder.
+Other language benches land with those packages’ v2 implementations (#141–#144).
