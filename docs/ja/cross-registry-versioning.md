@@ -37,6 +37,24 @@ alpha / beta は**開発フェーズの呼称**であり、レジストリの di
 すべての publish job をスキップする。手動の `workflow_dispatch` は従来どおり。レジストリ向けカットは
 安定版 `vX.Y.Z` のみ。詳細: [#148](https://github.com/orbit-id/orbit-id/issues/148)。
 
+## major `2.0.0` でのルート API 入れ替え（決定）
+
+TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート入れ替えは同じだが、**1.x** では
+公開の加算 v2 を出せない — 下記例外を参照）:
+
+| 系列 | 公開の既定 | もう一方の使い方 |
+| --- | --- | --- |
+| **1.x** | パッケージルートが v1 | v2 は加算の名前空間 / サブモジュールのみ（非破壊。**Go は不可** — 下記） |
+| **2.0.0** | パッケージルートが **v2** | v1 は同梱し `v1` 名前空間 / モジュールから利用 |
+
+「v2 を使うには別プロダクトが要る」ではなく、「major を上げるとルートの既定が v2 になる」形に揃える。
+言語ごとの入口は [Library API](library-api.md) · トラッカー
+[#150](https://github.com/orbit-id/orbit-id/issues/150)。
+
+**Go の例外:** Go modules は major ≥ 2 で module path に `/v2` が必須なため、v1 module path から
+公開 v2 API を出せない。alpha 期間は `internal/v2` に置き、パッケージ `2.0.0` で path を上げると同時に
+公開する（[#142](https://github.com/orbit-id/orbit-id/issues/142)）。
+
 ## いつ X.Y.Z を上げるか
 
 パッケージ版は SemVer `X.Y.Z` とし、本リポジトリでは次の慣習とする（あわせて
@@ -162,6 +180,8 @@ Action を使わない場合の手順:
 ## 関連
 
 - [npm Trusted Publishing](npm-trusted-publishing.md)
+- [Library API](library-api.md)（言語ごとの v1 / v2 入口）
 - [#42](https://github.com/orbit-id/orbit-id/issues/42)
 - [#54](https://github.com/orbit-id/orbit-id/issues/54) Maven · [#55](https://github.com/orbit-id/orbit-id/issues/55) Go · [#56](https://github.com/orbit-id/orbit-id/issues/56) crates.io · [#57](https://github.com/orbit-id/orbit-id/issues/57) Packagist
 - プレリリース publish ガード: [#148](https://github.com/orbit-id/orbit-id/issues/148)
+- 2.0.0 ルート API 入れ替え: [#150](https://github.com/orbit-id/orbit-id/issues/150)
