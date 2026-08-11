@@ -1,4 +1,9 @@
 //! Orbit ID v1: a 64-bit, time-sortable identifier.
+//!
+//! An additive [`v2`] module implements the 128-bit Draft layout; this crate
+//! root remains Orbit ID v1.
+
+pub mod v2;
 
 use std::error::Error;
 use std::fmt;
@@ -27,6 +32,10 @@ pub enum OrbitErrorCode {
     InvalidSequence,
     InvalidTimestamp,
     InvalidDecimal,
+    /// Unknown / reserved FormatVersion (v2).
+    InvalidFormatVersion,
+    /// Non-zero Reserved on encode, or rejected on strict decode (v2).
+    InvalidReserved,
     ClockRollback,
     SequenceExhausted,
     NodeOwnershipLost,
@@ -41,6 +50,8 @@ impl OrbitErrorCode {
             Self::InvalidSequence => "INVALID_SEQUENCE",
             Self::InvalidTimestamp => "INVALID_TIMESTAMP",
             Self::InvalidDecimal => "INVALID_DECIMAL",
+            Self::InvalidFormatVersion => "INVALID_FORMAT_VERSION",
+            Self::InvalidReserved => "INVALID_RESERVED",
             Self::ClockRollback => "CLOCK_ROLLBACK",
             Self::SequenceExhausted => "SEQUENCE_EXHAUSTED",
             Self::NodeOwnershipLost => "NODE_OWNERSHIP_LOST",
