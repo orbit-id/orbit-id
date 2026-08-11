@@ -15,6 +15,7 @@ namespace OrbitId;
 final class Decimal
 {
     public const U64_MAX = '18446744073709551615';
+    public const U128_MAX = '340282366920938463463374607431768211455';
 
     public static function compare(string $left, string $right): int
     {
@@ -96,6 +97,23 @@ final class Decimal
         }
 
         return strrev($result);
+    }
+
+    /**
+     * Multiplies a decimal string by 2**$bits.
+     *
+     * Chunked into <=30-bit multiplications so every intermediate
+     * `digit * multiplier + carry` step stays well within a 64-bit int.
+     */
+    public static function shiftLeft(string $value, int $bits): string
+    {
+        while ($bits > 0) {
+            $chunk = min($bits, 30);
+            $value = self::multiplyInt($value, 1 << $chunk);
+            $bits -= $chunk;
+        }
+
+        return $value;
     }
 
     /** @return array{0: string, 1: int} quotient and remainder */
