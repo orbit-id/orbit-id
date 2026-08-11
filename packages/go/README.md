@@ -49,6 +49,14 @@ Use `Encode` / `Decode` for fields, `Parse` for a `uint64` or canonical decimal
 string, and `IsValid` for syntactic validation only. Decimal strings must be
 unsigned and canonical (no signs, whitespace, or leading zeroes).
 
+## Orbit ID v2 (alpha)
+
+The Draft 128-bit format ([spec](../../docs/en/orbit-id-v2.md)) is implemented under
+`internal/v2` and is **not part of the public API** for the Go 1.x module — see
+[Library API](../../docs/en/library-api.md) ("not public, `internal/v2` in alpha"). It is
+exercised by this module's own conformance tests against `spec/conformance/*.v2.json` and
+will become the default at the `/v2` module path in a later major version.
+
 ## Test
 
 ```sh
