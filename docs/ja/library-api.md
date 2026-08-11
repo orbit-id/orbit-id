@@ -52,8 +52,8 @@ JSON 例:
 
 | Code | When |
 | --- | --- |
-| `INVALID_TYPE` | Type が `0..63` 外、または `generate(0)` |
-| `INVALID_NODE` | 構築・設定時に Node が `0..127` 外 |
+| `INVALID_TYPE` | Type outside the format range, or `generate(0)` |
+| `INVALID_NODE` | 構築・設定時に Node が形式の範囲外（v1 は `0..127`、v2 は `0..65535`） |
 | `INVALID_SEQUENCE` | fields の encode 時に Sequence が `0..1023` 外 |
 | `INVALID_TIMESTAMP` | fields の encode 時に Timestamp が 41-bit 範囲外 |
 | `INVALID_DECIMAL` | 非正規または範囲外の 10 進文字列 |

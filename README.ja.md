@@ -87,6 +87,7 @@ ID は発行時刻などを隠しません。また、推測耐性、改ざん�
 - [Design Decisions](docs/ja/design-decisions.md)
 - [Design Decisions（v2）](docs/ja/design-decisions-v2.md)
 - [Orbit ID v2 (128-bit) を採用する理由](docs/ja/why-128bit.md)
+- [v2 alpha 終了 / 2.0.0 昇格](docs/ja/v2-alpha-exit.md)
 - [Library API](docs/ja/library-api.md)
 - [npm Trusted Publishing](docs/ja/npm-trusted-publishing.md)
 - [横断の version / tagging 方針](docs/ja/cross-registry-versioning.md)

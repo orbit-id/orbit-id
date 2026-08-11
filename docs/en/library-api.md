@@ -51,8 +51,8 @@ Libraries SHOULD expose these stable code strings (or language enums mapping to 
 
 | Code | When |
 | --- | --- |
-| `INVALID_TYPE` | Type outside `0..63`, or `generate(0)` |
-| `INVALID_NODE` | Node outside `0..127` at construction / configuration |
+| `INVALID_TYPE` | Type outside the format range, or `generate(0)` |
+| `INVALID_NODE` | Node outside the format range (`0..127` for v1; `0..65535` for v2) at construction / configuration |
 | `INVALID_SEQUENCE` | Sequence outside `0..1023` when encoding fields |
 | `INVALID_TIMESTAMP` | Timestamp outside the 41-bit range when encoding fields |
 | `INVALID_DECIMAL` | Non-canonical or out-of-range decimal string |

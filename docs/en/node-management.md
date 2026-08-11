@@ -2,8 +2,10 @@
 
 [日本語](../ja/node-management.md)
 
-Orbit ID uniqueness depends on Node IDs (`0..127`) not overlapping across processes that issue IDs
-concurrently. Node ID allocation is a control-plane responsibility; per-ID generation remains local.
+Orbit ID uniqueness depends on Node IDs not overlapping across processes that issue IDs
+concurrently. The Node range depends on the wire format in use (**v1:** `0..127`; **v2 Draft:**
+`0..65535` — see the v2 section below). Node ID allocation is a control-plane responsibility;
+per-ID generation remains local.
 
 ## Production defaults
 
@@ -127,10 +129,8 @@ Node range for the format in use:
 | v2 (Draft) | `0..65535` | Pass `maxNode: 65535` (or `v2.MAX_NODE`) into `@orbit-id/node-lease` |
 
 `@orbit-id/node-lease` keeps **default `maxNode = 127`** (v1). For v2 generators, set `maxNode`
-explicitly. Today’s Redis acquire still linearly scans `0..maxNode`; that is fine for the v1 range
-but is **not** practical at `65535`. A free-pool / O(1) path for the wide range is tracked in
-[#149](https://github.com/orbit-id/orbit-id/issues/149) — do not treat a 16-bit `maxNode` as
-production-ready on Redis until that lands.
+explicitly (for example `65535`). Redis acquire uses a free-pool path suitable for the wide
+v2 range ([#149](https://github.com/orbit-id/orbit-id/issues/149)).
 
 Until key layouts for a wide-range store are defined and cut over, keep v1 and v2 lease pools on
 **separate Redis key prefixes** (do not share a prefix across formats).

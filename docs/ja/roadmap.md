@@ -66,7 +66,8 @@ npm / Maven / Go modules / crates.io / Packagist 公開は稼働中。共通の�
 
 128-bit を選ぶ理由: [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。  
 Draft 仕様: [Orbit ID v2 Specification](orbit-id-v2.md)。  
-alpha 決定ログ: [Design Decisions（v2）](design-decisions-v2.md)。
+alpha 決定ログ: [Design Decisions（v2）](design-decisions-v2.md)。  
+alpha 終了 / `2.0.0` 昇格: [v2 alpha 終了](v2-alpha-exit.md)。
 
 ## リポジトリ構成（モノレポ）
 

@@ -51,6 +51,10 @@ Across TypeScript, Java, Rust, PHP, and the CLI (Go follows the same **2.0.0** r
 default to v2 while keeping v1 importable. Details and per-language entry points:
 [Library API](library-api.md) · tracker [#150](https://github.com/orbit-id/orbit-id/issues/150).
 
+**When alpha ends** and the checklist before cutting package `2.0.0`:
+[Orbit ID v2 alpha exit and `2.0.0` promotion](v2-alpha-exit.md)
+([#138](https://github.com/orbit-id/orbit-id/issues/138)).
+
 **Go exception:** Go modules require a `/v2` path suffix for module major ≥ 2, so a public v2 API
 cannot ship under the v1 module path. During alpha, keep Go v2 under `internal/v2`; publish it when
 the module path moves to `/v2` at package `2.0.0` (see [#142](https://github.com/orbit-id/orbit-id/issues/142)).
