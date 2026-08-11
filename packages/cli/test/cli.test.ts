@@ -73,4 +73,40 @@ describe("orbit-id cli", () => {
   it("exports run for in-process use", () => {
     expect(typeof run).toBe("function");
   });
+
+  it("parses a known v2 decimal id", () => {
+    const result = runBin([
+      "parse",
+      "--spec",
+      "v2",
+      "21267647932558653967613957625668960256",
+    ]);
+    expect(result.status).toBe(0);
+    const body = JSON.parse(result.stdout);
+    expect(body).toMatchObject({
+      spec: "v2",
+      id: "21267647932558653967613957625668960256",
+      formatVersion: 1,
+      timestamp: "0",
+      type: 1,
+      node: 7,
+      sequence: 42,
+      reserved: 0,
+    });
+    expect(body.time).toBe("2026-01-01T00:00:00.000Z");
+    expect(body.hex).toBe("0x100000000000000010007002a0000000");
+  });
+
+  it("generates a v2 decimal id with --spec v2", () => {
+    const result = runBin(["generate", "--v2", "--type", "1", "--node", "7"]);
+    expect(result.status).toBe(0);
+    const id = result.stdout.trim();
+    expect(id).toMatch(/^\d+$/);
+    const parsed = runBin(["parse", "--spec", "v2", id]);
+    expect(parsed.status).toBe(0);
+    const body = JSON.parse(parsed.stdout);
+    expect(body.formatVersion).toBe(1);
+    expect(body.node).toBe(7);
+    expect(body.type).toBe(1);
+  });
 });
