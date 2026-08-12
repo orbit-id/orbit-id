@@ -13,23 +13,25 @@ type SpecVersion = "v1" | "v2";
 function printUsage(stream: NodeJS.WritableStream = process.stderr): void {
   stream.write(`Usage:
   orbit-id parse <id> [--spec v1|v2]
-  orbit-id generate --type <n> [--node <n>] [--spec v1|v2]
+  orbit-id generate --type <n> [--node <n>] [--region <n>] [--tenant <n>] [--spec v1|v2]
 
 Options:
   --spec v1|v2   Wire format (default: v1). Alias: --v2 for --spec v2
+  --region <n>   v2 only (default: 0, range 0..15)
+  --tenant <n>   v2 only (default: 0, range 0..65535)
 
 Environment:
   ORBIT_NODE_ID   Default Node ID when --node is omitted (generate)
 
 Ranges:
   v1  type 1..63, node 0..127
-  v2  type 1..65535, node 0..65535  (Draft; FormatVersion=1)
+  v2  type 1..65535, node 0..65535, region 0..15, tenant 0..65535  (Draft; FormatVersion=1)
 
 Examples:
   orbit-id parse 140612821619842090
   orbit-id parse --spec v2 21267647932558653967613957625668960256
   ORBIT_NODE_ID=7 orbit-id generate --type 1
-  orbit-id generate --spec v2 --type 1 --node 7
+  orbit-id generate --spec v2 --type 1 --node 7 --region 3 --tenant 1000
 `);
 }
 
@@ -108,6 +110,30 @@ function requireIntFlag(
   return value;
 }
 
+function optionalIntFlag(
+  flags: Record<string, string | boolean>,
+  name: string,
+  min: number,
+  max: number,
+  defaultValue: number,
+): number {
+  const raw = flags[name];
+  if (raw === undefined || raw === false) {
+    return defaultValue;
+  }
+  if (typeof raw !== "string") {
+    fail(`--${name} requires an integer`);
+  }
+  if (!/^-?\d+$/.test(raw)) {
+    fail(`Invalid --${name}: ${raw}`);
+  }
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < min || value > max) {
+    fail(`--${name} must be an integer in ${min}..${max}`);
+  }
+  return value;
+}
+
 function resolveNode(
   flags: Record<string, string | boolean>,
   maxNode: number,
@@ -147,6 +173,8 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
             type: fields.type,
             node: fields.node,
             sequence: fields.sequence,
+            region: fields.region,
+            tenant: fields.tenant,
             reserved: fields.reserved,
             hex: v2.toHexString(v2.fromDecimalString(idArg)),
           },
@@ -187,7 +215,9 @@ function cmdGenerate(flags: Record<string, string | boolean>, spec: SpecVersion)
     if (spec === "v2") {
       const type = requireIntFlag(flags, "type", 1, 65535);
       const node = resolveNode(flags, 65535);
-      const generator = new v2.OrbitGeneratorV2({ node });
+      const region = optionalIntFlag(flags, "region", 0, 15, 0);
+      const tenant = optionalIntFlag(flags, "tenant", 0, 65535, 0);
+      const generator = new v2.OrbitGeneratorV2({ node, region, tenant });
       const id = generator.generate(type);
       process.stdout.write(`${v2.toDecimalString(id)}\n`);
       return;
