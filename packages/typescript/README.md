@@ -2,18 +2,17 @@
 
 TypeScript package for Orbit ID. Re-exports [`@orbit-id/core`](../core/).
 
-- **v1** (default export): stable 64-bit wire format
-- **v2** (`v2` namespace / `@orbit-id/typescript/v2`): Draft 128-bit layout (`v2.0.0-alpha`)
+- **v2** (default export / `@orbit-id/typescript/v2`): Stable 128-bit wire format
+- **v1** (`v1` namespace / `@orbit-id/typescript/v1`): Stable 64-bit wire format
 
 ## API
 
 ```ts
-import { encode, parse, OrbitGenerator, isValid } from "@orbit-id/typescript";
-import * as v2 from "@orbit-id/typescript/v2";
-// or: import { v2 } from "@orbit-id/typescript";
+import { encode, parse, OrbitGeneratorV2, isValid, v1 } from "@orbit-id/typescript";
+import * as v2 from "@orbit-id/typescript/v2"; // alias of root
 
-const v1Id = new OrbitGenerator({ node: 7 }).generate(1);
-const v2Id = new v2.OrbitGeneratorV2({ node: 7 }).generate(1);
+const v2Id = new OrbitGeneratorV2({ node: 7 }).generate(1);
+const v1Id = new v1.OrbitGenerator({ node: 7 }).generate(1);
 ```
 
 See [Library API](../../docs/en/library-api.md) and fixtures in [`spec/conformance/`](../../spec/conformance/).
