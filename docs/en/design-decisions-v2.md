@@ -6,10 +6,11 @@ This document records decisions for Orbit ID v2 (128-bit) before / alongside the
 normative Draft in [Orbit ID v2 Specification](orbit-id-v2.md). Motivation for 128-bit:
 [Why Orbit ID v2 is 128-bit](why-128bit.md).
 
-Status: **FormatVersion · Timestamp · Type · Node · Sequence are frozen** (widths and bit
-positions). Region / Tenant are carved from the former 28-bit Reserved; remaining Reserved is
-8 bits. Further Datacenter (or similar) carve-outs MAY still come from remaining Reserved without
-changing the total 128-bit width. Tracker: [#171](https://github.com/orbit-id/orbit-id/issues/171)
+Status: **FormatVersion · Timestamp · Type · Node · Sequence · Region · Tenant are frozen**
+(widths and bit positions). Remaining Reserved is 8 bits and MUST be `0` on encode.
+Datacenter (or similar) carve-outs from remaining Reserved are **deferred to post-package-`2.0.0`**
+via a new ADR. Tracker: [#171](https://github.com/orbit-id/orbit-id/issues/171) /
+[#197](https://github.com/orbit-id/orbit-id/issues/197)
 (supersedes alpha field-set note in [#131](https://github.com/orbit-id/orbit-id/issues/131)).
 
 ## 1. Field set
@@ -18,8 +19,8 @@ changing the total 128-bit width. Tracker: [#171](https://github.com/orbit-id/or
 
 `FormatVersion` · `Timestamp` · `Type` · `Node` · `Sequence` · `Region` · `Tenant` · `Reserved`
 
-**Not carved:** Datacenter (and similar). Capacity stays inside the remaining 8-bit `Reserved` and
-MAY be split later without changing the total width.
+**Deferred (post-`2.0.0`):** Datacenter (and similar). Capacity stays inside the remaining 8-bit
+`Reserved` until a new ADR carves it without changing the total width.
 
 ## 2. Bit layout (128 bits)
 
@@ -40,9 +41,9 @@ MAY be split later without changing the total width.
 | Type | 75..60 | 16 | `0..65535` | `0` reserved (reject `generate(0)`). `1..65535` for deployers. **Frozen.** |
 | Node | 59..44 | 16 | `0..65535` | Exclusive assignment per concurrent generator. **Frozen.** |
 | Sequence | 43..28 | 16 | `0..65535` | Per node per millisecond, shared across Types. **Frozen.** |
-| Region | 27..24 | 4 | `0..15` | Application-assigned; `0` is a legal default / unset |
-| Tenant | 23..8 | 16 | `0..65535` | Application-assigned; `0` is a legal default / unset |
-| Reserved | 7..0 | 8 | MUST be `0` on encode | Decode MUST reject non-zero. Future carve-outs (e.g. Datacenter) MAY use these bits |
+| Region | 27..24 | 4 | `0..15` | Application-assigned; `0` is a legal default / unset. **Frozen.** |
+| Tenant | 23..8 | 16 | `0..65535` | Application-assigned; `0` is a legal default / unset. **Frozen.** |
+| Reserved | 7..0 | 8 | MUST be `0` on encode | Decode MUST reject non-zero. Datacenter-style carve-outs deferred to post-`2.0.0` (new ADR) |
 
 Shifts from LSB: Reserved `0`, Tenant `8`, Region `24`, Sequence `28`, Node `44`, Type `60`,
 Timestamp `76`, FormatVersion `124`.
@@ -108,7 +109,8 @@ unsigned 128-bit type.
 
 - Never re-decode an existing v1 ID under the v2 layout.
 - Migration is an application/storage concern (new columns, dual-write, envelopes).
-- v1 stays in maintenance mode; v2 evolves on the `v2.0.0-alpha.*` track until package `2.0.0`.
+- v1 stays in maintenance mode; v2 remains Draft until an explicit beta / Stable step, then package
+  `2.0.0` moves v2 to the root API ([v2 alpha exit](v2-alpha-exit.md)).
 
 ## Related
 

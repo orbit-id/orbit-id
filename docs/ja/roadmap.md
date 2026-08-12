@@ -60,14 +60,17 @@ npm / Maven / Go modules / crates.io / Packagist 公開は稼働中。共通の�
 | トラック | 意味 |
 | --- | --- |
 | **v1.x** | 64-bit Orbit ID。ワイヤ形式は凍結。**保守モード:** バグ修正・ドキュメント整備のみ。新機能は原則追加しない。 |
-| **v2.0.0-alpha.\*** | 128-bit 再設計（ビット配分・文字列表現・API）。alpha 中は破壊的変更を許容。 |
-| **v2.0.0-beta.\*** | 仕様と API がほぼ固まった段階。 |
-| **v2.0.0** | 正式な 128-bit 版。 |
+| **v2.0.0-alpha.\*** | フィールド／API が動いていた時期の 128-bit 再設計トラック。alpha 終了条件は充足済み（[v2 alpha 終了](v2-alpha-exit.md)）。 |
+| **v2.0.0-beta.\*** | 任意の短い凍結。パッケージ major 前に仕様と API をほぼ固める。 |
+| **v2.0.0** | 正式な 128-bit 版（パッケージ major で v2 をルート API にする）。 |
 
 128-bit を選ぶ理由: [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。  
-Draft 仕様: [Orbit ID v2 Specification](orbit-id-v2.md)。  
-alpha 決定ログ: [Design Decisions（v2）](design-decisions-v2.md)。  
+Draft 仕様（alpha 終了条件充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。  
+決定ログ: [Design Decisions（v2）](design-decisions-v2.md)。  
 alpha 終了 / `2.0.0` 昇格: [v2 alpha 終了](v2-alpha-exit.md)。
+
+次のプロセス（自動ではない）: 任意の `v2.0.0-beta.*` 凍結のあと、パッケージ `2.0.0` 昇格。
+追加の Reserved 切り出し（例: Datacenter）はパッケージ `2.0.0` 以降。
 
 ## リポジトリ構成（モノレポ）
 

@@ -113,7 +113,7 @@ lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` 
 
 ## Orbit ID v2（Draft）
 
-規範 Draft: [Orbit ID v2 Specification](orbit-id-v2.md)。Node 幅は **16 bit**（`0..65535`）。
+規範 Draft（alpha 終了条件充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。Node 幅は **16 bit**（`0..65535`）。
 上記の本番既定・quarantine 規則はそのまま適用し、利用中の形式に合わせて Node 範囲だけ差し替える。
 
 | 形式 | Node 範囲 | 注記 |

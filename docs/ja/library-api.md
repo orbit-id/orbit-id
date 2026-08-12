@@ -107,13 +107,13 @@ Node 割当（静的設定または Redis lease）は `generate` の hot path �
 ## Orbit ID v2 差分
 
 Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import * as v2 from
-"@orbit-id/core/v2"` または `import { v2 } from "@orbit-id/core"`）。仕様 Draft:
-[Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
-[Design Decisions（v2）](design-decisions-v2.md)。
+"@orbit-id/core/v2"` または `import { v2 } from "@orbit-id/core"`）。仕様 Draft（alpha 終了条件
+充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
+[Design Decisions（v2）](design-decisions-v2.md)。昇格パス: [v2 alpha 終了](v2-alpha-exit.md)。
 
 操作名は同じ（`generate` / `parse` / フィールド取得 / `isValid`）だが:
 
-| 観点 | v1 | v2（alpha Draft） |
+| 観点 | v1 | v2（Draft） |
 | --- | --- | --- |
 | 値幅 | 64-bit | 128-bit |
 | メモリ上（JS/TS） | `bigint` | `bigint`（128-bit 全体） |
@@ -140,5 +140,5 @@ v1 の 64-bit ID を v2 として再解釈してはならない。公開言語�
 | Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
 | Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
 | PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
-| Go | module `github.com/orbit-id/go` | 非公開（alpha は `internal/v2`） | module `/v2` path | 前 major の module |
+| Go | module `github.com/orbit-id/go` | 非公開（パッケージ `2.0.0` まで `internal/v2`） | module `/v2` path | 前 major の module |
 | CLI | v1 既定 | 加算の v2 フラグ（CLI Issue 参照） | 既定 → v2 | 明示的 v1 モード |

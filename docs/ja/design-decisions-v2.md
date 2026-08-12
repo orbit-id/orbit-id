@@ -6,10 +6,10 @@ Orbit ID v2（128-bit）の判断を記録します。規範的な Draft は
 [Orbit ID v2 Specification](orbit-id-v2.md)。128-bit 採用の動機は
 [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。
 
-Status: **FormatVersion · Timestamp · Type · Node · Sequence は frozen**（幅とビット位置）。
-旧 28-bit Reserved から Region / Tenant を切り出し、残 Reserved は 8 bit。Datacenter 等は残
-Reserved から後で切ってよい（総幅 128 は変えない）。Tracker:
-[#171](https://github.com/orbit-id/orbit-id/issues/171)
+Status: **FormatVersion · Timestamp · Type · Node · Sequence · Region · Tenant は frozen**
+（幅とビット位置）。残 Reserved は 8 bit、encode MUST `0`。Datacenter 等の切り出しはパッケージ
+**`2.0.0` 以降**へ延期（新しい ADR）。Tracker: [#171](https://github.com/orbit-id/orbit-id/issues/171) /
+[#197](https://github.com/orbit-id/orbit-id/issues/197)
 （[#131](https://github.com/orbit-id/orbit-id/issues/131) の alpha フィールド集合メモを更新）。
 
 ## 1. フィールド集合
@@ -18,7 +18,8 @@ Reserved から後で切ってよい（総幅 128 は変えない）。Tracker:
 
 `FormatVersion` · `Timestamp` · `Type` · `Node` · `Sequence` · `Region` · `Tenant` · `Reserved`
 
-**切り出さない:** Datacenter など。容量は残 8-bit `Reserved` に残し、総幅を変えずに後で分割 MAY。
+**延期（`2.0.0` 以降）:** Datacenter など。容量は残 8-bit `Reserved` に残し、新しい ADR で総幅を
+変えずに切る。
 
 ## 2. ビット配分（128 bits）
 
@@ -39,9 +40,9 @@ Reserved から後で切ってよい（総幅 128 は変えない）。Tracker:
 | Type | 75..60 | 16 | `0..65535` | `0` 予約（`generate(0)` 拒否）。`1..65535` は deployer 用。**Frozen.** |
 | Node | 59..44 | 16 | `0..65535` | 同時稼働 generator へ排他割当。**Frozen.** |
 | Sequence | 43..28 | 16 | `0..65535` | 同一 Node・同一ミリ秒。Type 横断で共有。**Frozen.** |
-| Region | 27..24 | 4 | `0..15` | アプリ割当。`0` は合法な既定 / 未設定 |
-| Tenant | 23..8 | 16 | `0..65535` | アプリ割当。`0` は合法な既定 / 未設定 |
-| Reserved | 7..0 | 8 | encode では MUST `0` | decode は非 0 を拒否 MUST。将来の切り出し（Datacenter 等）MAY |
+| Region | 27..24 | 4 | `0..15` | アプリ割当。`0` は合法な既定 / 未設定。**Frozen.** |
+| Tenant | 23..8 | 16 | `0..65535` | アプリ割当。`0` は合法な既定 / 未設定。**Frozen.** |
+| Reserved | 7..0 | 8 | encode では MUST `0` | decode は非 0 を拒否 MUST。Datacenter 系切り出しは `2.0.0` 以降（新 ADR） |
 
 LSB からの shift: Reserved `0`、Tenant `8`、Region `24`、Sequence `28`、Node `44`、Type `60`、
 Timestamp `76`、FormatVersion `124`。
@@ -102,7 +103,8 @@ ULID 風や UUID 8-4-4-4-12 は正規形にしない（後で再検討 MAY）。
 
 - 既存の v1 ID を v2 レイアウトで再デコードしない。
 - 移行はアプリ / ストレージ側（新列、二重書き込み、envelope）。
-- v1 は保守モードのまま。v2 はパッケージ `2.0.0` まで `v2.0.0-alpha.*` で進める。
+- v1 は保守モードのまま。v2 は明示的な beta / Stable まで Draft。パッケージ `2.0.0` でルート API へ
+  （[v2 alpha 終了](v2-alpha-exit.md)）。
 
 ## Related
 

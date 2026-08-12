@@ -2,10 +2,10 @@
 
 [日本語](../ja/orbit-id-v2.md)
 
-Status: Draft (`v2.0.0-alpha`) — high fields frozen; see [Design Decisions (v2)](design-decisions-v2.md)  
+Status: Draft — alpha exit criteria met; layout frozen for beta (see [v2 alpha exit](v2-alpha-exit.md))  
 Epoch: `2026-01-01T00:00:00.000Z`
 
-Alpha-blocking / freeze decisions: [Design Decisions (v2)](design-decisions-v2.md).  
+Freeze / carve decisions: [Design Decisions (v2)](design-decisions-v2.md).  
 Motivation: [Why Orbit ID v2 is 128-bit](why-128bit.md).
 
 ## 1. Purpose
@@ -97,8 +97,8 @@ does **not** replace Node exclusivity.
 ### 3.8 Reserved
 
 Encoders MUST set Reserved to `0`. Decoders MUST reject non-zero Reserved (`INVALID_RESERVED`).
-Later revisions MAY carve additional fields (for example Datacenter) from these 8 bits without
-changing the total 128-bit width.
+Further carve-outs from these 8 bits (for example Datacenter) are deferred to **after** package
+`2.0.0` and require a new ADR; they MUST NOT change the total 128-bit width.
 
 ## 4. Encoding
 
@@ -184,7 +184,7 @@ Within the same millisecond, Type and Node sit above Sequence; Region and Tenant
 | Dimension | Capacity |
 | --- | ---: |
 | Lifetime | 281,474,976,710,656 ms (≈ 8919.4 years) |
-| Format versions | 16 (this Draft uses `1`) |
+| Format versions | 16 (issued IDs use `1`) |
 | Types | 65,536 (`0` reserved → 65,535 usable) |
 | Nodes | 65,536 |
 | Regions | 16 |
