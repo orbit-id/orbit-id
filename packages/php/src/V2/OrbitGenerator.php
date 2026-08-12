@@ -17,6 +17,8 @@ use OrbitId\OrbitError;
 final class OrbitGenerator
 {
     public readonly int $node;
+    public readonly int $region;
+    public readonly int $tenant;
     private \Closure $clock;
     private int $clockRollbackToleranceMs;
     private string $onSequenceExhausted;
@@ -28,6 +30,8 @@ final class OrbitGenerator
     /**
      * @param array{
      *   node: int,
+     *   region?: int,
+     *   tenant?: int,
      *   clock?: callable(): string|int,
      *   clockRollbackToleranceMs?: int,
      *   onSequenceExhausted?: 'wait'|'fail',
@@ -41,6 +45,18 @@ final class OrbitGenerator
             throw new OrbitError(OrbitError::INVALID_NODE, 'node out of range');
         }
         $this->node = $node;
+
+        $region = $options['region'] ?? 0;
+        if (!is_int($region) || $region < 0 || $region > OrbitId::MAX_REGION) {
+            throw new OrbitError(OrbitError::INVALID_REGION, 'region out of range');
+        }
+        $this->region = $region;
+
+        $tenant = $options['tenant'] ?? 0;
+        if (!is_int($tenant) || $tenant < 0 || $tenant > OrbitId::MAX_TENANT) {
+            throw new OrbitError(OrbitError::INVALID_TENANT, 'tenant out of range');
+        }
+        $this->tenant = $tenant;
 
         $clock = $options['clock'] ?? self::systemClock();
         if (!is_callable($clock)) {
@@ -156,6 +172,8 @@ final class OrbitGenerator
                         'type' => $type,
                         'node' => $this->node,
                         'sequence' => $decision['sequence'],
+                        'region' => $this->region,
+                        'tenant' => $this->tenant,
                         'reserved' => 0,
                     ]);
                     $this->lastTimestamp = $decision['timestamp'];
