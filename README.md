@@ -88,6 +88,7 @@ is required for external exposure, or as authorization tokens.
 - [Design Decisions](docs/en/design-decisions.md)
 - [Design Decisions (v2)](docs/en/design-decisions-v2.md)
 - [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md)
+- [v2 alpha exit / 2.0.0 promotion](docs/en/v2-alpha-exit.md)
 - [Library API](docs/en/library-api.md)
 - [npm Trusted Publishing](docs/en/npm-trusted-publishing.md)
 - [Cross-registry versioning](docs/en/cross-registry-versioning.md)

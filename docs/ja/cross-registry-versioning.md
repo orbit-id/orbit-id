@@ -51,6 +51,10 @@ TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート�
 言語ごとの入口は [Library API](library-api.md) · トラッカー
 [#150](https://github.com/orbit-id/orbit-id/issues/150)。
 
+**alpha 終了条件**とパッケージ `2.0.0` を切る前のチェックリスト:
+[Orbit ID v2 alpha 終了と `2.0.0` 昇格](v2-alpha-exit.md)
+（[#138](https://github.com/orbit-id/orbit-id/issues/138)）。
+
 **Go の例外:** Go modules は major ≥ 2 で module path に `/v2` が必須なため、v1 module path から
 公開 v2 API を出せない。alpha 期間は `internal/v2` に置き、パッケージ `2.0.0` で path を上げると同時に
 公開する（[#142](https://github.com/orbit-id/orbit-id/issues/142)）。

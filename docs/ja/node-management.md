@@ -2,9 +2,9 @@
 
 [English](../en/node-management.md)
 
-Orbit ID の一意性は、同時に発行するプロセス間で Node ID（`0..127`）が重複しないことに
-依存します。Node ID の割当は control plane の責務であり、ID ごとの生成処理はローカルで
-完結させます。
+Orbit ID の一意性は、同時に発行するプロセス間で Node ID が重複しないことに依存します。
+Node の範囲はワイヤ形式に依存します（**v1:** `0..127`、**v2 Draft:** `0..65535` — 下記 v2 節）。
+Node ID の割当は control plane の責務であり、ID ごとの生成処理はローカルで完結させます。
 
 ## 本番の既定
 
@@ -122,10 +122,8 @@ lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` 
 | v2（Draft） | `0..65535` | `@orbit-id/node-lease` に `maxNode: 65535`（または `v2.MAX_NODE`）を渡す |
 
 `@orbit-id/node-lease` の **既定 `maxNode` は 127**（v1）のまま。v2 ジェネレーターでは明示的に
-`maxNode` を設定する。現状の Redis acquire は `0..maxNode` を線形スキャンする実装のままなので、
-v1 範囲では問題ないが **`65535` では実用的ではない**。広い範囲向けの空きプール / O(1) 経路は
-[#149](https://github.com/orbit-id/orbit-id/issues/149) で追跡する。それが入るまで、Redis 上で
-16-bit の `maxNode` を本番想定にしてはならない。
+`maxNode` を設定する（例: `65535`）。Redis acquire は広い v2 範囲向けの free-pool 経路を使う
+（[#149](https://github.com/orbit-id/orbit-id/issues/149)）。
 
 広い範囲用ストアのキー配置が定義され cutover されるまでは、v1 と v2 の lease プールは
 **別の Redis キー接頭辞**に置く（形式をまたいで接頭辞を共有しない）。
