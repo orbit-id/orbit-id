@@ -139,8 +139,10 @@ Calculation:
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
 レイアウト: `FormatVersion=1`、残 `Reserved=0`。Region（`0..15`）と Tenant（`0..65535`）は旧 28-bit
-Reserved から切り出し。v2 を提供する全パッケージがこれらを読み込む:
-`@orbit-id/core`、Java、Rust、PHP、Go（`internal/v2` 経由）。
+Reserved から切り出し。共有 JSON fixture は当面 `region=tenant=0` のままにし、旧 28-bit Reserved
+実装の言語 CI を落とさない。非ゼロ Region/Tenant は下記の手ベクトル（および `@orbit-id/core` の
+ユニットテスト）で扱い、全言語 PR 合流後に fixture へ戻す。
+v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-id/core`、Java、Rust、PHP、Go（`internal/v2` 経由）。
 
 ### v2 Vector 1: Epoch
 
@@ -194,7 +196,10 @@ Reserved から切り出し。v2 を提供する全パッケージがこれら�
 | Decimal ID | `21267647932634211831339783976615149568` |
 | Hex ID | `0x10000000003e800010001ffff0000000` |
 
-### v2 Vector 4: 非ゼロ Region / Tenant
+### v2 Vector 4: 非ゼロ Region / Tenant（手ベクトル）
+
+まだ `encode-decode.v2.json` には入れない（全言語が Region/Tenant を encode してから）。
+現状は `@orbit-id/core` のユニットテストでカバー。
 
 | Field | Value |
 | --- | ---: |
@@ -221,7 +226,10 @@ Reserved から切り出し。v2 を提供する全パッケージがこれら�
 | `-1` | Negative value |
 | `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
 | `01` | Leading zeros are not canonical |
-| `21267647932558653967613834469092360193` | 残 Reserved 非 0（`0x…01`） |
+
+残 Reserved 非 0（`21267647932558653967613834469092360193`）は正規な 10 進だが、carve-out 実装後は
+`parse`/`decode` が `INVALID_RESERVED` で失敗 MUST。いまは `decode-reject.v2.json` に入れない
+（当該ファイルは当面、非正規 decimal のみ。言語側が optional `code` に対応してから追加）。
 
 完全な表: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)。
 
