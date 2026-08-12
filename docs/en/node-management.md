@@ -3,7 +3,7 @@
 [日本語](../ja/node-management.md)
 
 Orbit ID uniqueness depends on Node IDs not overlapping across processes that issue IDs
-concurrently. The Node range depends on the wire format in use (**v1:** `0..127`; **v2 Draft:**
+concurrently. The Node range depends on the wire format in use (**v1:** `0..127`; **v2:**
 `0..65535` — see the v2 section below). Node ID allocation is a control-plane responsibility;
 per-ID generation remains local.
 
