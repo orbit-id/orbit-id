@@ -2,45 +2,49 @@
 
 [English](../en/design-decisions-v2.md)
 
-Orbit ID v2（128-bit）の **alpha 前に必須**の判断を記録します。規範的な Draft は
+Orbit ID v2（128-bit）の判断を記録します。規範的な Draft は
 [Orbit ID v2 Specification](orbit-id-v2.md)。128-bit 採用の動機は
 [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。
 
-Status: `v2.0.0-alpha` Draft 向けに固定。alpha 期間中の破壊的変更は許容。
+Status: **FormatVersion · Timestamp · Type · Node · Sequence は frozen**（幅とビット位置）。
+旧 28-bit Reserved から Region / Tenant を切り出し、残 Reserved は 8 bit。Datacenter 等は残
+Reserved から後で切ってよい（総幅 128 は変えない）。Tracker:
+[#171](https://github.com/orbit-id/orbit-id/issues/171)
+（[#131](https://github.com/orbit-id/orbit-id/issues/131) の alpha フィールド集合メモを更新）。
 
-Tracker: [#131](https://github.com/orbit-id/orbit-id/issues/131)。
+## 1. フィールド集合
 
-## 1. フィールド集合（alpha）
+**決定:** レイアウトは次。
 
-**決定:** alpha のレイアウトは次のみ。
+`FormatVersion` · `Timestamp` · `Type` · `Node` · `Sequence` · `Region` · `Tenant` · `Reserved`
 
-`FormatVersion` · `Timestamp` · `Type` · `Node` · `Sequence` · `Reserved`
-
-**alpha では切り出さない:** Region / Datacenter / Tenant など。容量は `Reserved` に残し、
-後続 alpha で総幅を変えずに分割 MAY。
+**切り出さない:** Datacenter など。容量は残 8-bit `Reserved` に残し、総幅を変えずに後で分割 MAY。
 
 ## 2. ビット配分（128 bits）
 
 **決定:** MSB → LSB（bit 127 = MSB、bit 0 = LSB）:
 
 ```text
-127          124 123                    76 75         60 59         44 43         28 27          0
-┌──────────────┬──────────────────────────┬─────────────┬─────────────┬─────────────┬────────────┐
-│ FormatVersion│ Timestamp                │ Type        │ Node        │ Sequence    │ Reserved   │
-│ 4 bits       │ 48 bits                  │ 16 bits     │ 16 bits     │ 16 bits     │ 28 bits    │
-└──────────────┴──────────────────────────┴─────────────┴─────────────┴─────────────┴────────────┘
+127          124 123                    76 75         60 59         44 43         28 27    24 23             8 7        0
+┌──────────────┬──────────────────────────┬─────────────┬─────────────┬─────────────┬───────┬────────────────┬──────────┐
+│ FormatVersion│ Timestamp                │ Type        │ Node        │ Sequence    │Region │ Tenant         │ Reserved │
+│ 4 bits       │ 48 bits                  │ 16 bits     │ 16 bits     │ 16 bits     │4 bits │ 16 bits        │ 8 bits   │
+└──────────────┴──────────────────────────┴─────────────┴─────────────┴─────────────┴───────┴────────────────┴──────────┘
 ```
 
 | Field | Bits | Width | Valid values | 容量メモ |
 | --- | --- | ---: | --- | --- |
-| FormatVersion | 127..124 | 4 | `0..15` | v2 ワイヤは **`1`**。`0` は予約。未知 version は decode 失敗 MUST |
-| Timestamp | 123..76 | 48 | `0..2^48-1` | Orbit Epoch から約 **8919.4 年**（ミリ秒） |
-| Type | 75..60 | 16 | `0..65535` | `0` 予約（`generate(0)` 拒否）。`1..65535` は deployer 用 |
-| Node | 59..44 | 16 | `0..65535` | 同時稼働 generator へ排他割当 |
-| Sequence | 43..28 | 16 | `0..65535` | 同一 Node・同一ミリ秒。Type 横断で共有 |
-| Reserved | 27..0 | 28 | alpha の encode では MUST `0` | decode は任意値を受理 MAY。strict 時は非 0 を拒否 SHOULD |
+| FormatVersion | 127..124 | 4 | `0..15` | v2 ワイヤは **`1`**。`0` は予約。未知 version は decode 失敗 MUST。**Frozen.** |
+| Timestamp | 123..76 | 48 | `0..2^48-1` | Orbit Epoch から約 **8919.4 年**（ミリ秒）。**Frozen.** |
+| Type | 75..60 | 16 | `0..65535` | `0` 予約（`generate(0)` 拒否）。`1..65535` は deployer 用。**Frozen.** |
+| Node | 59..44 | 16 | `0..65535` | 同時稼働 generator へ排他割当。**Frozen.** |
+| Sequence | 43..28 | 16 | `0..65535` | 同一 Node・同一ミリ秒。Type 横断で共有。**Frozen.** |
+| Region | 27..24 | 4 | `0..15` | アプリ割当。`0` は合法な既定 / 未設定 |
+| Tenant | 23..8 | 16 | `0..65535` | アプリ割当。`0` は合法な既定 / 未設定 |
+| Reserved | 7..0 | 8 | encode では MUST `0` | decode は非 0 を拒否 MUST。将来の切り出し（Datacenter 等）MAY |
 
-LSB からの shift: Reserved `0`、Sequence `28`、Node `44`、Type `60`、Timestamp `76`、FormatVersion `124`。
+LSB からの shift: Reserved `0`、Tenant `8`、Region `24`、Sequence `28`、Node `44`、Type `60`、
+Timestamp `76`、FormatVersion `124`。
 
 ## 3. ビット順序とエンディアン
 
@@ -75,7 +79,7 @@ v1 との識別:
 | Binary | 16-byte big-endian |
 | 任意 | 小文字 hex（32 桁、`0x` なし）をライブラリが受理 MAY。正規は 10 進 |
 
-ULID 風や UUID 8-4-4-4-12 は alpha の正規形にしない（後で再検討 MAY）。
+ULID 風や UUID 8-4-4-4-12 は正規形にしない（後で再検討 MAY）。
 
 ## 7. 言語上の値型（JS/TS）
 
@@ -84,12 +88,13 @@ ULID 風や UUID 8-4-4-4-12 は alpha の正規形にしない（後で再検討
 
 ## 8. v1 から引き継ぐ生成規則
 
-**決定:** 後続 alpha の ADR で明示しない限り:
+**決定:** 後続 ADR で明示しない限り:
 
 - Sequence は **Node × ミリ秒で共有**（Type 別ではない）。
 - Type `0` は予約。`generate(0)` は拒否 MUST。
 - 時計巻き戻りの既定許容は **`5_000` ms**。
 - Node 排他・quarantine の意図は [Node Management](node-management.md) に従う（幅だけ変わる）。
+- Region / Tenant は ID 上の **アプリ割当ラベル**であり、Node 排他の代替ではない。generator の既定は両方 `0`。
 
 ## 9. v1 との共存
 
@@ -97,7 +102,7 @@ ULID 風や UUID 8-4-4-4-12 は alpha の正規形にしない（後で再検討
 
 - 既存の v1 ID を v2 レイアウトで再デコードしない。
 - 移行はアプリ / ストレージ側（新列、二重書き込み、envelope）。
-- v1 は保守モードのまま。v2 は `v2.0.0-alpha.*` で進める。
+- v1 は保守モードのまま。v2 はパッケージ `2.0.0` まで `v2.0.0-alpha.*` で進める。
 
 ## Related
 
@@ -105,3 +110,4 @@ ULID 風や UUID 8-4-4-4-12 は alpha の正規形にしない（後で再検討
 - [Orbit ID v1 Specification](orbit-id-v1.md)
 - [Design Decisions（v1）](design-decisions.md)
 - [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)
+- [v2 alpha exit](v2-alpha-exit.md)

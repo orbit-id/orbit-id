@@ -58,7 +58,9 @@ JSON 例:
 | `INVALID_TIMESTAMP` | fields の encode 時に Timestamp が 41-bit 範囲外 |
 | `INVALID_DECIMAL` | 非正規または範囲外の 10 進文字列 |
 | `INVALID_FORMAT_VERSION` | 未知 / 予約の FormatVersion（v2） |
-| `INVALID_RESERVED` | encode 時の非 0 Reserved、または strict decode での拒否（v2） |
+| `INVALID_REGION` | Region が `0..15` 外（v2） |
+| `INVALID_TENANT` | Tenant が `0..65535` 外（v2） |
+| `INVALID_RESERVED` | encode 時の非 0 残 Reserved、または decode での拒否（v2） |
 | `CLOCK_ROLLBACK` | 壁時計が許容を超えて `last_timestamp` より後ろ |
 | `SEQUENCE_EXHAUSTED` | 同一 ms の容量超過で、待機ではなく失敗を選んだ場合 |
 | `NODE_OWNERSHIP_LOST` | lease / 所有権を確認できず fail closed |
@@ -118,10 +120,11 @@ Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import
 | JSON / HTTP | 符号なし 10 進 | 符号なし 10 進（桁が増える） |
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence | 6 / 7 / 10 bit | 16 / 16 / 16 bit |
-| 追加フィールド | — | `FormatVersion`（MUST `1`）、`Reserved`（encode は MUST `0`） |
+| 追加フィールド | — | `FormatVersion`（MUST `1`）、`Region`（`0..15`）、`Tenant`（`0..65535`）、残 `Reserved`（encode MUST `0`） |
 | パッケージ入口 | `@orbit-id/core` | `@orbit-id/core/v2`（ルートの `v2` 名前空間でも可） |
 
-v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_RESERVED`。
+v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_REGION`、`INVALID_TENANT`、
+`INVALID_RESERVED`。
 
 v1 の 64-bit ID を v2 として再解釈してはならない。公開言語パッケージは 1.x で v2 を加算的な
 名前空間として同梱する（TypeScript / Java / Rust / PHP）。Go はパッケージ `2.0.0` で
