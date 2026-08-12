@@ -4,15 +4,22 @@ import {
   FORMAT_VERSION_SHIFT,
   ISSUED_FORMAT_VERSION,
   MAX_NODE,
+  MAX_REGION,
+  MAX_RESERVED,
   MAX_SEQUENCE,
+  MAX_TENANT,
   MAX_TIMESTAMP,
   MAX_TYPE,
   NODE_MASK,
   NODE_SHIFT,
   ORBIT_EPOCH_UNIX_MS,
+  REGION_MASK,
+  REGION_SHIFT,
   RESERVED_MASK,
   SEQUENCE_MASK,
   SEQUENCE_SHIFT,
+  TENANT_MASK,
+  TENANT_SHIFT,
   TIMESTAMP_MASK,
   TIMESTAMP_SHIFT,
   TYPE_MASK,
@@ -26,11 +33,32 @@ export type OrbitFieldsV2 = {
   type: number;
   node: number;
   sequence: number;
+  region: number;
+  tenant: number;
   reserved: number;
 };
 
-export function encode(fields: OrbitFieldsV2): bigint {
-  const { formatVersion, timestamp, type, node, sequence, reserved } = fields;
+/** Encode input; region/tenant/reserved default to `0` when omitted. */
+export type OrbitFieldsV2Encode = {
+  formatVersion: number;
+  timestamp: bigint;
+  type: number;
+  node: number;
+  sequence: number;
+  region?: number;
+  tenant?: number;
+  reserved?: number;
+};
+
+export function encode(fields: OrbitFieldsV2Encode): bigint {
+  const formatVersion = fields.formatVersion;
+  const timestamp = fields.timestamp;
+  const type = fields.type;
+  const node = fields.node;
+  const sequence = fields.sequence;
+  const region = fields.region ?? 0;
+  const tenant = fields.tenant ?? 0;
+  const reserved = fields.reserved ?? 0;
   if (!Number.isInteger(formatVersion) || formatVersion !== ISSUED_FORMAT_VERSION) {
     throw new OrbitError(
       "INVALID_FORMAT_VERSION",
@@ -49,6 +77,12 @@ export function encode(fields: OrbitFieldsV2): bigint {
   if (!Number.isInteger(sequence) || sequence < 0 || sequence > MAX_SEQUENCE) {
     throw new OrbitError("INVALID_SEQUENCE", `sequence out of range: ${sequence}`);
   }
+  if (!Number.isInteger(region) || region < 0 || region > MAX_REGION) {
+    throw new OrbitError("INVALID_REGION", `region out of range: ${region}`);
+  }
+  if (!Number.isInteger(tenant) || tenant < 0 || tenant > MAX_TENANT) {
+    throw new OrbitError("INVALID_TENANT", `tenant out of range: ${tenant}`);
+  }
   if (!Number.isInteger(reserved) || reserved !== 0) {
     throw new OrbitError("INVALID_RESERVED", `reserved must be 0 on encode: ${reserved}`);
   }
@@ -58,6 +92,8 @@ export function encode(fields: OrbitFieldsV2): bigint {
     (BigInt(type) << TYPE_SHIFT) |
     (BigInt(node) << NODE_SHIFT) |
     (BigInt(sequence) << SEQUENCE_SHIFT) |
+    (BigInt(region) << REGION_SHIFT) |
+    (BigInt(tenant) << TENANT_SHIFT) |
     BigInt(reserved)
   );
 }
@@ -80,7 +116,7 @@ export function decode(id: bigint): OrbitFieldsV2 {
   }
   const reserved = Number(id & RESERVED_MASK);
   if (reserved !== 0) {
-    throw new OrbitError("INVALID_RESERVED", `non-zero reserved is rejected in alpha: ${reserved}`);
+    throw new OrbitError("INVALID_RESERVED", `non-zero reserved is rejected: ${reserved}`);
   }
   return {
     formatVersion,
@@ -88,6 +124,8 @@ export function decode(id: bigint): OrbitFieldsV2 {
     type: Number((id >> TYPE_SHIFT) & TYPE_MASK),
     node: Number((id >> NODE_SHIFT) & NODE_MASK),
     sequence: Number((id >> SEQUENCE_SHIFT) & SEQUENCE_MASK),
+    region: Number((id >> REGION_SHIFT) & REGION_MASK),
+    tenant: Number((id >> TENANT_SHIFT) & TENANT_MASK),
     reserved,
   };
 }
@@ -110,6 +148,14 @@ export function getNode(id: bigint | string): number {
 
 export function getSequence(id: bigint | string): number {
   return parse(id).sequence;
+}
+
+export function getRegion(id: bigint | string): number {
+  return parse(id).region;
+}
+
+export function getTenant(id: bigint | string): number {
+  return parse(id).tenant;
 }
 
 export function getReserved(id: bigint | string): number {

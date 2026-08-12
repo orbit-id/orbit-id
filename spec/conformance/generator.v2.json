@@ -4,6 +4,8 @@
   "defaults": {
     "clockRollbackToleranceMs": "5000",
     "formatVersion": 1,
+    "region": 0,
+    "tenant": 0,
     "reserved": 0
   },
   "cases": [
