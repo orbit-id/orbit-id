@@ -50,6 +50,7 @@ Prefer small reviewable PRs. Do **not** land the version bump / tag until slices
 ### Issue titles
 
 Child Issues under epic [#199](https://github.com/orbit-id/orbit-id/issues/199) (one per slice above).
+
 ## When to run Bump release PR
 
 Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
@@ -76,6 +77,7 @@ PR merges, create a GitHub Release so Publish runs (see
 
 Local equivalent (optional): `npm run release:bump -- 2.0.0` then open the PR by hand — prefer the
 Action for a lockstep bump.
+
 ## Consumer migration (summary)
 
 | Consumer today (1.x) | After `2.0.0` |
@@ -106,5 +108,9 @@ Before tagging `v2.0.0`:
 
 ## Status
 
-Slice **A** (Spec → Stable) tracked by [#201](https://github.com/orbit-id/orbit-id/issues/201).
-Remaining slices B–J follow after A merges.
+| Slice | Issue |
+| --- | --- |
+| A | [#201](https://github.com/orbit-id/orbit-id/issues/201) |
+| B–J | [#203](https://github.com/orbit-id/orbit-id/issues/203)–[#211](https://github.com/orbit-id/orbit-id/issues/211) |
+
+Epic: [#199](https://github.com/orbit-id/orbit-id/issues/199).

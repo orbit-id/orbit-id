@@ -50,6 +50,7 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 ### Issue タイトル
 
 epic [#199](https://github.com/orbit-id/orbit-id/issues/199) 配下の子 Issue（上表どおり 1 スライス 1 Issue）。
+
 ## Bump release PR をいつ実行するか
 
 Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
@@ -107,5 +108,9 @@ Action を優先する。
 
 ## ステータス
 
-スライス **A**（Spec → Stable）は [#201](https://github.com/orbit-id/orbit-id/issues/201)。
-残り B–J は A 合流後。
+| スライス | Issue |
+| --- | --- |
+| A | [#201](https://github.com/orbit-id/orbit-id/issues/201) |
+| B–J | [#203](https://github.com/orbit-id/orbit-id/issues/203)–[#211](https://github.com/orbit-id/orbit-id/issues/211) |
+
+Epic: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
