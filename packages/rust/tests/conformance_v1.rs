@@ -1,4 +1,4 @@
-use orbit_id::{
+use orbit_id::v1::{
     decode, encode, from_decimal_string, is_valid, parse, to_decimal_string, to_hex_string,
     GenerateDecision, GeneratorOptions, OrbitErrorCode, OrbitFields, OrbitGenerator,
     SequenceExhaustedMode,
@@ -175,7 +175,7 @@ fn generator_rejects_type_zero() {
 
 #[test]
 fn generate_helpers_and_getters() {
-    use orbit_id::{
+    use orbit_id::v1::{
         encode, from_unix_time_ms, get_node, get_sequence, get_timestamp, get_type, to_unix_time_ms,
         OrbitErrorCode,
     };
