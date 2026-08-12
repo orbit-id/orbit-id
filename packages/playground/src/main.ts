@@ -28,6 +28,8 @@ let typeDraft = "1";
 let nodeDraft = "1";
 let timestampDraft = "";
 let sequenceDraft = "";
+let regionDraft = "0";
+let tenantDraft = "0";
 
 render();
 
@@ -132,6 +134,20 @@ function render(): void {
                 <input id="sequence" type="number" min="0" max="${isV2 ? 65535 : 1023}" placeholder="0" />
               </div>
             </div>
+            ${
+              isV2
+                ? `<div class="row">
+              <div class="field">
+                <label for="region">${escapeHtml(t.region)}</label>
+                <input id="region" type="number" min="0" max="15" />
+              </div>
+              <div class="field">
+                <label for="tenant">${escapeHtml(t.tenant)}</label>
+                <input id="tenant" type="number" min="0" max="65535" />
+              </div>
+            </div>`
+                : ""
+            }
             <div class="actions">
               <button type="button" class="btn btn-primary" id="btn-generate">${escapeHtml(t.generateAction)}</button>
               <button type="button" class="btn btn-ghost" id="btn-encode">${escapeHtml(t.encodeAction)}</button>
@@ -152,6 +168,10 @@ function render(): void {
   must<HTMLInputElement>("#node").value = nodeDraft;
   must<HTMLInputElement>("#timestamp").value = timestampDraft;
   must<HTMLInputElement>("#sequence").value = sequenceDraft;
+  if (isV2) {
+    must<HTMLInputElement>("#region").value = regionDraft;
+    must<HTMLInputElement>("#tenant").value = tenantDraft;
+  }
   resetPanel(must("#parse-out"), t.resultPlaceholder);
   resetPanel(must("#gen-out"), t.resultPlaceholder);
   must("#footer").innerHTML = t.footer;
@@ -168,6 +188,8 @@ function bind(): void {
   const nodeInput = must<HTMLInputElement>("#node");
   const timestampInput = must<HTMLInputElement>("#timestamp");
   const sequenceInput = must<HTMLInputElement>("#sequence");
+  const regionInput = spec === "v2" ? must<HTMLInputElement>("#region") : null;
+  const tenantInput = spec === "v2" ? must<HTMLInputElement>("#tenant") : null;
   const localeSelect = must<HTMLSelectElement>("#locale-select");
   const specSelect = must<HTMLSelectElement>("#spec-select");
 
@@ -177,6 +199,8 @@ function bind(): void {
     nodeDraft = nodeInput.value;
     timestampDraft = timestampInput.value;
     sequenceDraft = sequenceInput.value;
+    if (regionInput) regionDraft = regionInput.value;
+    if (tenantInput) tenantDraft = tenantInput.value;
   };
 
   localeSelect.addEventListener("change", () => {
@@ -205,6 +229,8 @@ function bind(): void {
           type: fields.type,
           node: fields.node,
           sequence: fields.sequence,
+          region: fields.region,
+          tenant: fields.tenant,
           reserved: fields.reserved,
           hex: v2.toHexString(v2.fromDecimalString(raw)),
         });
@@ -229,7 +255,9 @@ function bind(): void {
       const type = Number(typeInput.value);
       const node = Number(nodeInput.value);
       if (spec === "v2") {
-        const generator = new v2.OrbitGeneratorV2({ node });
+        const region = Number(regionInput?.value || "0");
+        const tenant = Number(tenantInput?.value || "0");
+        const generator = new v2.OrbitGeneratorV2({ node, region, tenant });
         const id = generator.generate(type);
         const fields = v2.parse(id);
         setOutput(genOut, {
@@ -240,6 +268,8 @@ function bind(): void {
           type: fields.type,
           node: fields.node,
           sequence: fields.sequence,
+          region: fields.region,
+          tenant: fields.tenant,
           reserved: fields.reserved,
         });
         idInput.value = v2.toDecimalString(id);
@@ -273,12 +303,16 @@ function bind(): void {
           ? BigInt(Date.now()) - 1767225600000n
           : BigInt(timestampInput.value.trim());
       if (spec === "v2") {
+        const region = Number(regionInput?.value || "0");
+        const tenant = Number(tenantInput?.value || "0");
         const id = v2.encode({
           formatVersion: 1,
           timestamp,
           type,
           node,
           sequence,
+          region,
+          tenant,
           reserved: 0,
         });
         setOutput(genOut, {
@@ -289,6 +323,8 @@ function bind(): void {
           type,
           node,
           sequence,
+          region,
+          tenant,
           reserved: 0,
         });
         idInput.value = v2.toDecimalString(id);
