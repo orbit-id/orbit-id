@@ -139,9 +139,8 @@ Calculation:
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
 レイアウト: `FormatVersion=1`、残 `Reserved=0`。Region（`0..15`）と Tenant（`0..65535`）は旧 28-bit
-Reserved から切り出し。共有 JSON fixture は当面 `region=tenant=0` のままにし、旧 28-bit Reserved
-実装の言語 CI を落とさない。非ゼロ Region/Tenant は下記の手ベクトル（および `@orbit-id/core` の
-ユニットテスト）で扱い、全言語 PR 合流後に fixture へ戻す。
+Reserved から切り出し。共有 JSON fixture は Region/Tenant のゼロ／非ゼロ往復と、残 Reserved 拒否
+（`INVALID_RESERVED`）をカバーする。
 v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-id/core`、Java、Rust、PHP、Go（`internal/v2` 経由）。
 
 ### v2 Vector 1: Epoch
@@ -196,10 +195,9 @@ v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-i
 | Decimal ID | `21267647932634211831339783976615149568` |
 | Hex ID | `0x10000000003e800010001ffff0000000` |
 
-### v2 Vector 4: 非ゼロ Region / Tenant（手ベクトル）
+### v2 Vector 4: 非ゼロ Region / Tenant
 
-まだ `encode-decode.v2.json` には入れない（全言語が Region/Tenant を encode してから）。
-現状は `@orbit-id/core` のユニットテストでカバー。
+fixture id: `encode-decode.v2.json` の `region-tenant-nonzero`。
 
 | Field | Value |
 | --- | ---: |
@@ -226,10 +224,11 @@ v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-i
 | `-1` | Negative value |
 | `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
 | `01` | Leading zeros are not canonical |
+| `21267647932558653967613834469092360193` | 残 Reserved 非 0 → `INVALID_RESERVED` |
 
-残 Reserved 非 0（`21267647932558653967613834469092360193`）は正規な 10 進だが、carve-out 実装後は
-`parse`/`decode` が `INVALID_RESERVED` で失敗 MUST。いまは `decode-reject.v2.json` に入れない
-（当該ファイルは当面、非正規 decimal のみ。言語側が optional `code` に対応してから追加）。
+`21267647932558653967613834469092360193` は正規な符号なし 10 進
+（`FormatVersion=1`、`Type=1`、残 `Reserved=1`）だが、`parse`/`decode` は `INVALID_RESERVED` で
+失敗 MUST（fixture id `nonzero-remaining-reserved`）。
 
 完全な表: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)。
 
