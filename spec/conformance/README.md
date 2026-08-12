@@ -12,9 +12,9 @@ spec/conformance/
 ├── encode-decode.v1.json     # v1 round-trip encode / decode
 ├── decode-reject.v1.json     # v1 decimal-string rejection
 ├── generator.v1.json         # v1 generator behavior (clock / sequence)
-├── encode-decode.v2.json     # v2 Draft round-trip encode / decode
-├── decode-reject.v2.json     # v2 Draft decimal-string rejection
-└── generator.v2.json         # v2 Draft generator behavior
+├── encode-decode.v2.json     # v2 Stable round-trip encode / decode
+├── decode-reject.v2.json     # v2 Stable decimal-string rejection
+└── generator.v2.json         # v2 Stable generator behavior
 ```
 
 Naming pattern: `<category>.v1.json` / `<category>.v2.json`.
@@ -22,7 +22,7 @@ Naming pattern: `<category>.v1.json` / `<category>.v2.json`.
 | File set | `spec` field | Status |
 | --- | --- | --- |
 | `*.v1.json` | `"orbit-id/v1"` | Stable — loaded by language packages today |
-| `*.v2.json` | `"orbit-id/v2"` | Draft (alpha exit criteria met) — loaded by v2 language harnesses |
+| `*.v2.json` | `"orbit-id/v2"` | Stable — loaded by v2 language harnesses |
 
 ## Common envelope
 

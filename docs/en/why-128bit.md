@@ -64,4 +64,4 @@ foundation for a format intended to last.
 ## Related
 
 - [Design Decisions (v2)](design-decisions-v2.md) — locked alpha layout and interchange choices
-- [Orbit ID v2 Specification](orbit-id-v2.md) — Draft (`v2.0.0-alpha.0`)
+- [Orbit ID v2 Specification](orbit-id-v2.md) — Stable

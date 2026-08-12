@@ -2,14 +2,15 @@
 
 [日本語](../ja/design-decisions-v2.md)
 
-This document records decisions for Orbit ID v2 (128-bit) before / alongside the
-normative Draft in [Orbit ID v2 Specification](orbit-id-v2.md). Motivation for 128-bit:
+This document records decisions for Orbit ID v2 (128-bit) alongside the
+normative Stable [Orbit ID v2 Specification](orbit-id-v2.md). Motivation for 128-bit:
 [Why Orbit ID v2 is 128-bit](why-128bit.md).
 
 Status: **FormatVersion · Timestamp · Type · Node · Sequence · Region · Tenant are frozen**
 (widths and bit positions). Remaining Reserved is 8 bits and MUST be `0` on encode.
 Datacenter (or similar) carve-outs from remaining Reserved are **deferred to post-package-`2.0.0`**
-via a new ADR. Tracker: [#171](https://github.com/orbit-id/orbit-id/issues/171) /
+via a new ADR. Spec status: **Stable** ([#201](https://github.com/orbit-id/orbit-id/issues/201)).
+Trackers: [#171](https://github.com/orbit-id/orbit-id/issues/171) /
 [#197](https://github.com/orbit-id/orbit-id/issues/197)
 (supersedes alpha field-set note in [#131](https://github.com/orbit-id/orbit-id/issues/131)).
 
@@ -114,7 +115,7 @@ unsigned 128-bit type.
 
 ## Related
 
-- [Orbit ID v2 Specification](orbit-id-v2.md) (Draft)
+- [Orbit ID v2 Specification](orbit-id-v2.md) (Stable)
 - [Orbit ID v1 Specification](orbit-id-v1.md)
 - [Design Decisions (v1)](design-decisions.md)
 - [Why Orbit ID v2 is 128-bit](why-128bit.md)

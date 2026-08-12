@@ -127,9 +127,9 @@ Calculation:
 | 許容内の巻き戻り | `(1000, 10)` | `995` | timestamp `1000` まで待機 |
 | 許容超過の巻き戻り | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
 
-## Orbit ID v2（Draft）
+## Orbit ID v2
 
-規範 Draft: [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
+規範: [Orbit ID v2 Specification](orbit-id-v2.md)（Stable）。決定ログ:
 [Design Decisions（v2）](design-decisions-v2.md)。
 
 機械可読 fixture（自動化の正）:

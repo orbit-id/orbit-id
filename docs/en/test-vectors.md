@@ -127,9 +127,9 @@ in [`generator.v1.json`](../../spec/conformance/generator.v1.json).
 | Rollback within tolerance | `(1000, 10)` | `995` | Wait until timestamp `1000` |
 | Rollback beyond tolerance | `(6000, 10)` | `0` | `CLOCK_ROLLBACK` |
 
-## Orbit ID v2 (Draft)
+## Orbit ID v2
 
-Normative Draft: [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
+Normative: [Orbit ID v2 Specification](orbit-id-v2.md) (Stable). Decisions:
 [Design Decisions (v2)](design-decisions-v2.md).
 
 Machine-readable fixtures (canonical for automation):

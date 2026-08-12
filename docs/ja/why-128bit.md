@@ -66,4 +66,4 @@ Orbit ID v2 では 128-bit を採用する。64-bit では長期運用に必要�
 ## Related
 
 - [Design Decisions（v2）](design-decisions-v2.md) — alpha 向けに固定したレイアウトと交換形式
-- [Orbit ID v2 Specification](orbit-id-v2.md) — Draft（`v2.0.0-alpha.0`）
+- [Orbit ID v2 Specification](orbit-id-v2.md) — Stable

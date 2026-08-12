@@ -14,7 +14,7 @@ This document locks **when alpha ends** and how package majors move v2 to the ro
 
 | Rule | Detail |
 | --- | --- |
-| Spec status | [Orbit ID v2](orbit-id-v2.md) remains **Draft** until an explicit beta / Stable step |
+| Spec status | During alpha, [Orbit ID v2](orbit-id-v2.md) stayed **Draft**; it is now **Stable** ([#201](https://github.com/orbit-id/orbit-id/issues/201)) |
 | Package default | **1.x** keeps **v1** at the package root |
 | How to use v2 | Additive namespace only (`v2` / `@orbit-id/core/v2`, `com.github.orbitid.v2`, …) |
 | Registry tags | Stable `vX.Y.Z` only publish; pre-release Git tags do **not** publish ([#148](https://github.com/orbit-id/orbit-id/issues/148)) |
@@ -45,10 +45,11 @@ Exit is a **docs + process** gate, not an automatic publish of `2.0.0`.
 
 ### Criteria status
 
-As of [#197](https://github.com/orbit-id/orbit-id/issues/197), items **1–6 are met**. The
-specification remains **Draft** until package-`2.0.0` promotion moves it to **Stable**.
+As of [#197](https://github.com/orbit-id/orbit-id/issues/197), items **1–6 are met**. Spec status
+moved to **Stable** in slice A ([#201](https://github.com/orbit-id/orbit-id/issues/201)).
 Optional `v2.0.0-beta.*` freeze: **skipped** ([#199](https://github.com/orbit-id/orbit-id/issues/199)).
-No registry publish is implied by alpha exit alone.
+Package-`2.0.0` root API swap and registry publish are still tracked by the
+[promotion plan](v2-package-2.0.0.md).
 
 ## Promotion to package `2.0.0` (root → v2)
 

@@ -68,14 +68,14 @@ npm / Maven / Go modules / crates.io / Packagist publishing is live. Shared tagg
 | **v2.0.0** | Stable 128-bit Orbit ID (package majors move v2 to the root API). |
 
 Why 128-bit: [Why Orbit ID v2 is 128-bit](why-128bit.md).  
-Draft spec (alpha exit criteria met): [Orbit ID v2 Specification](orbit-id-v2.md).  
+Draft → **Stable** spec: [Orbit ID v2 Specification](orbit-id-v2.md)
+([#201](https://github.com/orbit-id/orbit-id/issues/201)).  
 Locked decisions: [Design Decisions (v2)](design-decisions-v2.md).  
 Alpha exit / promotion overview: [v2 alpha exit](v2-alpha-exit.md).  
 **Package `2.0.0` execution plan:** [Package `2.0.0` promotion plan](v2-package-2.0.0.md).
 
-Next: implement the ordered slices in the promotion plan (spec Stable → languages → CLI →
-`v2.0.0` cut). Further Reserved carve-outs (for example Datacenter) wait until after package
-`2.0.0`.
+Next: implement remaining promotion slices (languages → CLI → `v2.0.0` cut). Further Reserved
+carve-outs (for example Datacenter) wait until after package `2.0.0`.
 
 ## Repository layout (monorepo)
 

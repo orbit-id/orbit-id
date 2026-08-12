@@ -117,16 +117,16 @@ TypeScript control-plane helpers live in [`@orbit-id/node-lease`](../../packages
 Wire `confirmOwnership` into `@orbit-id/core` `OrbitGenerator` so generation fail-closes when the
 lease is lost. Do not call Redis on every `generate`.
 
-## Orbit ID v2 (Draft)
+## Orbit ID v2
 
-Normative Draft (alpha exit criteria met): [Orbit ID v2 Specification](orbit-id-v2.md). Node width
+Normative (Stable): [Orbit ID v2 Specification](orbit-id-v2.md). Node width
 is **16 bits** (`0..65535`). The production defaults and quarantine rules above still apply; only
 substitute the Node range for the format in use:
 
 | Format | Node range | Notes |
 | --- | --- | --- |
 | v1 (default in 1.x) | `0..127` | Sections above |
-| v2 (Draft) | `0..65535` | Pass `maxNode: 65535` (or `v2.MAX_NODE`) into `@orbit-id/node-lease` |
+| v2 (Stable) | `0..65535` | Pass `maxNode: 65535` (or `v2.MAX_NODE`) into `@orbit-id/node-lease` |
 
 `@orbit-id/node-lease` keeps **default `maxNode = 127`** (v1). For v2 generators, set `maxNode`
 explicitly (for example `65535`). Redis acquire uses a free-pool path suitable for the wide

@@ -107,13 +107,14 @@ Node 割当（静的設定または Redis lease）は `generate` の hot path �
 ## Orbit ID v2 差分
 
 Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import * as v2 from
-"@orbit-id/core/v2"` または `import { v2 } from "@orbit-id/core"`）。仕様 Draft（alpha 終了条件
-充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
-[Design Decisions（v2）](design-decisions-v2.md)。昇格パス: [v2 alpha 終了](v2-alpha-exit.md)。
+"@orbit-id/core/v2"` または `import { v2 } from "@orbit-id/core"`）。仕様（Stable）:
+[Orbit ID v2 Specification](orbit-id-v2.md)。決定ログ:
+[Design Decisions（v2）](design-decisions-v2.md)。昇格パス: [v2 alpha 終了](v2-alpha-exit.md) ·
+[パッケージ `2.0.0` 計画](v2-package-2.0.0.md)。
 
 操作名は同じ（`generate` / `parse` / フィールド取得 / `isValid`）だが:
 
-| 観点 | v1 | v2（Draft） |
+| 観点 | v1 | v2（Stable ワイヤ。1.x では加算） |
 | --- | --- | --- |
 | 値幅 | 64-bit | 128-bit |
 | メモリ上（JS/TS） | `bigint` | `bigint`（128-bit 全体） |

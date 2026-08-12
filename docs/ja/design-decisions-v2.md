@@ -2,13 +2,15 @@
 
 [English](../en/design-decisions-v2.md)
 
-Orbit ID v2（128-bit）の判断を記録します。規範的な Draft は
+Orbit ID v2（128-bit）の判断を記録します。規範的な Stable 仕様は
 [Orbit ID v2 Specification](orbit-id-v2.md)。128-bit 採用の動機は
 [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。
 
 Status: **FormatVersion · Timestamp · Type · Node · Sequence · Region · Tenant は frozen**
 （幅とビット位置）。残 Reserved は 8 bit、encode MUST `0`。Datacenter 等の切り出しはパッケージ
-**`2.0.0` 以降**へ延期（新しい ADR）。Tracker: [#171](https://github.com/orbit-id/orbit-id/issues/171) /
+**`2.0.0` 以降**へ延期（新しい ADR）。仕様ステータス: **Stable**
+（[#201](https://github.com/orbit-id/orbit-id/issues/201)）。Tracker:
+[#171](https://github.com/orbit-id/orbit-id/issues/171) /
 [#197](https://github.com/orbit-id/orbit-id/issues/197)
 （[#131](https://github.com/orbit-id/orbit-id/issues/131) の alpha フィールド集合メモを更新）。
 
@@ -108,7 +110,7 @@ ULID 風や UUID 8-4-4-4-12 は正規形にしない（後で再検討 MAY）。
 
 ## Related
 
-- [Orbit ID v2 Specification](orbit-id-v2.md)（Draft）
+- [Orbit ID v2 Specification](orbit-id-v2.md)（Stable）
 - [Orbit ID v1 Specification](orbit-id-v1.md)
 - [Design Decisions（v1）](design-decisions.md)
 - [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)

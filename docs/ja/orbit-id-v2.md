@@ -2,8 +2,13 @@
 
 [English](../en/orbit-id-v2.md)
 
-Status: Draft — alpha 終了条件を充足。beta 向けにレイアウト凍結（[v2 alpha 終了](v2-alpha-exit.md) 参照）  
+Status: Stable  
 Epoch: `2026-01-01T00:00:00.000Z`
+
+ワイヤレイアウトはパッケージ `2.0.0` 列車向けに凍結
+（[昇格計画](v2-package-2.0.0.md) · [#201](https://github.com/orbit-id/orbit-id/issues/201)）。
+パッケージ major が出るまで、1.x ライブラリは v2 を加算名前空間のまま公開する
+（[v2 alpha 終了](v2-alpha-exit.md)）。
 
 freeze / 切り出しの判断: [Design Decisions（v2）](design-decisions-v2.md)。  
 動機: [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。

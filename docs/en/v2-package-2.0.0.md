@@ -14,7 +14,7 @@ root). It does **not** cut tags or publish by itself.
 | Item | Choice |
 | --- | --- |
 | Optional `v2.0.0-beta.*` freeze | **Skipped** — proceed from alpha-exit-met Draft straight to the `2.0.0` work below |
-| Spec status at cut | Move [Orbit ID v2](orbit-id-v2.md) from **Draft** → **Stable** in the same release train as package `2.0.0` |
+| Spec status at cut | **Done (slice A)** — [Orbit ID v2](orbit-id-v2.md) is **Stable** ([#201](https://github.com/orbit-id/orbit-id/issues/201)) |
 | Registry publish | Only after all code slices merge and a coordinated `v2.0.0` GitHub Release / tag |
 | Datacenter / remaining Reserved carve | Still **post-`2.0.0`** (new ADR) |
 
@@ -111,5 +111,5 @@ Before tagging `v2.0.0`:
 
 ## Status
 
-Planning only ([#199](https://github.com/orbit-id/orbit-id/issues/199)). Implementation Issues/PRs land
-after this plan is merged.
+Slice **A** (Spec → Stable) tracked by [#201](https://github.com/orbit-id/orbit-id/issues/201).
+Remaining slices B–J follow after A merges.

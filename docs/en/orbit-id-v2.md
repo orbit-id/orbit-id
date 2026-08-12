@@ -2,8 +2,13 @@
 
 [日本語](../ja/orbit-id-v2.md)
 
-Status: Draft — alpha exit criteria met; layout frozen for beta (see [v2 alpha exit](v2-alpha-exit.md))  
+Status: Stable  
 Epoch: `2026-01-01T00:00:00.000Z`
+
+Wire layout is frozen for the package `2.0.0` train
+([promotion plan](v2-package-2.0.0.md) · [#201](https://github.com/orbit-id/orbit-id/issues/201)).
+Until package majors ship, 1.x libraries still expose v2 as an additive namespace
+([v2 alpha exit](v2-alpha-exit.md)).
 
 Freeze / carve decisions: [Design Decisions (v2)](design-decisions-v2.md).  
 Motivation: [Why Orbit ID v2 is 128-bit](why-128bit.md).
