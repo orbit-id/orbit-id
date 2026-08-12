@@ -13,7 +13,7 @@ This document locks **when alpha ends** and how package majors move v2 to the ro
 
 | Rule | Detail |
 | --- | --- |
-| Spec status | [Orbit ID v2](orbit-id-v2.md) remains **Draft**; bit layout MAY still change |
+| Spec status | [Orbit ID v2](orbit-id-v2.md) remains **Draft**; FormatVersion / Timestamp / Type / Node / Sequence are **frozen**; remaining Reserved (8) MAY still be carved (e.g. Datacenter) |
 | Package default | **1.x** keeps **v1** at the package root |
 | How to use v2 | Additive namespace only (`v2` / `@orbit-id/core/v2`, `com.github.orbitid.v2`, …) |
 | Registry tags | Stable `vX.Y.Z` only publish; pre-release Git tags do **not** publish ([#148](https://github.com/orbit-id/orbit-id/issues/148)) |
@@ -23,17 +23,17 @@ This document locks **when alpha ends** and how package majors move v2 to the ro
 
 Alpha MAY end (and beta / freeze may start) only when **all** of the following are true:
 
-1. **Layout freeze** — [design-decisions-v2](design-decisions-v2.md) field set and bit widths are
-   marked frozen (or an explicit “no further alpha layout changes” ADR is merged). No open proposal
-   to re-slice Timestamp / Type / Node / Sequence / FormatVersion for alpha.
-2. **Reserved carve-outs** — Either Reserved stays all-zero for encode through beta, **or** any
-   Region / Tenant carve-out that must ship with stable decode rules is specified and fixture-covered
-   before exit.
+1. **Layout freeze** — [design-decisions-v2](design-decisions-v2.md) marks FormatVersion /
+   Timestamp / Type / Node / Sequence frozen ([#171](https://github.com/orbit-id/orbit-id/issues/171)).
+   No open proposal to re-slice those fields for alpha.
+2. **Reserved carve-outs** — Region (4) + Tenant (16) are carved; remaining Reserved (8) MUST be `0`
+   on encode and is fixture-covered. Further Datacenter-style carve-outs from the remaining 8 bits
+   are optional before exit.
 3. **Conformance green** — `spec/conformance/*.v2.json` pass in every public language package that
    claims v2 support (TypeScript/`@orbit-id/core`, Java, Rust, PHP; Go via `internal/v2` tests).
 4. **API surface** — Library operations match [Library API](library-api.md) v2 delta
-   (`generate` / `parse` / getters / `isValid` + FormatVersion / Reserved). CLI and playground can
-   exercise v2 without breaking v1 defaults.
+   (`generate` / `parse` / getters / `isValid` + FormatVersion / Region / Tenant / Reserved). CLI and
+   playground can exercise v2 without breaking v1 defaults.
 5. **Docs** — Normative Draft status can move toward beta wording; node-management / library-api /
    roadmap agree on ranges and the promotion path below.
 6. **No blocking alpha issues** — Open `v2-alpha` implementation trackers required for the above are

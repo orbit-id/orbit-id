@@ -10,6 +10,8 @@
       "type": 1,
       "node": 7,
       "sequence": 42,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21267647932558653967613957625668960256",
       "idHex": "0x100000000000000010007002a0000000"
@@ -22,6 +24,8 @@
       "type": 2,
       "node": 7,
       "sequence": 42,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21268914460260752812362294599660601344",
       "idHex": "0x10003e71d3b8700020007002a0000000"
@@ -34,6 +38,8 @@
       "type": 1,
       "node": 0,
       "sequence": 0,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21267647932558729525477560383415779328",
       "idHex": "0x10000000000010001000000000000000"
@@ -46,6 +52,8 @@
       "type": 10,
       "node": 65535,
       "sequence": 0,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21267647932634211842868946246393921536",
       "idHex": "0x10000000003e8000affff00000000000"
@@ -58,6 +66,8 @@
       "type": 1,
       "node": 1,
       "sequence": 65535,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21267647932634211831339783976615149568",
       "idHex": "0x10000000003e800010001ffff0000000"
@@ -70,6 +80,8 @@
       "type": 65535,
       "node": 65535,
       "sequence": 65535,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "21267647932558729524324638878540496896",
       "idHex": "0x1000000000000ffffffffffff0000000"
@@ -83,9 +95,39 @@
       "type": 65535,
       "node": 65535,
       "sequence": 65535,
+      "region": 0,
+      "tenant": 0,
       "reserved": 0,
       "idDecimal": "42535295865117307932921825928702590976",
       "idHex": "0x1ffffffffffffffffffffffff0000000"
+    },
+    {
+      "id": "region-tenant-nonzero",
+      "time": "2026-01-01T00:00:00.000Z",
+      "formatVersion": 1,
+      "timestamp": "0",
+      "type": 1,
+      "node": 7,
+      "sequence": 42,
+      "region": 3,
+      "tenant": 1000,
+      "reserved": 0,
+      "idDecimal": "21267647932558653967613957625719547904",
+      "idHex": "0x100000000000000010007002a303e800"
+    },
+    {
+      "id": "region-tenant-max",
+      "time": "2026-01-01T00:00:00.000Z",
+      "formatVersion": 1,
+      "timestamp": "0",
+      "type": 1,
+      "node": 0,
+      "sequence": 0,
+      "region": 15,
+      "tenant": 65535,
+      "reserved": 0,
+      "idDecimal": "21267647932558653967613834469360795392",
+      "idHex": "0x1000000000000000100000000fffff00"
     }
   ]
 }

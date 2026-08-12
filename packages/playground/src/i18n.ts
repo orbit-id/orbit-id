@@ -27,6 +27,8 @@ export type Messages = {
   timestamp: string;
   sequenceV1: string;
   sequenceV2: string;
+  region: string;
+  tenant: string;
   generateAction: string;
   encodeAction: string;
   resultPlaceholder: string;
@@ -73,6 +75,8 @@ export const messages: Record<Locale, Messages> = {
     timestamp: "Timestamp (Orbit ms, optional)",
     sequenceV1: "Sequence (optional, 0–1023)",
     sequenceV2: "Sequence (optional, 0–65535)",
+    region: "Region (optional, 0–15)",
+    tenant: "Tenant (optional, 0–65535)",
     generateAction: "Generate",
     encodeAction: "Encode fields",
     resultPlaceholder: "Results appear here",
@@ -118,6 +122,8 @@ export const messages: Record<Locale, Messages> = {
     timestamp: "Timestamp（Orbit ms・任意）",
     sequenceV1: "Sequence（任意・0–1023）",
     sequenceV2: "Sequence（任意・0–65535）",
+    region: "Region（任意・0–15）",
+    tenant: "Tenant（任意・0–65535）",
     generateAction: "生成する",
     encodeAction: "フィールドをエンコード",
     resultPlaceholder: "結果がここに表示されます",

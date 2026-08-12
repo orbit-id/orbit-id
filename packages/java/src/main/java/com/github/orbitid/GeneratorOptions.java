@@ -6,6 +6,8 @@ import java.util.function.BooleanSupplier;
 /** Immutable configuration for {@link OrbitGenerator}. */
 public final class GeneratorOptions {
     private final int node;
+    private final int region;
+    private final int tenant;
     private final OrbitClock clock;
     private final long clockRollbackToleranceMs;
     private final SequenceExhaustedMode onSequenceExhausted;
@@ -13,6 +15,8 @@ public final class GeneratorOptions {
 
     private GeneratorOptions(Builder builder) {
         this.node = builder.node;
+        this.region = builder.region;
+        this.tenant = builder.tenant;
         this.clock = builder.clock;
         this.clockRollbackToleranceMs = builder.clockRollbackToleranceMs;
         this.onSequenceExhausted = builder.onSequenceExhausted;
@@ -21,6 +25,16 @@ public final class GeneratorOptions {
 
     public int node() {
         return node;
+    }
+
+    /** Region for Orbit ID v2 generators; ignored by v1. Defaults to 0. */
+    public int region() {
+        return region;
+    }
+
+    /** Tenant for Orbit ID v2 generators; ignored by v1. Defaults to 0. */
+    public int tenant() {
+        return tenant;
     }
 
     public OrbitClock clock() {
@@ -45,6 +59,8 @@ public final class GeneratorOptions {
 
     public static final class Builder {
         private final int node;
+        private int region;
+        private int tenant;
         private OrbitClock clock;
         private long clockRollbackToleranceMs = OrbitId.DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS;
         private SequenceExhaustedMode onSequenceExhausted = SequenceExhaustedMode.WAIT;
@@ -52,6 +68,16 @@ public final class GeneratorOptions {
 
         private Builder(int node) {
             this.node = node;
+        }
+
+        public Builder region(int region) {
+            this.region = region;
+            return this;
+        }
+
+        public Builder tenant(int tenant) {
+            this.tenant = tenant;
+            return this;
         }
 
         public Builder clock(OrbitClock clock) {

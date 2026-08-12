@@ -10,6 +10,8 @@ describe("@orbit-id/typescript v2 surface", () => {
     type: 1,
     node: 7,
     sequence: 42,
+    region: 0,
+    tenant: 0,
     reserved: 0,
   };
   const decimal = "21267647932558653967613957625668960256";
@@ -22,6 +24,8 @@ describe("@orbit-id/typescript v2 surface", () => {
     expect(v2.fromDecimalString(decimal)).toBe(id);
     expect(v2.getFormatVersion(id)).toBe(1);
     expect(v2.getReserved(id)).toBe(0);
+    expect(v2.getRegion(id)).toBe(0);
+    expect(v2.getTenant(id)).toBe(0);
     expect(v2.isValid(decimal)).toBe(true);
   });
 

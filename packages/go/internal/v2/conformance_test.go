@@ -19,13 +19,14 @@ type encodeDecodeFixture struct {
 	Cases []struct {
 		ID, Timestamp, IDDecimal, IDHex string
 		FormatVersion, Type, Node       int
-		Sequence, Reserved              int
+		Sequence, Region, Tenant        int
+		Reserved                        int
 	}
 }
 
 type rejectFixture struct {
 	Cases []struct {
-		ID, Input, Reason string
+		ID, Input, Reason, Code string
 	}
 }
 
@@ -81,7 +82,8 @@ func TestEncodeDecodeConformance(t *testing.T) {
 		t.Run(c.ID, func(t *testing.T) {
 			fields := v2.Fields{
 				FormatVersion: c.FormatVersion, Timestamp: uintValue(t, c.Timestamp),
-				Type: c.Type, Node: c.Node, Sequence: c.Sequence, Reserved: uint32(c.Reserved),
+				Type: c.Type, Node: c.Node, Sequence: c.Sequence,
+				Region: c.Region, Tenant: c.Tenant, Reserved: uint32(c.Reserved),
 			}
 			id, err := v2.Encode(fields)
 			if err != nil {
@@ -120,6 +122,12 @@ func TestEncodeDecodeConformance(t *testing.T) {
 			if got, _ := v2.GetSequence(id); got != fields.Sequence {
 				t.Fatalf("sequence = %d, want %d", got, fields.Sequence)
 			}
+			if got, _ := v2.GetRegion(id); got != fields.Region {
+				t.Fatalf("region = %d, want %d", got, fields.Region)
+			}
+			if got, _ := v2.GetTenant(id); got != fields.Tenant {
+				t.Fatalf("tenant = %d, want %d", got, fields.Tenant)
+			}
 			if got, _ := v2.GetReserved(id); got != fields.Reserved {
 				t.Fatalf("reserved = %d, want %d", got, fields.Reserved)
 			}
@@ -135,13 +143,29 @@ func TestDecimalRejectConformance(t *testing.T) {
 	loadFixture(t, "decode-reject.v2.json", &fixture)
 	for _, c := range fixture.Cases {
 		t.Run(c.ID, func(t *testing.T) {
-			_, err := v2.FromDecimalString(c.Input)
-			var orbitErr *orbitid.Error
-			if !errors.As(err, &orbitErr) || orbitErr.Code != orbitid.InvalidDecimal {
-				t.Fatalf("error = %v, want INVALID_DECIMAL", err)
+			expectedCode := orbitid.InvalidDecimal
+			if c.Code != "" {
+				expectedCode = orbitid.ErrorCode(c.Code)
+			}
+			if expectedCode == orbitid.InvalidDecimal {
+				_, err := v2.FromDecimalString(c.Input)
+				var orbitErr *orbitid.Error
+				if !errors.As(err, &orbitErr) || orbitErr.Code != orbitid.InvalidDecimal {
+					t.Fatalf("error = %v, want INVALID_DECIMAL", err)
+				}
+			} else {
+				value, err := v2.FromDecimalString(c.Input)
+				if err != nil || value.Sign() < 0 {
+					t.Fatalf("FromDecimalString = %v, %v", value, err)
+				}
+				_, err = v2.Parse(c.Input)
+				var orbitErr *orbitid.Error
+				if !errors.As(err, &orbitErr) || orbitErr.Code != expectedCode {
+					t.Fatalf("parse error = %v, want %s", err, expectedCode)
+				}
 			}
 			if _, err := v2.Parse(c.Input); err == nil || v2.IsValid(c.Input) {
-				t.Fatal("invalid decimal accepted")
+				t.Fatal("invalid input accepted")
 			}
 		})
 	}
@@ -160,7 +184,7 @@ func TestDecimalRejectConformance(t *testing.T) {
 }
 
 func TestDecodeRejectsUnknownFormatVersionAndReserved(t *testing.T) {
-	fields := v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Reserved: 0}
+	fields := v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 0, Tenant: 0, Reserved: 0}
 	id, err := v2.Encode(fields)
 	if err != nil {
 		t.Fatal(err)
@@ -192,6 +216,12 @@ func TestDecodeRejectsUnknownFormatVersionAndReserved(t *testing.T) {
 	}
 	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Reserved: 1}); err == nil {
 		t.Fatal("expected non-zero reserved to be rejected on encode")
+	}
+	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 99}); err == nil {
+		t.Fatal("expected region overflow to be rejected on encode")
+	}
+	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Tenant: 99_999}); err == nil {
+		t.Fatal("expected tenant overflow to be rejected on encode")
 	}
 
 	if _, err := v2.Decode(nil); err == nil {
@@ -289,6 +319,9 @@ func TestGeneratorGenerateAndHelpers(t *testing.T) {
 	if generator.Node() != 7 {
 		t.Fatalf("node = %d", generator.Node())
 	}
+	if generator.Region() != 0 || generator.Tenant() != 0 {
+		t.Fatalf("region/tenant = %d/%d", generator.Region(), generator.Tenant())
+	}
 	if generator.GetLastTimestamp() != 0 || generator.GetSequence() != 0 {
 		t.Fatalf("initial state = %d/%d", generator.GetLastTimestamp(), generator.GetSequence())
 	}
@@ -298,6 +331,35 @@ func TestGeneratorGenerateAndHelpers(t *testing.T) {
 	}
 	if generator.GetLastTimestamp() == 0 {
 		t.Fatal("expected last timestamp to update")
+	}
+	if region, _ := v2.GetRegion(id); region != 0 {
+		t.Fatalf("region = %d", region)
+	}
+	if tenant, _ := v2.GetTenant(id); tenant != 0 {
+		t.Fatalf("tenant = %d", tenant)
+	}
+
+	configured, err := v2.NewGenerator(v2.GeneratorOptions{
+		Node: 1, Region: 3, Tenant: 1000, Clock: fixedClock{now: 1},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	configuredID, err := configured.Generate(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := v2.GetRegion(configuredID); got != 3 {
+		t.Fatalf("region = %d, want 3", got)
+	}
+	if got, _ := v2.GetTenant(configuredID); got != 1000 {
+		t.Fatalf("tenant = %d, want 1000", got)
+	}
+	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, Region: 99}); err == nil {
+		t.Fatal("expected region overflow")
+	}
+	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, Tenant: 99_999}); err == nil {
+		t.Fatal("expected tenant overflow")
 	}
 
 	waitClock := &tickingClock{values: []int64{1000, 1000, 1001, 1001}}

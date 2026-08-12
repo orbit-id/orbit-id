@@ -7,6 +7,8 @@ public final class OrbitFields {
     private final int type;
     private final int node;
     private final int sequence;
+    private final int region;
+    private final int tenant;
     private final int reserved;
 
     public OrbitFields(
@@ -15,12 +17,16 @@ public final class OrbitFields {
             int type,
             int node,
             int sequence,
+            int region,
+            int tenant,
             int reserved) {
         this.formatVersion = formatVersion;
         this.timestamp = timestamp;
         this.type = type;
         this.node = node;
         this.sequence = sequence;
+        this.region = region;
+        this.tenant = tenant;
         this.reserved = reserved;
     }
 
@@ -44,6 +50,14 @@ public final class OrbitFields {
         return sequence;
     }
 
+    public int region() {
+        return region;
+    }
+
+    public int tenant() {
+        return tenant;
+    }
+
     public int reserved() {
         return reserved;
     }
@@ -62,6 +76,8 @@ public final class OrbitFields {
                 && type == that.type
                 && node == that.node
                 && sequence == that.sequence
+                && region == that.region
+                && tenant == that.tenant
                 && reserved == that.reserved;
     }
 
@@ -72,6 +88,8 @@ public final class OrbitFields {
         result = 31 * result + Integer.hashCode(type);
         result = 31 * result + Integer.hashCode(node);
         result = 31 * result + Integer.hashCode(sequence);
+        result = 31 * result + Integer.hashCode(region);
+        result = 31 * result + Integer.hashCode(tenant);
         result = 31 * result + Integer.hashCode(reserved);
         return result;
     }
@@ -83,6 +101,8 @@ public final class OrbitFields {
                 + ", type=" + type
                 + ", node=" + node
                 + ", sequence=" + sequence
+                + ", region=" + region
+                + ", tenant=" + tenant
                 + ", reserved=" + reserved + "]";
     }
 }

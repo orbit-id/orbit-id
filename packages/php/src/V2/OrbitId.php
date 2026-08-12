@@ -14,9 +14,9 @@ use OrbitId\OrbitId as OrbitIdV1;
  * v2 widens the value to 128 bits. IDs and timestamps stay canonical decimal
  * strings so the full unsigned 128-bit range works on every PHP 8.1 platform
  * without GMP, BCMath, or Composer packages (see `OrbitId\Decimal`). The
- * Sequence + Node + Reserved fields (60 bits) fit a native PHP int, but
- * FormatVersion, Timestamp, and Type live above bit 60 and require decimal
- * string arithmetic.
+ * Sequence + Node + Region + Tenant + Reserved fields (60 bits) fit a native
+ * PHP int, but FormatVersion, Timestamp, and Type live above bit 60 and require
+ * decimal string arithmetic.
  */
 final class OrbitId
 {
@@ -29,29 +29,35 @@ final class OrbitId
     public const TYPE_BITS = 16;
     public const NODE_BITS = 16;
     public const SEQUENCE_BITS = 16;
-    public const RESERVED_BITS = 28;
+    public const REGION_BITS = 4;
+    public const TENANT_BITS = 16;
+    public const RESERVED_BITS = 8;
 
     public const FORMAT_VERSION_SHIFT = 124;
     public const TIMESTAMP_SHIFT = 76;
     public const TYPE_SHIFT = 60;
     public const NODE_SHIFT = 44;
     public const SEQUENCE_SHIFT = 28;
+    public const REGION_SHIFT = 24;
+    public const TENANT_SHIFT = 8;
 
     public const MAX_TIMESTAMP = '281474976710655';
     public const MAX_TYPE = 65535;
     public const MAX_NODE = 65535;
     public const MAX_SEQUENCE = 65535;
-    public const MAX_RESERVED = 268435455;
+    public const MAX_REGION = 15;
+    public const MAX_TENANT = 65535;
+    public const MAX_RESERVED = 255;
 
     /** Issued Orbit ID v2 values MUST use FormatVersion = 1. */
     public const ISSUED_FORMAT_VERSION = 1;
 
     /**
-     * @param array{formatVersion: int, timestamp: string|int, type: int, node: int, sequence: int, reserved: int} $fields
+     * @param array{formatVersion: int, timestamp: string|int, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int} $fields
      */
     public static function encode(array $fields): string
     {
-        foreach (['formatVersion', 'timestamp', 'type', 'node', 'sequence', 'reserved'] as $field) {
+        foreach (['formatVersion', 'timestamp', 'type', 'node', 'sequence', 'region', 'tenant', 'reserved'] as $field) {
             if (!array_key_exists($field, $fields)) {
                 throw new \InvalidArgumentException("missing required field: {$field}");
             }
@@ -64,11 +70,17 @@ final class OrbitId
         self::boundedInt($fields['type'], self::MAX_TYPE, OrbitError::INVALID_TYPE, 'type');
         self::boundedInt($fields['node'], self::MAX_NODE, OrbitError::INVALID_NODE, 'node');
         self::boundedInt($fields['sequence'], self::MAX_SEQUENCE, OrbitError::INVALID_SEQUENCE, 'sequence');
+        self::boundedInt($fields['region'], self::MAX_REGION, OrbitError::INVALID_REGION, 'region');
+        self::boundedInt($fields['tenant'], self::MAX_TENANT, OrbitError::INVALID_TENANT, 'tenant');
         if ($fields['reserved'] !== 0) {
             throw new OrbitError(OrbitError::INVALID_RESERVED, "reserved must be 0 on encode: {$fields['reserved']}");
         }
 
-        $low60 = ($fields['node'] << self::NODE_SHIFT) | ($fields['sequence'] << self::SEQUENCE_SHIFT) | $fields['reserved'];
+        $low60 = ($fields['node'] << self::NODE_SHIFT)
+            | ($fields['sequence'] << self::SEQUENCE_SHIFT)
+            | ($fields['region'] << self::REGION_SHIFT)
+            | ($fields['tenant'] << self::TENANT_SHIFT)
+            | $fields['reserved'];
 
         $high = Decimal::add(
             Decimal::add(
@@ -82,17 +94,19 @@ final class OrbitId
     }
 
     /**
-     * @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, reserved: int}
+     * @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int}
      */
     public static function decode(mixed $id): array
     {
         $value = self::id($id);
 
         // Peel the low, small fields off with plain-int divisors first; once
-        // 76 bits (Reserved + Sequence + Node + Type) are removed, the
-        // remainder is <= 52 bits and safe to hold in a native PHP int.
+        // 76 bits (Reserved + Tenant + Region + Sequence + Node + Type) are
+        // removed, the remainder is <= 52 bits and safe to hold in a native PHP int.
         [$afterReserved, $reserved] = Decimal::divmodInt($value, 1 << self::RESERVED_BITS);
-        [$afterSequence, $sequence] = Decimal::divmodInt($afterReserved, 1 << self::SEQUENCE_BITS);
+        [$afterTenant, $tenant] = Decimal::divmodInt($afterReserved, 1 << self::TENANT_BITS);
+        [$afterRegion, $region] = Decimal::divmodInt($afterTenant, 1 << self::REGION_BITS);
+        [$afterSequence, $sequence] = Decimal::divmodInt($afterRegion, 1 << self::SEQUENCE_BITS);
         [$afterNode, $node] = Decimal::divmodInt($afterSequence, 1 << self::NODE_BITS);
         [$afterType, $type] = Decimal::divmodInt($afterNode, 1 << self::TYPE_BITS);
 
@@ -107,11 +121,11 @@ final class OrbitId
             throw new OrbitError(OrbitError::INVALID_RESERVED, "non-zero reserved is rejected in alpha: {$reserved}");
         }
 
-        return compact('formatVersion', 'timestamp', 'type', 'node', 'sequence', 'reserved');
+        return compact('formatVersion', 'timestamp', 'type', 'node', 'sequence', 'region', 'tenant', 'reserved');
     }
 
     /**
-     * @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, reserved: int}
+     * @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int}
      */
     public static function parse(mixed $id): array
     {
@@ -141,6 +155,16 @@ final class OrbitId
     public static function getSequence(mixed $id): int
     {
         return self::decode($id)['sequence'];
+    }
+
+    public static function getRegion(mixed $id): int
+    {
+        return self::decode($id)['region'];
+    }
+
+    public static function getTenant(mixed $id): int
+    {
+        return self::decode($id)['tenant'];
     }
 
     public static function getReserved(mixed $id): int

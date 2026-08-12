@@ -1,8 +1,8 @@
 use orbit_id::v2::{
-    decode, encode, from_decimal_string, get_format_version, get_node, get_reserved, get_sequence,
-    get_timestamp, get_type, is_valid, is_valid_id, parse, to_decimal_string, to_hex_string,
-    GenerateDecision, GeneratorOptions, OrbitErrorCode, OrbitFields, OrbitGenerator,
-    SequenceExhaustedMode, ISSUED_FORMAT_VERSION, MAX_SEQUENCE,
+    decode, encode, from_decimal_string, get_format_version, get_node, get_region, get_reserved,
+    get_sequence, get_tenant, get_timestamp, get_type, is_valid, is_valid_id, parse,
+    to_decimal_string, to_hex_string, GenerateDecision, GeneratorOptions, OrbitErrorCode,
+    OrbitFields, OrbitGenerator, SequenceExhaustedMode, ISSUED_FORMAT_VERSION, MAX_SEQUENCE,
 };
 use serde::Deserialize;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -22,7 +22,9 @@ struct EncodeDecodeCase {
     type_: u16,
     node: u16,
     sequence: u16,
-    reserved: u32,
+    region: u8,
+    tenant: u16,
+    reserved: u8,
     id_decimal: String,
     id_hex: String,
 }
@@ -35,6 +37,7 @@ struct RejectFixture {
 #[derive(Deserialize)]
 struct RejectCase {
     input: String,
+    code: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -86,6 +89,8 @@ fn encode_decode_conformance_v2() {
             r#type: case.type_,
             node: case.node,
             sequence: case.sequence,
+            region: case.region,
+            tenant: case.tenant,
             reserved: case.reserved,
         };
         let id = encode(fields).unwrap();
@@ -99,6 +104,8 @@ fn encode_decode_conformance_v2() {
         assert_eq!(get_type(id).unwrap(), case.type_);
         assert_eq!(get_node(id).unwrap(), case.node);
         assert_eq!(get_sequence(id).unwrap(), case.sequence);
+        assert_eq!(get_region(id).unwrap(), case.region);
+        assert_eq!(get_tenant(id).unwrap(), case.tenant);
         assert_eq!(get_reserved(id).unwrap(), case.reserved);
         assert!(is_valid(&case.id_decimal));
         assert!(is_valid_id(id));
@@ -112,8 +119,22 @@ fn decimal_rejection_conformance_v2() {
             .unwrap();
 
     for case in fixture.cases {
-        let error = from_decimal_string(&case.input).unwrap_err();
-        assert_eq!(error.code, OrbitErrorCode::InvalidDecimal);
+        let code = case.code.as_deref().unwrap_or("INVALID_DECIMAL");
+        if code == "INVALID_DECIMAL" {
+            let error = from_decimal_string(&case.input).unwrap_err();
+            assert_eq!(error.code, OrbitErrorCode::InvalidDecimal);
+        } else {
+            assert!(from_decimal_string(&case.input).is_ok());
+            let error = parse(&case.input).unwrap_err();
+            assert_eq!(
+                error.code,
+                match code {
+                    "INVALID_RESERVED" => OrbitErrorCode::InvalidReserved,
+                    "INVALID_FORMAT_VERSION" => OrbitErrorCode::InvalidFormatVersion,
+                    other => panic!("unexpected reject code: {other}"),
+                }
+            );
+        }
         assert!(!is_valid(&case.input));
     }
     assert_eq!(from_decimal_string("0").unwrap(), 0);
@@ -128,6 +149,8 @@ fn generator_conformance_v2() {
     for case in fixture.cases {
         let options = GeneratorOptions {
             node: case.node,
+            region: 0,
+            tenant: 0,
             clock: Arc::new(|| 0_i64),
             clock_rollback_tolerance_ms: 5_000,
             on_sequence_exhausted: SequenceExhaustedMode::Fail,
@@ -201,6 +224,8 @@ fn generate_helpers_and_decode_guards_v2() {
     let index_c = index.clone();
     let generator = OrbitGenerator::new(GeneratorOptions {
         node: 7,
+        region: 3,
+        tenant: 1000,
         clock: Arc::new(move || {
             let i = index_c.fetch_add(1, Ordering::SeqCst);
             let values = ticks_c.lock().unwrap();
@@ -211,8 +236,12 @@ fn generate_helpers_and_decode_guards_v2() {
         confirm_ownership: None,
     })
     .unwrap();
+    assert_eq!(generator.region(), 3);
+    assert_eq!(generator.tenant(), 1000);
     let id = generator.generate(1).unwrap();
     assert_eq!(get_format_version(id).unwrap(), ISSUED_FORMAT_VERSION);
+    assert_eq!(get_region(id).unwrap(), 3);
+    assert_eq!(get_tenant(id).unwrap(), 1000);
     assert_eq!(get_reserved(id).unwrap(), 0);
 
     let wait_ticks = Arc::new(Mutex::new(vec![1000_i64, 1000, 1001, 1001]));
@@ -221,6 +250,8 @@ fn generate_helpers_and_decode_guards_v2() {
     let wait_index_c = wait_index.clone();
     let waiter = OrbitGenerator::new(GeneratorOptions {
         node: 7,
+        region: 0,
+        tenant: 0,
         clock: Arc::new(move || {
             let i = wait_index_c.fetch_add(1, Ordering::SeqCst);
             let values = wait_ticks_c.lock().unwrap();
@@ -242,6 +273,8 @@ fn generate_helpers_and_decode_guards_v2() {
             r#type: 1,
             node: 1,
             sequence: 0,
+            region: 0,
+            tenant: 0,
             reserved: 0,
         })
         .unwrap_err()
@@ -255,6 +288,23 @@ fn generate_helpers_and_decode_guards_v2() {
             r#type: 1,
             node: 1,
             sequence: 0,
+            region: 16,
+            tenant: 0,
+            reserved: 0,
+        })
+        .unwrap_err()
+        .code,
+        OrbitErrorCode::InvalidRegion
+    );
+    assert_eq!(
+        encode(OrbitFields {
+            format_version: 1,
+            timestamp: 0,
+            r#type: 1,
+            node: 1,
+            sequence: 0,
+            region: 0,
+            tenant: 0,
             reserved: 1,
         })
         .unwrap_err()
@@ -271,6 +321,8 @@ fn generate_helpers_and_decode_guards_v2() {
         r#type: 1,
         node: 7,
         sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 0,
     })
     .unwrap()
@@ -278,5 +330,19 @@ fn generate_helpers_and_decode_guards_v2() {
     assert_eq!(
         decode(with_reserved).unwrap_err().code,
         OrbitErrorCode::InvalidReserved
+    );
+    assert_eq!(
+        OrbitGenerator::new(GeneratorOptions {
+            node: 1,
+            region: 16,
+            tenant: 0,
+            clock: Arc::new(|| 0_i64),
+            clock_rollback_tolerance_ms: 5_000,
+            on_sequence_exhausted: SequenceExhaustedMode::Wait,
+            confirm_ownership: None,
+        })
+        .err()
+        .map(|e| e.code),
+        Some(OrbitErrorCode::InvalidRegion)
     );
 }

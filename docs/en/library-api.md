@@ -57,7 +57,9 @@ Libraries SHOULD expose these stable code strings (or language enums mapping to 
 | `INVALID_TIMESTAMP` | Timestamp outside the 41-bit range when encoding fields |
 | `INVALID_DECIMAL` | Non-canonical or out-of-range decimal string |
 | `INVALID_FORMAT_VERSION` | Unknown / reserved FormatVersion (v2) |
-| `INVALID_RESERVED` | Non-zero Reserved on encode, or rejected on strict decode (v2) |
+| `INVALID_REGION` | Region outside `0..15` (v2) |
+| `INVALID_TENANT` | Tenant outside `0..65535` (v2) |
+| `INVALID_RESERVED` | Non-zero remaining Reserved on encode, or rejected on decode (v2) |
 | `CLOCK_ROLLBACK` | Wall clock behind `last_timestamp` beyond tolerance |
 | `SEQUENCE_EXHAUSTED` | Same-ms capacity exceeded and the implementation chooses to fail instead of waiting |
 | `NODE_OWNERSHIP_LOST` | Lease / ownership cannot be confirmed; fail closed |
@@ -117,10 +119,11 @@ Operations stay the same (`generate` / `parse` / field getters / `isValid`), but
 | JSON / HTTP | unsigned decimal | unsigned decimal (longer strings) |
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence ranges | 6 / 7 / 10 bits | 16 / 16 / 16 bits |
-| Extra fields | — | `FormatVersion` (MUST `1`), `Reserved` (MUST `0` on encode) |
+| Extra fields | — | `FormatVersion` (MUST `1`), `Region` (`0..15`), `Tenant` (`0..65535`), remaining `Reserved` (MUST `0` on encode) |
 | Package entry | `@orbit-id/core` | `@orbit-id/core/v2` (also `v2` namespace on root) |
 
-Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_RESERVED`.
+Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_REGION`, `INVALID_TENANT`,
+`INVALID_RESERVED`.
 
 Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Every public language package ships v2 as an
 additive namespace in 1.x (TypeScript, Java, Rust, PHP); Go keeps v2 under `internal/v2` until the

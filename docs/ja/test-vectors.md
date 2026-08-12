@@ -138,7 +138,8 @@ Calculation:
 - [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-alpha レイアウト: `FormatVersion=1`、`Reserved=0`。v2 を提供する全パッケージがこれらを読み込む:
+レイアウト: `FormatVersion=1`、残 `Reserved=0`。Region（`0..15`）と Tenant（`0..65535`）は旧 28-bit
+Reserved から切り出し。v2 を提供する全パッケージがこれらを読み込む:
 `@orbit-id/core`、Java、Rust、PHP、Go（`internal/v2` 経由）。
 
 ### v2 Vector 1: Epoch
@@ -151,12 +152,14 @@ alpha レイアウト: `FormatVersion=1`、`Reserved=0`。v2 を提供する全�
 | Type | `1` |
 | Node | `7` |
 | Sequence | `42` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21267647932558653967613957625668960256` |
 | Hex ID | `0x100000000000000010007002a0000000` |
 
 ```text
-(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | 0
+(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | (0 << 24) | (0 << 8) | 0
 ```
 
 ### v2 Vector 2: Representative timestamp
@@ -169,6 +172,8 @@ alpha レイアウト: `FormatVersion=1`、`Reserved=0`。v2 を提供する全�
 | Type | `2` |
 | Node | `7` |
 | Sequence | `42` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21268914460260752812362294599660601344` |
 | Hex ID | `0x10003e71d3b8700020007002a0000000` |
@@ -183,9 +188,31 @@ alpha レイアウト: `FormatVersion=1`、`Reserved=0`。v2 を提供する全�
 | Type | `1` |
 | Node | `1` |
 | Sequence | `65,535` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21267647932634211831339783976615149568` |
 | Hex ID | `0x10000000003e800010001ffff0000000` |
+
+### v2 Vector 4: 非ゼロ Region / Tenant
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:00.000Z` |
+| Timestamp | `0` |
+| Type | `1` |
+| Node | `7` |
+| Sequence | `42` |
+| Region | `3` |
+| Tenant | `1000` |
+| Reserved | `0` |
+| Decimal ID | `21267647932558653967613957625719547904` |
+| Hex ID | `0x100000000000000010007002a303e800` |
+
+```text
+(1 << 124) | (1 << 60) | (7 << 44) | (42 << 28) | (3 << 24) | (1000 << 8) | 0
+```
 
 ### v2 decoder 拒否（抜粋）
 
@@ -194,6 +221,7 @@ alpha レイアウト: `FormatVersion=1`、`Reserved=0`。v2 を提供する全�
 | `-1` | Negative value |
 | `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
 | `01` | Leading zeros are not canonical |
+| `21267647932558653967613834469092360193` | 残 Reserved 非 0（`0x…01`） |
 
 完全な表: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)。
 

@@ -20,6 +20,8 @@ final class ConformanceV2Test extends TestCase
                 'type' => $case['type'],
                 'node' => $case['node'],
                 'sequence' => $case['sequence'],
+                'region' => $case['region'],
+                'tenant' => $case['tenant'],
                 'reserved' => $case['reserved'],
             ];
             $id = OrbitId::encode($fields);
@@ -33,6 +35,8 @@ final class ConformanceV2Test extends TestCase
             self::assertSame($case['type'], OrbitId::getType($id), $case['id']);
             self::assertSame($case['node'], OrbitId::getNode($id), $case['id']);
             self::assertSame($case['sequence'], OrbitId::getSequence($id), $case['id']);
+            self::assertSame($case['region'], OrbitId::getRegion($id), $case['id']);
+            self::assertSame($case['tenant'], OrbitId::getTenant($id), $case['id']);
             self::assertSame($case['reserved'], OrbitId::getReserved($id), $case['id']);
             self::assertTrue(OrbitId::isValid($id), $case['id']);
         }
@@ -41,11 +45,22 @@ final class ConformanceV2Test extends TestCase
     public function testRejectFixtures(): void
     {
         foreach ($this->fixture('decode-reject.v2.json')['cases'] as $case) {
-            try {
-                OrbitId::fromDecimalString($case['input']);
-                self::fail("Expected INVALID_DECIMAL for {$case['id']}");
-            } catch (OrbitError $error) {
-                self::assertSame(OrbitError::INVALID_DECIMAL, $error->orbitCode, $case['id']);
+            $code = $case['code'] ?? OrbitError::INVALID_DECIMAL;
+            if ($code === OrbitError::INVALID_DECIMAL) {
+                try {
+                    OrbitId::fromDecimalString($case['input']);
+                    self::fail("Expected INVALID_DECIMAL for {$case['id']}");
+                } catch (OrbitError $error) {
+                    self::assertSame(OrbitError::INVALID_DECIMAL, $error->orbitCode, $case['id']);
+                }
+            } else {
+                self::assertSame($case['input'], OrbitId::fromDecimalString($case['input']), $case['id']);
+                try {
+                    OrbitId::parse($case['input']);
+                    self::fail("Expected {$code} for {$case['id']}");
+                } catch (OrbitError $error) {
+                    self::assertSame($code, $error->orbitCode, $case['id']);
+                }
             }
             self::assertFalse(OrbitId::isValid($case['input']), $case['id']);
         }
@@ -109,6 +124,8 @@ final class ConformanceV2Test extends TestCase
         $index = 0;
         $generator = new OrbitGenerator([
             'node' => 7,
+            'region' => 3,
+            'tenant' => 1000,
             'onSequenceExhausted' => 'wait',
             'clock' => static function () use (&$ticks, &$index): int {
                 $value = $ticks[min($index, count($ticks) - 1)];
@@ -117,10 +134,14 @@ final class ConformanceV2Test extends TestCase
             },
         ]);
         self::assertSame(0, $generator->getSequence());
+        self::assertSame(3, $generator->region);
+        self::assertSame(1000, $generator->tenant);
         $id = $generator->generate(1);
         self::assertNotSame('', $id);
         self::assertGreaterThan('0', $generator->getLastTimestamp());
         self::assertSame(OrbitId::ISSUED_FORMAT_VERSION, OrbitId::getFormatVersion($id));
+        self::assertSame(3, OrbitId::getRegion($id));
+        self::assertSame(1000, OrbitId::getTenant($id));
         self::assertSame(0, OrbitId::getReserved($id));
 
         $waitIndex = 0;
@@ -143,6 +164,8 @@ final class ConformanceV2Test extends TestCase
         self::assertSame(2, OrbitId::getType($sample));
         self::assertSame(7, OrbitId::getNode($sample));
         self::assertSame(42, OrbitId::getSequence($sample));
+        self::assertSame(0, OrbitId::getRegion($sample));
+        self::assertSame(0, OrbitId::getTenant($sample));
         self::assertTrue(OrbitId::isValid($sample));
         self::assertSame($sample, OrbitId::toDecimalString($sample));
         self::assertSame($sample, OrbitId::fromDecimalString($sample));
@@ -167,10 +190,12 @@ final class ConformanceV2Test extends TestCase
             'type' => 1,
             'node' => 7,
             'sequence' => 0,
+            'region' => 0,
+            'tenant' => 0,
             'reserved' => 0,
         ];
 
-        foreach (['formatVersion', 'timestamp', 'type', 'node', 'sequence', 'reserved'] as $missing) {
+        foreach (['formatVersion', 'timestamp', 'type', 'node', 'sequence', 'region', 'tenant', 'reserved'] as $missing) {
             $fields = $base;
             unset($fields[$missing]);
             try {
@@ -186,6 +211,8 @@ final class ConformanceV2Test extends TestCase
         $this->assertOrbitError(OrbitError::INVALID_TYPE, fn() => OrbitId::encode(['type' => -1] + $base));
         $this->assertOrbitError(OrbitError::INVALID_NODE, fn() => OrbitId::encode(['node' => 65536] + $base));
         $this->assertOrbitError(OrbitError::INVALID_SEQUENCE, fn() => OrbitId::encode(['sequence' => 65536] + $base));
+        $this->assertOrbitError(OrbitError::INVALID_REGION, fn() => OrbitId::encode(['region' => 16] + $base));
+        $this->assertOrbitError(OrbitError::INVALID_TENANT, fn() => OrbitId::encode(['tenant' => 65536] + $base));
         $this->assertOrbitError(OrbitError::INVALID_RESERVED, fn() => OrbitId::encode(['reserved' => 1] + $base));
         $this->assertOrbitError(OrbitError::INVALID_TIMESTAMP, fn() => OrbitId::encode(['timestamp' => '281474976710656'] + $base));
         $this->assertOrbitError(OrbitError::INVALID_TIMESTAMP, fn() => OrbitId::encode(['timestamp' => '-1'] + $base));
@@ -205,6 +232,15 @@ final class ConformanceV2Test extends TestCase
         );
         $this->assertOrbitError(OrbitError::INVALID_RESERVED, fn() => OrbitId::decode($nonZeroReserved));
         self::assertFalse(OrbitId::isValid($nonZeroReserved));
+    }
+
+    public function testGeneratorRejectsInvalidRegionTenant(): void
+    {
+        $this->assertOrbitError(OrbitError::INVALID_REGION, fn() => new OrbitGenerator(['node' => 1, 'region' => 16]));
+        $this->assertOrbitError(OrbitError::INVALID_TENANT, fn() => new OrbitGenerator(['node' => 1, 'tenant' => 65536]));
+        $ok = new OrbitGenerator(['node' => 1]);
+        self::assertSame(0, $ok->region);
+        self::assertSame(0, $ok->tenant);
     }
 
     public function testIdRejectsNonStringNonIntAndNegativeInt(): void
