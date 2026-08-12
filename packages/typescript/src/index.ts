@@ -1,6 +1,9 @@
 /**
  * Language package surface for TypeScript consumers.
  * Implementation lives in `@orbit-id/core`.
+ *
+ * - Default export: Orbit ID v1 (stable)
+ * - `v2` namespace / `@orbit-id/typescript/v2`: Orbit ID v2 Draft
  */
 export {
   DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS,
@@ -35,3 +38,5 @@ export type {
   OrbitFields,
   SequenceExhaustedMode,
 } from "@orbit-id/core";
+
+export * as v2 from "./v2/index.js";
