@@ -362,6 +362,14 @@ function bind(): void {
     nodeDraft = "1";
     timestampDraft = "";
     sequenceDraft = "";
+    if (regionInput) {
+      regionInput.value = "0";
+      regionDraft = "0";
+    }
+    if (tenantInput) {
+      tenantInput.value = "0";
+      tenantDraft = "0";
+    }
     resetPanel(genOut, t.resultPlaceholder);
   });
 }
