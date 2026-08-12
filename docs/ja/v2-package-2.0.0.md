@@ -45,7 +45,7 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 | **G. Go** | モジュール **`github.com/orbit-id/go/v2`**。`internal/v2` を公開化。`github.com/orbit-id/go` は v1 のまま | `go.mod`、mirror、[go-module.md](go-module.md) |
 | **H. CLI + playground** | 既定 `--spec` / UI → v2。明示的 v1 モードは残す | `--spec v1` を壊さない |
 | **I. Docs 仕上げ** | 1.x → 2.0.0 移行メモ、CHANGELOG、README、Go `/v2` 節 | I 単独または J 直前 |
-| **J. リリースカット** | マニフェストを `2.0.0` に揃え、合流後 GitHub Release **`v2.0.0`** | [横断 versioning](cross-registry-versioning.md) のチェックリスト |
+| **J. リリースカット** | [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) を `version=2.0.0` で実行 → その PR をマージ → GitHub Release **`v2.0.0`**（安定タグ → Publish） | [Bump release PR をいつ実行するか](#bump-release-pr-をいつ実行するか) 参照 |
 
 ### Issue タイトル案
 
@@ -55,6 +55,32 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 - `feat(go): publish Orbit ID v2 under module path /v2`
 - `chore(release): cut coordinated v2.0.0`
 
+## Bump release PR をいつ実行するか
+
+Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
+（`.github/workflows/bump-release-pr.yml`、`main` 上の `workflow_dispatch`）。
+
+ツリー内のバージョンメタデータだけを上げて PR を開く。タグ切りやレジストリ公開はしない。
+その PR をマージしたあと、GitHub Release を作って Publish を走らせる
+（[横断 versioning](cross-registry-versioning.md)）。
+
+| タイミング | 実行する？ | 入力 |
+| --- | --- | --- |
+| スライス **A–I**（仕様 / API / docs）の作業中 | **しない** | — |
+| スライス **J** の開始時（A–I が `main` にあり CI green） | **する** | `version` = `2.0.0`（先頭の `v` なし） |
+| bump PR マージ後 | **しない**（次は Release） | 代わりに GitHub Release / タグ `v2.0.0` |
+| pre-release / alpha / beta タグ向け | レジストリカットとしては **しない** | pre-release タグは公開しない。この workflow で偽の registry beta を作らない |
+
+### スライス J の手順
+
+1. スライス A–I 合流、`main` の CI green を確認。
+2. **Actions → Bump release PR → Run workflow** を `main` で実行（`version=2.0.0`）。
+3. 開かれた `chore/release-v2.0.0` PR をレビューしてマージ（CI green）。
+4. GitHub Release **`v2.0.0`**（pre-release ではない）を作り `.github/workflows/publish.yml` を走らせる。
+5. レジストリを確認（npm / Maven / crates / Packagist / `proxy.golang.org` の `…/go/v2@v2.0.0`）。
+
+ローカル同等（任意）: `npm run release:bump -- 2.0.0` のあと手で PR。ロックステップ bump には
+Action を優先する。
 ## 消費者移行（要約）
 
 | いま（1.x） | `2.0.0` 後 |
@@ -71,7 +97,8 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 `v2.0.0` タグ前:
 
 1. スライス A–I 合流、`main` の CI green。
-2. ツリー内バージョン = `2.0.0`（Bump release PR / `npm run release:bump -- 2.0.0`）。
+2. [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) を
+   `version=2.0.0` で実行し、できた PR をマージしてツリー内バージョンを `2.0.0` にする。
 3. 各言語で共有 v2 fixture をパッケージルートから generate/parse（Go は `/v2`）。
 4. GitHub Release `v2.0.0`（pre-release ではない）を作り Publish を走らせる。
 5. npm / Maven / crates / Packagist / `proxy.golang.org` の `…/go/v2@v2.0.0` を確認。

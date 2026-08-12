@@ -45,7 +45,7 @@ Prefer small reviewable PRs. Do **not** land the version bump / tag until slices
 | **G. Go** | Module path **`github.com/orbit-id/go/v2`**; lift `internal/v2` to public; leave `github.com/orbit-id/go` as v1 major line | Update `go.mod`, mirror split docs, [go-module.md](go-module.md) |
 | **H. CLI + playground** | Default `--spec` / UI → v2; keep explicit v1 mode | Do not break scripts that pass `--spec v1` |
 | **I. Docs polish** | Migration notes (1.x → 2.0.0), CHANGELOG, README install snippets, cross-registry Go `/v2` section | Can land with I or just before J |
-| **J. Release cut** | Bump manifests to `2.0.0`, merge, GitHub Release **`v2.0.0`** (stable tag → Publish workflow) | Follow [Cross-registry versioning](cross-registry-versioning.md) checklist |
+| **J. Release cut** | Run [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) with `version=2.0.0`, merge that PR, then GitHub Release **`v2.0.0`** (stable tag → Publish) | See [When to run Bump release PR](#when-to-run-bump-release-pr) |
 
 ### Suggested Issue titles
 
@@ -55,6 +55,32 @@ Reuse this tracker as the epic; open child Issues when starting each slice, for 
 - `feat(go): publish Orbit ID v2 under module path /v2`
 - `chore(release): cut coordinated v2.0.0`
 
+## When to run Bump release PR
+
+Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
+(`.github/workflows/bump-release-pr.yml`, `workflow_dispatch` on `main`).
+
+It only bumps in-tree version metadata and opens a PR. It does **not** tag or publish. After that
+PR merges, create a GitHub Release so Publish runs (see
+[Cross-registry versioning](cross-registry-versioning.md)).
+
+| Timing | Run? | Input |
+| --- | --- | --- |
+| During slices **A–I** (spec / API / docs work) | **No** | — |
+| Start of slice **J**, after A–I are on `main` and CI is green | **Yes** | `version` = `2.0.0` (no leading `v`) |
+| After the bump PR merges | **No** (next step is Release) | Create GitHub Release / tag `v2.0.0` instead |
+| Pre-release / alpha / beta tags | **No** for registry cuts | Pre-release tags do not publish; do not use this workflow to fake a registry beta |
+
+### Slice J sequence
+
+1. Confirm slices A–I merged; `main` CI green.
+2. **Actions → Bump release PR → Run workflow** on `main` with `version=2.0.0`.
+3. Review and merge the opened `chore/release-v2.0.0` PR (CI green).
+4. Create GitHub Release **`v2.0.0`** (not pre-release) so `.github/workflows/publish.yml` runs.
+5. Verify registries (npm / Maven / crates / Packagist / `proxy.golang.org` for `…/go/v2@v2.0.0`).
+
+Local equivalent (optional): `npm run release:bump -- 2.0.0` then open the PR by hand — prefer the
+Action for a lockstep bump.
 ## Consumer migration (summary)
 
 | Consumer today (1.x) | After `2.0.0` |
@@ -71,7 +97,8 @@ Libraries MUST still refuse to reinterpret a 64-bit v1 ID as v2.
 Before tagging `v2.0.0`:
 
 1. Slices A–I merged; CI green on `main`.
-2. In-tree versions = `2.0.0` (Bump release PR / `npm run release:bump -- 2.0.0`).
+2. Run [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
+   with `version=2.0.0`; merge the resulting PR so in-tree versions are `2.0.0`.
 3. Spot-check: each language can generate/parse a shared v2 fixture ID from the package root (Go from `/v2`).
 4. Create GitHub Release `v2.0.0` (not a pre-release) so `.github/workflows/publish.yml` runs.
 5. Verify npm / Maven / crates / Packagist / `proxy.golang.org` for `…/go/v2@v2.0.0`.
