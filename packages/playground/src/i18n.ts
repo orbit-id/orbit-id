@@ -1,4 +1,5 @@
 export type Locale = "en" | "ja";
+export type SpecVersion = "v1" | "v2";
 
 export type Messages = {
   htmlLang: string;
@@ -10,7 +11,8 @@ export type Messages = {
   github: string;
   badge: string;
   pageTitle: string;
-  pageDesc: string;
+  pageDescV1: string;
+  pageDescV2: string;
   checkLocal: string;
   checkNoServer: string;
   parse: string;
@@ -18,10 +20,13 @@ export type Messages = {
   clear: string;
   decimalId: string;
   parseAction: string;
-  type: string;
-  node: string;
+  typeV1: string;
+  typeV2: string;
+  nodeV1: string;
+  nodeV2: string;
   timestamp: string;
-  sequence: string;
+  sequenceV1: string;
+  sequenceV2: string;
   generateAction: string;
   encodeAction: string;
   resultPlaceholder: string;
@@ -29,8 +34,14 @@ export type Messages = {
   langLabel: string;
   langEn: string;
   langJa: string;
-  docsSpec: string;
+  versionLabel: string;
+  versionV1: string;
+  versionV2: string;
+  docsSpecV1: string;
+  docsSpecV2: string;
   docsVectors: string;
+  idPlaceholderV1: string;
+  idPlaceholderV2: string;
 };
 
 export const messages: Record<Locale, Messages> = {
@@ -44,8 +55,10 @@ export const messages: Record<Locale, Messages> = {
     github: "GitHub",
     badge: "Runs in your browser · no signup",
     pageTitle: "Orbit ID Playground",
-    pageDesc:
+    pageDescV1:
       "Generate, parse, and encode Orbit ID v1 values locally. Invalid input shows the rejection reason.",
+    pageDescV2:
+      "Generate, parse, and encode Orbit ID v2 Draft (128-bit) values locally. Default remains v1 until you switch.",
     checkLocal: "Processing stays in the browser",
     checkNoServer: "Input is never sent to a server",
     parse: "Parse",
@@ -53,10 +66,13 @@ export const messages: Record<Locale, Messages> = {
     clear: "Clear",
     decimalId: "Decimal ID",
     parseAction: "Parse",
-    type: "Type (1–63)",
-    node: "Node (0–127)",
+    typeV1: "Type (1–63)",
+    typeV2: "Type (1–65535)",
+    nodeV1: "Node (0–127)",
+    nodeV2: "Node (0–65535)",
     timestamp: "Timestamp (Orbit ms, optional)",
-    sequence: "Sequence (optional)",
+    sequenceV1: "Sequence (optional, 0–1023)",
+    sequenceV2: "Sequence (optional, 0–65535)",
     generateAction: "Generate",
     encodeAction: "Encode fields",
     resultPlaceholder: "Results appear here",
@@ -65,8 +81,14 @@ export const messages: Record<Locale, Messages> = {
     langLabel: "Language",
     langEn: "English",
     langJa: "日本語",
-    docsSpec: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/orbit-id-v1.md",
+    versionLabel: "Format",
+    versionV1: "v1 (stable)",
+    versionV2: "v2 (Draft)",
+    docsSpecV1: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/orbit-id-v1.md",
+    docsSpecV2: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/orbit-id-v2.md",
     docsVectors: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/test-vectors.md",
+    idPlaceholderV1: "140612821619842090",
+    idPlaceholderV2: "21267647932558653967613957625668960256",
   },
   ja: {
     htmlLang: "ja",
@@ -78,8 +100,10 @@ export const messages: Record<Locale, Messages> = {
     github: "GitHub",
     badge: "ブラウザ完結 · 登録不要",
     pageTitle: "Orbit ID プレイグラウンド",
-    pageDesc:
+    pageDescV1:
       "Orbit ID v1 の生成・解析・エンコードをその場で試せます。不正な入力は拒否理由を表示します。",
+    pageDescV2:
+      "Orbit ID v2 Draft（128-bit）の生成・解析・エンコードをその場で試せます。切り替えない限り既定は v1 です。",
     checkLocal: "処理はブラウザ内で完結します",
     checkNoServer: "入力データはサーバーへ送りません",
     parse: "解析",
@@ -87,10 +111,13 @@ export const messages: Record<Locale, Messages> = {
     clear: "クリア",
     decimalId: "Decimal ID",
     parseAction: "解析する",
-    type: "Type (1–63)",
-    node: "Node (0–127)",
+    typeV1: "Type (1–63)",
+    typeV2: "Type (1–65535)",
+    nodeV1: "Node (0–127)",
+    nodeV2: "Node (0–65535)",
     timestamp: "Timestamp（Orbit ms・任意）",
-    sequence: "Sequence（任意）",
+    sequenceV1: "Sequence（任意・0–1023）",
+    sequenceV2: "Sequence（任意・0–65535）",
     generateAction: "生成する",
     encodeAction: "フィールドをエンコード",
     resultPlaceholder: "結果がここに表示されます",
@@ -99,20 +126,31 @@ export const messages: Record<Locale, Messages> = {
     langLabel: "言語",
     langEn: "English",
     langJa: "日本語",
-    docsSpec: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/orbit-id-v1.md",
+    versionLabel: "形式",
+    versionV1: "v1（stable）",
+    versionV2: "v2（Draft）",
+    docsSpecV1: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/orbit-id-v1.md",
+    docsSpecV2: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/orbit-id-v2.md",
     docsVectors: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/test-vectors.md",
+    idPlaceholderV1: "140612821619842090",
+    idPlaceholderV2: "21267647932558653967613957625668960256",
   },
 };
 
-const STORAGE_KEY = "orbit-id-playground-locale";
+const LOCALE_KEY = "orbit-id-playground-locale";
+const SPEC_KEY = "orbit-id-playground-spec";
 
 export function resolveLocale(raw: string | null | undefined): Locale {
   return raw === "ja" ? "ja" : "en";
 }
 
+export function resolveSpec(raw: string | null | undefined): SpecVersion {
+  return raw === "v2" ? "v2" : "v1";
+}
+
 export function readStoredLocale(): Locale {
   try {
-    return resolveLocale(localStorage.getItem(STORAGE_KEY));
+    return resolveLocale(localStorage.getItem(LOCALE_KEY));
   } catch {
     return "en";
   }
@@ -120,7 +158,23 @@ export function readStoredLocale(): Locale {
 
 export function writeStoredLocale(locale: Locale): void {
   try {
-    localStorage.setItem(STORAGE_KEY, locale);
+    localStorage.setItem(LOCALE_KEY, locale);
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+export function readStoredSpec(): SpecVersion {
+  try {
+    return resolveSpec(localStorage.getItem(SPEC_KEY));
+  } catch {
+    return "v1";
+  }
+}
+
+export function writeStoredSpec(spec: SpecVersion): void {
+  try {
+    localStorage.setItem(SPEC_KEY, spec);
   } catch {
     // ignore quota / private mode
   }

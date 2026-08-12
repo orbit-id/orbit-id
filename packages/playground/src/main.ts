@@ -7,17 +7,22 @@ import {
   toDecimalString,
   toHexString,
 } from "@orbit-id/core";
+import * as v2 from "@orbit-id/core/v2";
 import {
   type Locale,
+  type SpecVersion,
   messages,
   readStoredLocale,
+  readStoredSpec,
   writeStoredLocale,
+  writeStoredSpec,
 } from "./i18n.js";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("#app missing");
 
 let locale: Locale = readStoredLocale();
+let spec: SpecVersion = readStoredSpec();
 let idDraft = "";
 let typeDraft = "1";
 let nodeDraft = "1";
@@ -28,6 +33,7 @@ render();
 
 function render(): void {
   const t = messages[locale];
+  const isV2 = spec === "v2";
   document.documentElement.lang = t.htmlLang;
   document.title = t.title;
 
@@ -40,6 +46,13 @@ function render(): void {
       </a>
       <div class="top-right">
         <label class="lang-switch">
+          <span class="lang-label">${escapeHtml(t.versionLabel)}</span>
+          <select id="spec-select" aria-label="${escapeAttr(t.versionLabel)}">
+            <option value="v1" ${spec === "v1" ? "selected" : ""}>${escapeHtml(t.versionV1)}</option>
+            <option value="v2" ${spec === "v2" ? "selected" : ""}>${escapeHtml(t.versionV2)}</option>
+          </select>
+        </label>
+        <label class="lang-switch">
           <span class="lang-label">${escapeHtml(t.langLabel)}</span>
           <select id="locale-select" aria-label="${escapeAttr(t.langLabel)}">
             <option value="en" ${locale === "en" ? "selected" : ""}>${escapeHtml(t.langEn)}</option>
@@ -47,7 +60,7 @@ function render(): void {
           </select>
         </label>
         <nav class="top-links" aria-label="${escapeAttr(t.navAria)}">
-          <a href="${escapeAttr(t.docsSpec)}" target="_blank" rel="noreferrer">${escapeHtml(t.spec)}</a>
+          <a href="${escapeAttr(isV2 ? t.docsSpecV2 : t.docsSpecV1)}" target="_blank" rel="noreferrer">${escapeHtml(t.spec)}</a>
           <a href="${escapeAttr(t.docsVectors)}" target="_blank" rel="noreferrer">${escapeHtml(t.testVectors)}</a>
           <a href="https://github.com/orbit-id/orbit-id/tree/main/spec/conformance" target="_blank" rel="noreferrer">${escapeHtml(t.conformance)}</a>
           <a href="https://github.com/orbit-id/orbit-id" target="_blank" rel="noreferrer">${escapeHtml(t.github)}</a>
@@ -62,7 +75,7 @@ function render(): void {
           <span>${escapeHtml(t.badge)}</span>
         </div>
         <h1 class="page-title">${escapeHtml(t.pageTitle)}</h1>
-        <p class="page-desc">${escapeHtml(t.pageDesc)}</p>
+        <p class="page-desc">${escapeHtml(isV2 ? t.pageDescV2 : t.pageDescV1)}</p>
         <ul class="checks">
           <li>${escapeHtml(t.checkLocal)}</li>
           <li>${escapeHtml(t.checkNoServer)}</li>
@@ -83,7 +96,7 @@ function render(): void {
                 id="id-input"
                 inputmode="numeric"
                 spellcheck="false"
-                placeholder="140612821619842090"
+                placeholder="${escapeAttr(isV2 ? t.idPlaceholderV2 : t.idPlaceholderV1)}"
               />
             </div>
             <div class="actions">
@@ -101,12 +114,12 @@ function render(): void {
           <div class="card-body">
             <div class="row">
               <div class="field">
-                <label for="type">${escapeHtml(t.type)}</label>
-                <input id="type" type="number" min="1" max="63" />
+                <label for="type">${escapeHtml(isV2 ? t.typeV2 : t.typeV1)}</label>
+                <input id="type" type="number" min="1" max="${isV2 ? 65535 : 63}" />
               </div>
               <div class="field">
-                <label for="node">${escapeHtml(t.node)}</label>
-                <input id="node" type="number" min="0" max="127" />
+                <label for="node">${escapeHtml(isV2 ? t.nodeV2 : t.nodeV1)}</label>
+                <input id="node" type="number" min="0" max="${isV2 ? 65535 : 127}" />
               </div>
             </div>
             <div class="row">
@@ -115,8 +128,8 @@ function render(): void {
                 <input class="mono" id="timestamp" inputmode="numeric" placeholder="auto" />
               </div>
               <div class="field">
-                <label for="sequence">${escapeHtml(t.sequence)}</label>
-                <input id="sequence" type="number" min="0" max="1023" placeholder="0" />
+                <label for="sequence">${escapeHtml(isV2 ? t.sequenceV2 : t.sequenceV1)}</label>
+                <input id="sequence" type="number" min="0" max="${isV2 ? 65535 : 1023}" placeholder="0" />
               </div>
             </div>
             <div class="actions">
@@ -156,6 +169,7 @@ function bind(): void {
   const timestampInput = must<HTMLInputElement>("#timestamp");
   const sequenceInput = must<HTMLInputElement>("#sequence");
   const localeSelect = must<HTMLSelectElement>("#locale-select");
+  const specSelect = must<HTMLSelectElement>("#spec-select");
 
   const persistDrafts = (): void => {
     idDraft = idInput.value;
@@ -172,10 +186,31 @@ function bind(): void {
     render();
   });
 
+  specSelect.addEventListener("change", () => {
+    persistDrafts();
+    spec = specSelect.value === "v2" ? "v2" : "v1";
+    writeStoredSpec(spec);
+    render();
+  });
+
   must("#btn-parse").addEventListener("click", () => {
     persistDrafts();
     try {
-      const fields = parse(idInput.value.trim());
+      const raw = idInput.value.trim();
+      if (spec === "v2") {
+        const fields = v2.parse(raw);
+        setOutput(parseOut, {
+          formatVersion: fields.formatVersion,
+          timestamp: fields.timestamp.toString(),
+          type: fields.type,
+          node: fields.node,
+          sequence: fields.sequence,
+          reserved: fields.reserved,
+          hex: v2.toHexString(v2.fromDecimalString(raw)),
+        });
+        return;
+      }
+      const fields = parse(raw);
       setOutput(parseOut, {
         timestamp: fields.timestamp.toString(),
         type: fields.type,
@@ -193,6 +228,24 @@ function bind(): void {
     try {
       const type = Number(typeInput.value);
       const node = Number(nodeInput.value);
+      if (spec === "v2") {
+        const generator = new v2.OrbitGeneratorV2({ node });
+        const id = generator.generate(type);
+        const fields = v2.parse(id);
+        setOutput(genOut, {
+          id: v2.toDecimalString(id),
+          hex: v2.toHexString(id),
+          formatVersion: fields.formatVersion,
+          timestamp: fields.timestamp.toString(),
+          type: fields.type,
+          node: fields.node,
+          sequence: fields.sequence,
+          reserved: fields.reserved,
+        });
+        idInput.value = v2.toDecimalString(id);
+        idDraft = idInput.value;
+        return;
+      }
       const generator = new OrbitGenerator({ node });
       const id = generator.generate(type);
       const fields = parse(id);
@@ -219,6 +272,29 @@ function bind(): void {
         timestampInput.value.trim() === ""
           ? BigInt(Date.now()) - 1767225600000n
           : BigInt(timestampInput.value.trim());
+      if (spec === "v2") {
+        const id = v2.encode({
+          formatVersion: 1,
+          timestamp,
+          type,
+          node,
+          sequence,
+          reserved: 0,
+        });
+        setOutput(genOut, {
+          id: v2.toDecimalString(id),
+          hex: v2.toHexString(id),
+          formatVersion: 1,
+          timestamp: timestamp.toString(),
+          type,
+          node,
+          sequence,
+          reserved: 0,
+        });
+        idInput.value = v2.toDecimalString(id);
+        idDraft = idInput.value;
+        return;
+      }
       const id = encode({ timestamp, type, node, sequence });
       setOutput(genOut, {
         id: toDecimalString(id),

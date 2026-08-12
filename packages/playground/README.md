@@ -2,8 +2,8 @@
 
 Local web UI for encode / decode / generate ([#20](https://github.com/orbit-id/orbit-id/issues/20)).
 
-Visual language is inspired by [Web ToolBox](https://web-toolbox.dev/) (dark tool page, indigo accent, compact cards).
-UI strings support **English (default)** and Japanese; choice is stored in `localStorage`.
+Supports **Orbit ID v1** (default) and **v2 Draft** via a Format selector ([#145](https://github.com/orbit-id/orbit-id/issues/145)).
+UI strings support **English (default)** and Japanese; language and format choice are stored in `localStorage`.
 
 ## Local
 
