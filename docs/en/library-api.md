@@ -106,14 +106,14 @@ Node allocation (static config or Redis lease) is outside the hot path of `gener
 ## Orbit ID v2 delta
 
 Status: **implemented** in `@orbit-id/core` as an additive namespace (`import * as v2 from
-"@orbit-id/core/v2"` or `import { v2 } from "@orbit-id/core"`). Spec Draft (alpha exit criteria
-met): [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
+"@orbit-id/core/v2"` or `import { v2 } from "@orbit-id/core"`). Spec (Stable):
+[Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
 [Design Decisions (v2)](design-decisions-v2.md). Promotion path:
-[v2 alpha exit](v2-alpha-exit.md).
+[v2 alpha exit](v2-alpha-exit.md) · [package `2.0.0` plan](v2-package-2.0.0.md).
 
 Operations stay the same (`generate` / `parse` / field getters / `isValid`), but:
 
-| Aspect | v1 | v2 (Draft) |
+| Aspect | v1 | v2 (Stable wire; additive on 1.x) |
 | --- | --- | --- |
 | Value width | 64-bit | 128-bit |
 | In-memory (JS/TS) | `bigint` | `bigint` (full 128-bit) |

@@ -3,7 +3,7 @@
 [English](../en/node-management.md)
 
 Orbit ID の一意性は、同時に発行するプロセス間で Node ID が重複しないことに依存します。
-Node の範囲はワイヤ形式に依存します（**v1:** `0..127`、**v2 Draft:** `0..65535` — 下記 v2 節）。
+Node の範囲はワイヤ形式に依存します（**v1:** `0..127`、**v2:** `0..65535` — 下記 v2 節）。
 Node ID の割当は control plane の責務であり、ID ごとの生成処理はローカルで完結させます。
 
 ## 本番の既定
@@ -111,15 +111,15 @@ TypeScript の control-plane ヘルパーは [`@orbit-id/node-lease`](../../pack
 lease 喪失時は `@orbit-id/core` の `OrbitGenerator` に `confirmOwnership` を渡し fail closed
 にしてください。`generate` ごとに Redis を呼ばないでください。
 
-## Orbit ID v2（Draft）
+## Orbit ID v2
 
-規範 Draft（alpha 終了条件充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。Node 幅は **16 bit**（`0..65535`）。
+規範（Stable）: [Orbit ID v2 Specification](orbit-id-v2.md)。Node 幅は **16 bit**（`0..65535`）。
 上記の本番既定・quarantine 規則はそのまま適用し、利用中の形式に合わせて Node 範囲だけ差し替える。
 
 | 形式 | Node 範囲 | 注記 |
 | --- | --- | --- |
 | v1（1.x の既定） | `0..127` | 上記セクション |
-| v2（Draft） | `0..65535` | `@orbit-id/node-lease` に `maxNode: 65535`（または `v2.MAX_NODE`）を渡す |
+| v2（Stable） | `0..65535` | `@orbit-id/node-lease` に `maxNode: 65535`（または `v2.MAX_NODE`）を渡す |
 
 `@orbit-id/node-lease` の **既定 `maxNode` は 127**（v1）のまま。v2 ジェネレーターでは明示的に
 `maxNode` を設定する（例: `65535`）。Redis acquire は広い v2 範囲向けの free-pool 経路を使う

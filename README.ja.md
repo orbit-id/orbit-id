@@ -81,7 +81,7 @@ ID は発行時刻などを隠しません。また、推測耐性、改ざん�
 ## ドキュメント
 
 - [Orbit ID v1 Specification](docs/ja/orbit-id-v1.md)
-- [Orbit ID v2 Specification](docs/ja/orbit-id-v2.md)（Draft）
+- [Orbit ID v2 Specification](docs/ja/orbit-id-v2.md)（Stable）
 - [Canonical Test Vectors](docs/ja/test-vectors.md)
 - [Node Management](docs/ja/node-management.md)
 - [Design Decisions](docs/ja/design-decisions.md)

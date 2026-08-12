@@ -14,7 +14,7 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
 
 | 規則 | 内容 |
 | --- | --- |
-| 仕様ステータス | [Orbit ID v2](orbit-id-v2.md) は、明示的な beta / Stable 手順まで **Draft** |
+| 仕様ステータス | alpha 中は [Orbit ID v2](orbit-id-v2.md) が **Draft**。いまは **Stable**（[#201](https://github.com/orbit-id/orbit-id/issues/201)） |
 | パッケージ既定 | **1.x** のルートは **v1** |
 | v2 の使い方 | 加算名前空間のみ（`v2` / `@orbit-id/core/v2`、`com.github.orbitid.v2` など） |
 | レジストリタグ | 安定版 `vX.Y.Z` のみ公開。pre-release Git タグは公開しない（[#148](https://github.com/orbit-id/orbit-id/issues/148)） |
@@ -43,9 +43,11 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
 
 ### 条件の充足状況
 
-[#197](https://github.com/orbit-id/orbit-id/issues/197) 時点で項目 **1–6 は充足**。仕様はパッケージ
-`2.0.0` 昇格で **Stable** にするまで **Draft**。任意の `v2.0.0-beta.*` 凍結は **スキップ**
-（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。alpha 終了だけではレジストリ公開しない。
+[#197](https://github.com/orbit-id/orbit-id/issues/197) 時点で項目 **1–6 は充足**。仕様ステータスは
+スライス A で **Stable**（[#201](https://github.com/orbit-id/orbit-id/issues/201)）。
+任意の `v2.0.0-beta.*` 凍結は **スキップ**（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。
+パッケージ `2.0.0` のルート API 入れ替えとレジストリ公開は
+[昇格計画](v2-package-2.0.0.md) で追跡。
 
 ## パッケージ `2.0.0` への昇格（ルート → v2）
 

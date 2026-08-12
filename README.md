@@ -82,7 +82,7 @@ is required for external exposure, or as authorization tokens.
 ## Documentation
 
 - [Orbit ID v1 Specification](docs/en/orbit-id-v1.md)
-- [Orbit ID v2 Specification](docs/en/orbit-id-v2.md) (Draft)
+- [Orbit ID v2 Specification](docs/en/orbit-id-v2.md) (Stable)
 - [Canonical Test Vectors](docs/en/test-vectors.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)

@@ -65,12 +65,13 @@ npm / Maven / Go modules / crates.io / Packagist 公開は稼働中。共通の�
 | **v2.0.0** | 正式な 128-bit 版（パッケージ major で v2 をルート API にする）。 |
 
 128-bit を選ぶ理由: [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md)。  
-Draft 仕様（alpha 終了条件充足）: [Orbit ID v2 Specification](orbit-id-v2.md)。  
+Draft → **Stable** 仕様: [Orbit ID v2 Specification](orbit-id-v2.md)
+（[#201](https://github.com/orbit-id/orbit-id/issues/201)）。  
 決定ログ: [Design Decisions（v2）](design-decisions-v2.md)。  
 alpha 終了 / 昇格概要: [v2 alpha 終了](v2-alpha-exit.md)。  
 **パッケージ `2.0.0` 実行計画:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)。
 
-次: 昇格計画のスライス順で実装（Spec Stable → 各言語 → CLI → `v2.0.0` カット）。
+次: 残りの昇格スライス（各言語 → CLI → `v2.0.0` カット）。
 追加の Reserved 切り出し（例: Datacenter）はパッケージ `2.0.0` 以降。
 
 ## リポジトリ構成（モノレポ）

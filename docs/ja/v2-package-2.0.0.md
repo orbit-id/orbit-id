@@ -14,7 +14,7 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 | 項目 | 選択 |
 | --- | --- |
 | 任意の `v2.0.0-beta.*` 凍結 | **スキップ** — alpha 終了条件充足の Draft から下記 `2.0.0` 作業へ進む |
-| カット時の仕様ステータス | パッケージ `2.0.0` と同じ列車で [Orbit ID v2](orbit-id-v2.md) を **Draft → Stable** |
+| カット時の仕様ステータス | **済（スライス A）** — [Orbit ID v2](orbit-id-v2.md) は **Stable**（[#201](https://github.com/orbit-id/orbit-id/issues/201)） |
 | レジストリ公開 | 全コードスライス合流後、協調 `v2.0.0` GitHub Release / タグでのみ |
 | Datacenter / 残 Reserved 切り出し | 引き続き **`2.0.0` 以降**（新 ADR） |
 
@@ -112,4 +112,5 @@ Action を優先する。
 
 ## ステータス
 
-計画のみ（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。実装 Issue/PR は本計画のマージ後。
+スライス **A**（Spec → Stable）は [#201](https://github.com/orbit-id/orbit-id/issues/201)。
+残り B–J は A 合流後。
