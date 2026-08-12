@@ -26,18 +26,29 @@ Do **not** open feature PRs against `orbit-id/go` — change `packages/go` in th
 ## Module path
 
 ```text
-github.com/orbit-id/go
+github.com/orbit-id/go/v2
 ```
 
 Declared in [`packages/go/go.mod`](../../packages/go/go.mod). Import with package
 name `orbitid` (see [`packages/go/README.md`](../../packages/go/README.md)).
+Legacy v1 is available as package `github.com/orbit-id/go/v2/v1`, and existing
+`v1.x` tags on the prior major module path `github.com/orbit-id/go` continue to
+resolve.
 
 ```bash
-go get github.com/orbit-id/go@v1.1.0
+# After the coordinated v2.0.0 cut:
+go get github.com/orbit-id/go/v2@v2.0.0
+
+# Prior major (unchanged historical tags):
+go get github.com/orbit-id/go@v1.1.1
 ```
 
 The former subdirectory path `github.com/orbit-id/orbit-id/packages/go` is retired.
 
+**Note:** After this module path lands on the `orbit-id/go` mirror `main`, do **not**
+cut new `v1.*` tags from that `main` tip — Go rejects a `v1` tag whose `go.mod`
+declares `/v2`. Patch v1 from a maintenance commit that still declares
+`github.com/orbit-id/go` if needed.
 ## One-time setup
 
 1. Mirror repo exists: [`orbit-id/go`](https://github.com/orbit-id/go).
@@ -58,8 +69,13 @@ The `go` job in [`.github/workflows/publish.yml`](../../.github/workflows/publis
 ## Verify
 
 ```bash
+# After v2.0.0 is published:
 GOPROXY=https://proxy.golang.org,direct \
-  go list -m github.com/orbit-id/go@v1.1.0
+  go list -m github.com/orbit-id/go/v2@v2.0.0
+
+# Prior major:
+GOPROXY=https://proxy.golang.org,direct \
+  go list -m github.com/orbit-id/go@v1.1.1
 ```
 
 First fetch after a new tag can take a few minutes for the proxy to index. Use
@@ -71,4 +87,4 @@ First fetch after a new tag can take a few minutes for the proxy to index. Use
 2. Ensure `GO_SPLIT_TOKEN` is set.
 3. Tag and push monorepo `vX.Y.Z` (Publish `go` job mirrors it).
 4. Confirm [`orbit-id/go` tags](https://github.com/orbit-id/go/tags) and
-   [pkg.go.dev](https://pkg.go.dev/github.com/orbit-id/go).
+   [pkg.go.dev](https://pkg.go.dev/github.com/orbit-id/go/v2).
