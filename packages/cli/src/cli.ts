@@ -1,12 +1,13 @@
-import { pathToFileURL } from "node:url";
 import {
   OrbitError,
-  OrbitGenerator,
+  OrbitGeneratorV2,
+  fromDecimalString,
   parse,
   toDecimalString,
+  toHexString,
   toUnixTimeMs,
-} from "@orbit-id/core/v1";
-import * as v2 from "@orbit-id/core/v2";
+} from "@orbit-id/core";
+import * as v1 from "@orbit-id/core/v1";
 
 type SpecVersion = "v1" | "v2";
 
@@ -16,7 +17,7 @@ function printUsage(stream: NodeJS.WritableStream = process.stderr): void {
   orbit-id generate --type <n> [--node <n>] [--region <n>] [--tenant <n>] [--spec v1|v2]
 
 Options:
-  --spec v1|v2   Wire format (default: v1). Alias: --v2 for --spec v2
+  --spec v1|v2   Wire format (default: v2). Alias: --v2 for --spec v2
   --region <n>   v2 only (default: 0, range 0..15)
   --tenant <n>   v2 only (default: 0, range 0..65535)
 
@@ -24,14 +25,15 @@ Environment:
   ORBIT_NODE_ID   Default Node ID when --node is omitted (generate)
 
 Ranges:
+  v2  type 1..65535, node 0..65535, region 0..15, tenant 0..65535  (FormatVersion=1)
   v1  type 1..63, node 0..127
-  v2  type 1..65535, node 0..65535, region 0..15, tenant 0..65535  (Draft; FormatVersion=1)
 
 Examples:
-  orbit-id parse 140612821619842090
-  orbit-id parse --spec v2 21267647932558653967613957625668960256
+  orbit-id parse 21267647932558653967613957625668960256
+  orbit-id parse --spec v1 140612821619842090
   ORBIT_NODE_ID=7 orbit-id generate --type 1
-  orbit-id generate --spec v2 --type 1 --node 7 --region 3 --tenant 1000
+  orbit-id generate --spec v1 --type 1 --node 7
+  orbit-id generate --type 1 --node 7 --region 3 --tenant 1000
 `);
 }
 
@@ -79,7 +81,7 @@ function parseArgs(argv: string[]): {
 function resolveSpec(flags: Record<string, string | boolean>): SpecVersion {
   const raw = flags.spec;
   if (raw === undefined || raw === false) {
-    return "v1";
+    return "v2";
   }
   if (raw === true) {
     fail("--spec requires v1 or v2");
@@ -144,7 +146,7 @@ function rejectV2OnlyGenerateFlags(
   }
   for (const name of ["region", "tenant"] as const) {
     if (flags[name] !== undefined && flags[name] !== false) {
-      fail(`--${name} requires --spec v2 (or --v2)`);
+      fail(`--${name} is not supported with --spec v1`);
     }
   }
 }
@@ -173,25 +175,19 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
     fail("parse requires <id> (unsigned decimal string)");
   }
   try {
-    if (spec === "v2") {
-      const fields = v2.parse(idArg);
-      const unixMs = v2.toUnixTimeMs(fields.timestamp);
+    if (spec === "v1") {
+      const fields = v1.parse(idArg);
+      const unixMs = v1.toUnixTimeMs(fields.timestamp);
       const time = new Date(Number(unixMs)).toISOString();
       process.stdout.write(
         `${JSON.stringify(
           {
-            spec: "v2",
             id: idArg,
-            formatVersion: fields.formatVersion,
             timestamp: fields.timestamp.toString(10),
             time,
             type: fields.type,
             node: fields.node,
             sequence: fields.sequence,
-            region: fields.region,
-            tenant: fields.tenant,
-            reserved: fields.reserved,
-            hex: v2.toHexString(v2.fromDecimalString(idArg)),
           },
           null,
           2,
@@ -206,12 +202,18 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
     process.stdout.write(
       `${JSON.stringify(
         {
+          spec: "v2",
           id: idArg,
+          formatVersion: fields.formatVersion,
           timestamp: fields.timestamp.toString(10),
           time,
           type: fields.type,
           node: fields.node,
           sequence: fields.sequence,
+          region: fields.region,
+          tenant: fields.tenant,
+          reserved: fields.reserved,
+          hex: toHexString(fromDecimalString(idArg)),
         },
         null,
         2,
@@ -228,20 +230,20 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
 function cmdGenerate(flags: Record<string, string | boolean>, spec: SpecVersion): void {
   try {
     rejectV2OnlyGenerateFlags(flags, spec);
-    if (spec === "v2") {
-      const type = requireIntFlag(flags, "type", 1, 65535);
-      const node = resolveNode(flags, 65535);
-      const region = optionalIntFlag(flags, "region", 0, 15, 0);
-      const tenant = optionalIntFlag(flags, "tenant", 0, 65535, 0);
-      const generator = new v2.OrbitGeneratorV2({ node, region, tenant });
+    if (spec === "v1") {
+      const type = requireIntFlag(flags, "type", 1, 63);
+      const node = resolveNode(flags, 127);
+      const generator = new v1.OrbitGenerator({ node });
       const id = generator.generate(type);
-      process.stdout.write(`${v2.toDecimalString(id)}\n`);
+      process.stdout.write(`${v1.toDecimalString(id)}\n`);
       return;
     }
 
-    const type = requireIntFlag(flags, "type", 1, 63);
-    const node = resolveNode(flags, 127);
-    const generator = new OrbitGenerator({ node });
+    const type = requireIntFlag(flags, "type", 1, 65535);
+    const node = resolveNode(flags, 65535);
+    const region = optionalIntFlag(flags, "region", 0, 15, 0);
+    const tenant = optionalIntFlag(flags, "tenant", 0, 65535, 0);
+    const generator = new OrbitGeneratorV2({ node, region, tenant });
     const id = generator.generate(type);
     process.stdout.write(`${toDecimalString(id)}\n`);
   } catch (e) {
@@ -272,20 +274,4 @@ export function run(argv: string[]): void {
     default:
       fail(`Unknown command: ${command}`);
   }
-}
-
-function isMainModule(): boolean {
-  const entry = process.argv[1];
-  if (!entry) {
-    return false;
-  }
-  try {
-    return import.meta.url === pathToFileURL(entry).href;
-  } catch {
-    return false;
-  }
-}
-
-if (isMainModule()) {
-  run(process.argv.slice(2));
 }

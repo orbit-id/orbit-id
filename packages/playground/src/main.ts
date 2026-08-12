@@ -1,13 +1,14 @@
 import "./styles.css";
 import {
   OrbitError,
-  OrbitGenerator,
+  OrbitGeneratorV2,
   encode,
+  fromDecimalString,
   parse,
   toDecimalString,
   toHexString,
-} from "@orbit-id/core/v1";
-import * as v2 from "@orbit-id/core/v2";
+} from "@orbit-id/core";
+import * as v1 from "@orbit-id/core/v1";
 import {
   type Locale,
   type SpecVersion,
@@ -50,8 +51,8 @@ function render(): void {
         <label class="lang-switch">
           <span class="lang-label">${escapeHtml(t.versionLabel)}</span>
           <select id="spec-select" aria-label="${escapeAttr(t.versionLabel)}">
-            <option value="v1" ${spec === "v1" ? "selected" : ""}>${escapeHtml(t.versionV1)}</option>
             <option value="v2" ${spec === "v2" ? "selected" : ""}>${escapeHtml(t.versionV2)}</option>
+            <option value="v1" ${spec === "v1" ? "selected" : ""}>${escapeHtml(t.versionV1)}</option>
           </select>
         </label>
         <label class="lang-switch">
@@ -221,28 +222,28 @@ function bind(): void {
     persistDrafts();
     try {
       const raw = idInput.value.trim();
-      if (spec === "v2") {
-        const fields = v2.parse(raw);
+      if (spec === "v1") {
+        const fields = v1.parse(raw);
         setOutput(parseOut, {
-          formatVersion: fields.formatVersion,
           timestamp: fields.timestamp.toString(),
           type: fields.type,
           node: fields.node,
           sequence: fields.sequence,
-          region: fields.region,
-          tenant: fields.tenant,
-          reserved: fields.reserved,
-          hex: v2.toHexString(v2.fromDecimalString(raw)),
+          hex: v1.toHexString(v1.encode(fields)),
         });
         return;
       }
       const fields = parse(raw);
       setOutput(parseOut, {
+        formatVersion: fields.formatVersion,
         timestamp: fields.timestamp.toString(),
         type: fields.type,
         node: fields.node,
         sequence: fields.sequence,
-        hex: toHexString(encode(fields)),
+        region: fields.region,
+        tenant: fields.tenant,
+        reserved: fields.reserved,
+        hex: toHexString(fromDecimalString(raw)),
       });
     } catch (e) {
       setError(parseOut, e);
@@ -254,36 +255,36 @@ function bind(): void {
     try {
       const type = Number(typeInput.value);
       const node = Number(nodeInput.value);
-      if (spec === "v2") {
-        const region = Number(regionInput?.value || "0");
-        const tenant = Number(tenantInput?.value || "0");
-        const generator = new v2.OrbitGeneratorV2({ node, region, tenant });
+      if (spec === "v1") {
+        const generator = new v1.OrbitGenerator({ node });
         const id = generator.generate(type);
-        const fields = v2.parse(id);
+        const fields = v1.parse(id);
         setOutput(genOut, {
-          id: v2.toDecimalString(id),
-          hex: v2.toHexString(id),
-          formatVersion: fields.formatVersion,
+          id: v1.toDecimalString(id),
+          hex: v1.toHexString(id),
+          ...fields,
           timestamp: fields.timestamp.toString(),
-          type: fields.type,
-          node: fields.node,
-          sequence: fields.sequence,
-          region: fields.region,
-          tenant: fields.tenant,
-          reserved: fields.reserved,
         });
-        idInput.value = v2.toDecimalString(id);
+        idInput.value = v1.toDecimalString(id);
         idDraft = idInput.value;
         return;
       }
-      const generator = new OrbitGenerator({ node });
+      const region = Number(regionInput?.value || "0");
+      const tenant = Number(tenantInput?.value || "0");
+      const generator = new OrbitGeneratorV2({ node, region, tenant });
       const id = generator.generate(type);
       const fields = parse(id);
       setOutput(genOut, {
         id: toDecimalString(id),
         hex: toHexString(id),
-        ...fields,
+        formatVersion: fields.formatVersion,
         timestamp: fields.timestamp.toString(),
+        type: fields.type,
+        node: fields.node,
+        sequence: fields.sequence,
+        region: fields.region,
+        tenant: fields.tenant,
+        reserved: fields.reserved,
       });
       idInput.value = toDecimalString(id);
       idDraft = idInput.value;
@@ -302,43 +303,43 @@ function bind(): void {
         timestampInput.value.trim() === ""
           ? BigInt(Date.now()) - 1767225600000n
           : BigInt(timestampInput.value.trim());
-      if (spec === "v2") {
-        const region = Number(regionInput?.value || "0");
-        const tenant = Number(tenantInput?.value || "0");
-        const id = v2.encode({
-          formatVersion: 1,
-          timestamp,
-          type,
-          node,
-          sequence,
-          region,
-          tenant,
-          reserved: 0,
-        });
+      if (spec === "v1") {
+        const id = v1.encode({ timestamp, type, node, sequence });
         setOutput(genOut, {
-          id: v2.toDecimalString(id),
-          hex: v2.toHexString(id),
-          formatVersion: 1,
+          id: v1.toDecimalString(id),
+          hex: v1.toHexString(id),
           timestamp: timestamp.toString(),
           type,
           node,
           sequence,
-          region,
-          tenant,
-          reserved: 0,
         });
-        idInput.value = v2.toDecimalString(id);
+        idInput.value = v1.toDecimalString(id);
         idDraft = idInput.value;
         return;
       }
-      const id = encode({ timestamp, type, node, sequence });
+      const region = Number(regionInput?.value || "0");
+      const tenant = Number(tenantInput?.value || "0");
+      const id = encode({
+        formatVersion: 1,
+        timestamp,
+        type,
+        node,
+        sequence,
+        region,
+        tenant,
+        reserved: 0,
+      });
       setOutput(genOut, {
         id: toDecimalString(id),
         hex: toHexString(id),
+        formatVersion: 1,
         timestamp: timestamp.toString(),
         type,
         node,
         sequence,
+        region,
+        tenant,
+        reserved: 0,
       });
       idInput.value = toDecimalString(id);
       idDraft = idInput.value;

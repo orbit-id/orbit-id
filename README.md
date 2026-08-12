@@ -103,12 +103,13 @@ is required for external exposure, or as authorization tokens.
 
 ## Current Scope
 
-Orbit ID v1 is stable and in maintenance mode. Install from npm (and other registries):
+Orbit ID v2 is Stable at the package root (promotion train toward `2.0.0`). Install from npm
+(and other registries):
 
 ```bash
 npm install @orbit-id/typescript
 npm install -g @orbit-id/cli
-orbit-id parse 140612821619842090
+orbit-id parse 21267647932558653967613957625668960256
 ```
 
 See [`packages/`](packages/), [npm Trusted Publishing](docs/en/npm-trusted-publishing.md), and
