@@ -14,6 +14,8 @@ import java.util.function.LongPredicate;
 /** Thread-safe Orbit ID v2 generator for one node. */
 public final class OrbitGenerator {
     private final int node;
+    private final int region;
+    private final int tenant;
     private final OrbitClock clock;
     private final long clockRollbackToleranceMs;
     private final SequenceExhaustedMode onSequenceExhausted;
@@ -29,7 +31,11 @@ public final class OrbitGenerator {
     public OrbitGenerator(GeneratorOptions options) {
         Objects.requireNonNull(options, "options");
         OrbitId.validateNode(options.node());
+        OrbitId.validateRegion(options.region());
+        OrbitId.validateTenant(options.tenant());
         this.node = options.node();
+        this.region = options.region();
+        this.tenant = options.tenant();
         this.clock = options.clock() == null ? systemOrbitClock() : options.clock();
         this.clockRollbackToleranceMs = options.clockRollbackToleranceMs();
         this.onSequenceExhausted = options.onSequenceExhausted();
@@ -42,6 +48,14 @@ public final class OrbitGenerator {
 
     public int getNode() {
         return node;
+    }
+
+    public int getRegion() {
+        return region;
+    }
+
+    public int getTenant() {
+        return tenant;
     }
 
     public synchronized long getLastTimestamp() {
@@ -111,6 +125,8 @@ public final class OrbitGenerator {
                         type,
                         node,
                         issue.sequence(),
+                        region,
+                        tenant,
                         0);
                 lastTimestamp = issue.timestamp();
                 sequence = issue.sequence();
