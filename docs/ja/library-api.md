@@ -123,8 +123,9 @@ Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import
 
 v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_RESERVED`。
 
-v1 の 64-bit ID を v2 として再解釈してはならない。Java は 1.x で加算パッケージ
-`com.github.orbitid.v2` を同梱。他言語パッケージの v2 は順次追加中。
+v1 の 64-bit ID を v2 として再解釈してはならない。公開言語パッケージは 1.x で v2 を加算的な
+名前空間として同梱する（TypeScript / Java / Rust / PHP）。Go はパッケージ `2.0.0` で
+`/v2` モジュールパスに出るまで `internal/v2` に置く。
 
 ### 言語ごとの入口（1.x → 2.0.0）
 

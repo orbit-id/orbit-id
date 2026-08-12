@@ -138,8 +138,8 @@ Machine-readable fixtures (canonical for automation):
 - [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-Alpha layout: `FormatVersion=1`, `Reserved=0`. `@orbit-id/core` loads these in
-`test/conformance.v2.test.ts`; other language packages do not yet.
+Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 support loads these:
+`@orbit-id/core`, Java, Rust, PHP, and Go (via `internal/v2`).
 
 ### v2 Vector 1: Epoch
 
