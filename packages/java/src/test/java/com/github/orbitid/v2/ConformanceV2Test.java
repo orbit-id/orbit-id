@@ -29,8 +29,11 @@ class ConformanceV2Test {
             int type = testCase.get("type").asInt();
             int node = testCase.get("node").asInt();
             int sequence = testCase.get("sequence").asInt();
+            int region = testCase.get("region").asInt();
+            int tenant = testCase.get("tenant").asInt();
             int reserved = testCase.get("reserved").asInt();
-            OrbitFields fields = new OrbitFields(formatVersion, timestamp, type, node, sequence, reserved);
+            OrbitFields fields = new OrbitFields(
+                    formatVersion, timestamp, type, node, sequence, region, tenant, reserved);
             BigInteger id = OrbitId.encode(fields);
 
             assertEquals(testCase.get("idDecimal").asText(), OrbitId.toDecimalString(id));
@@ -43,6 +46,8 @@ class ConformanceV2Test {
             assertEquals(type, OrbitId.getType(id));
             assertEquals(node, OrbitId.getNode(testCase.get("idDecimal").asText()));
             assertEquals(sequence, OrbitId.getSequence(id));
+            assertEquals(region, OrbitId.getRegion(id));
+            assertEquals(tenant, OrbitId.getTenant(id));
             assertEquals(reserved, OrbitId.getReserved(id));
             assertTrue(OrbitId.isValid(id));
             assertTrue(OrbitId.isValid(testCase.get("idDecimal").asText()));
@@ -52,9 +57,21 @@ class ConformanceV2Test {
     @Test
     void rejectsNonCanonicalDecimals() throws IOException {
         for (JsonNode testCase : fixture("decode-reject.v2.json").withArray("cases")) {
-            OrbitError error = assertThrows(OrbitError.class,
-                    () -> OrbitId.fromDecimalString(testCase.get("input").asText()));
-            assertEquals(OrbitError.INVALID_DECIMAL, error.getCode());
+            String expectedCode = testCase.has("code")
+                    ? testCase.get("code").asText()
+                    : OrbitError.INVALID_DECIMAL;
+            if (OrbitError.INVALID_DECIMAL.equals(expectedCode)) {
+                OrbitError error = assertThrows(OrbitError.class,
+                        () -> OrbitId.fromDecimalString(testCase.get("input").asText()));
+                assertEquals(OrbitError.INVALID_DECIMAL, error.getCode());
+            } else {
+                BigInteger value = OrbitId.fromDecimalString(testCase.get("input").asText());
+                assertTrue(value.signum() >= 0);
+                OrbitError error = assertThrows(OrbitError.class,
+                        () -> OrbitId.parse(testCase.get("input").asText()));
+                assertEquals(expectedCode, error.getCode());
+            }
+            assertThrows(OrbitError.class, () -> OrbitId.parse(testCase.get("input").asText()));
             assertFalse(OrbitId.isValid(testCase.get("input").asText()));
         }
         assertEquals(BigInteger.ZERO, OrbitId.fromDecimalString("0"));
@@ -110,13 +127,28 @@ class ConformanceV2Test {
                 .onSequenceExhausted(SequenceExhaustedMode.WAIT)
                 .build());
         assertEquals(7, generator.getNode());
+        assertEquals(0, generator.getRegion());
+        assertEquals(0, generator.getTenant());
         assertEquals(0L, generator.getLastTimestamp());
         assertEquals(0, generator.getSequence());
 
         BigInteger id = generator.generate(1);
         assertEquals(1, OrbitId.getFormatVersion(id));
+        assertEquals(0, OrbitId.getRegion(id));
+        assertEquals(0, OrbitId.getTenant(id));
         assertEquals(0, OrbitId.getReserved(id));
         assertTrue(generator.getLastTimestamp() > 0L);
+
+        OrbitGenerator configured = new OrbitGenerator(GeneratorOptions.builder(1)
+                .region(3)
+                .tenant(1000)
+                .clock(() -> 1L)
+                .build());
+        BigInteger configuredId = configured.generate(1);
+        assertEquals(3, OrbitId.getRegion(configuredId));
+        assertEquals(1000, OrbitId.getTenant(configuredId));
+        assertThrows(OrbitError.class, () -> new OrbitGenerator(GeneratorOptions.builder(1).region(99).build()));
+        assertThrows(OrbitError.class, () -> new OrbitGenerator(GeneratorOptions.builder(1).tenant(99_999).build()));
 
         int[] waitIndex = {0};
         long[] waitTicks = {1000L, 1000L, 1001L, 1001L};
@@ -129,7 +161,7 @@ class ConformanceV2Test {
         assertEquals(1001L, waiter.getLastTimestamp());
         assertEquals(1, OrbitId.getFormatVersion(waited));
 
-        OrbitFields sampleFields = new OrbitFields(1, 16_762_354_567L, 2, 7, 42, 0);
+        OrbitFields sampleFields = new OrbitFields(1, 16_762_354_567L, 2, 7, 42, 0, 0, 0);
         BigInteger sample = OrbitId.encode(sampleFields);
         assertEquals(sampleFields, OrbitId.decode(sample));
         assertEquals(sampleFields, OrbitId.parse(sample));
@@ -139,12 +171,14 @@ class ConformanceV2Test {
         assertFalse(OrbitId.isValid((Object) Boolean.TRUE));
         assertEquals(0L, OrbitId.fromUnixTimeMs(OrbitId.toUnixTimeMs(0L)));
 
-        assertThrows(OrbitError.class, () -> OrbitId.encode(1, -1L, 1, 1, 0, 0));
-        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 70_000, 1, 0, 0));
-        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 70_000, 0, 0));
-        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 1, 70_000, 0));
-        assertThrows(OrbitError.class, () -> OrbitId.encode(0, 0L, 1, 1, 0, 0));
-        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 0L, 1, 1, 0, 1));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, -1L, 1, 1, 0, 0, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 70_000, 1, 0, 0, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 70_000, 0, 0, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 1, 70_000, 0, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 1, 0, 99, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 1L, 1, 1, 0, 0, 99_999, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(0, 0L, 1, 1, 0, 0, 0, 0));
+        assertThrows(OrbitError.class, () -> OrbitId.encode(1, 0L, 1, 1, 0, 0, 0, 1));
 
         // FormatVersion 0 / non-zero reserved fail decode.
         BigInteger badVersion = BigInteger.ZERO;
@@ -152,7 +186,7 @@ class ConformanceV2Test {
         assertEquals(OrbitError.INVALID_FORMAT_VERSION, badFv.getCode());
         assertFalse(OrbitId.isValid(badVersion));
 
-        BigInteger nonZeroReserved = OrbitId.encode(1, 0L, 1, 7, 0, 0).or(BigInteger.ONE);
+        BigInteger nonZeroReserved = OrbitId.encode(1, 0L, 1, 7, 0, 0, 0, 0).or(BigInteger.ONE);
         OrbitError badRes = assertThrows(OrbitError.class, () -> OrbitId.decode(nonZeroReserved));
         assertEquals(OrbitError.INVALID_RESERVED, badRes.getCode());
 

@@ -17,16 +17,22 @@ public final class OrbitId {
     public static final int TYPE_BITS = 16;
     public static final int NODE_BITS = 16;
     public static final int SEQUENCE_BITS = 16;
-    public static final int RESERVED_BITS = 28;
+    public static final int REGION_BITS = 4;
+    public static final int TENANT_BITS = 16;
+    public static final int RESERVED_BITS = 8;
     public static final int FORMAT_VERSION_SHIFT = 124;
     public static final int TIMESTAMP_SHIFT = 76;
     public static final int TYPE_SHIFT = 60;
     public static final int NODE_SHIFT = 44;
     public static final int SEQUENCE_SHIFT = 28;
+    public static final int REGION_SHIFT = 24;
+    public static final int TENANT_SHIFT = 8;
     public static final long MAX_TIMESTAMP = (1L << TIMESTAMP_BITS) - 1;
     public static final int MAX_TYPE = (1 << TYPE_BITS) - 1;
     public static final int MAX_NODE = (1 << NODE_BITS) - 1;
     public static final int MAX_SEQUENCE = (1 << SEQUENCE_BITS) - 1;
+    public static final int MAX_REGION = (1 << REGION_BITS) - 1;
+    public static final int MAX_TENANT = (1 << TENANT_BITS) - 1;
     public static final int MAX_RESERVED = (1 << RESERVED_BITS) - 1;
     public static final int ISSUED_FORMAT_VERSION = 1;
     public static final long DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS = 5_000L;
@@ -39,6 +45,8 @@ public final class OrbitId {
     private static final BigInteger TYPE_MASK = BigInteger.valueOf(MAX_TYPE);
     private static final BigInteger NODE_MASK = BigInteger.valueOf(MAX_NODE);
     private static final BigInteger SEQUENCE_MASK = BigInteger.valueOf(MAX_SEQUENCE);
+    private static final BigInteger REGION_MASK = BigInteger.valueOf(MAX_REGION);
+    private static final BigInteger TENANT_MASK = BigInteger.valueOf(MAX_TENANT);
     private static final BigInteger RESERVED_MASK = BigInteger.valueOf(MAX_RESERVED);
 
     private OrbitId() {
@@ -51,6 +59,8 @@ public final class OrbitId {
                 fields.type(),
                 fields.node(),
                 fields.sequence(),
+                fields.region(),
+                fields.tenant(),
                 fields.reserved());
     }
 
@@ -60,6 +70,8 @@ public final class OrbitId {
             int type,
             int node,
             int sequence,
+            int region,
+            int tenant,
             int reserved) {
         if (formatVersion != ISSUED_FORMAT_VERSION) {
             throw new OrbitError(
@@ -70,6 +82,8 @@ public final class OrbitId {
         validateType(type);
         validateNode(node);
         validateSequence(sequence);
+        validateRegion(region);
+        validateTenant(tenant);
         if (reserved != 0) {
             throw new OrbitError(
                     OrbitError.INVALID_RESERVED, "reserved must be 0 on encode: " + reserved);
@@ -78,7 +92,9 @@ public final class OrbitId {
                 .or(BigInteger.valueOf(timestamp).shiftLeft(TIMESTAMP_SHIFT))
                 .or(BigInteger.valueOf(type).shiftLeft(TYPE_SHIFT))
                 .or(BigInteger.valueOf(node).shiftLeft(NODE_SHIFT))
-                .or(BigInteger.valueOf(sequence).shiftLeft(SEQUENCE_SHIFT));
+                .or(BigInteger.valueOf(sequence).shiftLeft(SEQUENCE_SHIFT))
+                .or(BigInteger.valueOf(region).shiftLeft(REGION_SHIFT))
+                .or(BigInteger.valueOf(tenant).shiftLeft(TENANT_SHIFT));
     }
 
     public static OrbitFields decode(BigInteger id) {
@@ -99,7 +115,7 @@ public final class OrbitId {
         if (reserved != 0) {
             throw new OrbitError(
                     OrbitError.INVALID_RESERVED,
-                    "non-zero reserved is rejected in alpha: " + reserved);
+                    "non-zero reserved is rejected: " + reserved);
         }
         return new OrbitFields(
                 formatVersion,
@@ -107,6 +123,8 @@ public final class OrbitId {
                 id.shiftRight(TYPE_SHIFT).and(TYPE_MASK).intValue(),
                 id.shiftRight(NODE_SHIFT).and(NODE_MASK).intValue(),
                 id.shiftRight(SEQUENCE_SHIFT).and(SEQUENCE_MASK).intValue(),
+                id.shiftRight(REGION_SHIFT).and(REGION_MASK).intValue(),
+                id.shiftRight(TENANT_SHIFT).and(TENANT_MASK).intValue(),
                 reserved);
     }
 
@@ -156,6 +174,22 @@ public final class OrbitId {
 
     public static int getSequence(String id) {
         return parse(id).sequence();
+    }
+
+    public static int getRegion(BigInteger id) {
+        return decode(id).region();
+    }
+
+    public static int getRegion(String id) {
+        return parse(id).region();
+    }
+
+    public static int getTenant(BigInteger id) {
+        return decode(id).tenant();
+    }
+
+    public static int getTenant(String id) {
+        return parse(id).tenant();
     }
 
     public static int getReserved(BigInteger id) {
@@ -266,6 +300,18 @@ public final class OrbitId {
     static void validateSequence(int sequence) {
         if (sequence < 0 || sequence > MAX_SEQUENCE) {
             throw new OrbitError(OrbitError.INVALID_SEQUENCE, "sequence out of range: " + sequence);
+        }
+    }
+
+    static void validateRegion(int region) {
+        if (region < 0 || region > MAX_REGION) {
+            throw new OrbitError(OrbitError.INVALID_REGION, "region out of range: " + region);
+        }
+    }
+
+    static void validateTenant(int tenant) {
+        if (tenant < 0 || tenant > MAX_TENANT) {
+            throw new OrbitError(OrbitError.INVALID_TENANT, "tenant out of range: " + tenant);
         }
     }
 }
