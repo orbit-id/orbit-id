@@ -91,6 +91,8 @@ describe("orbit-id cli", () => {
       type: 1,
       node: 7,
       sequence: 42,
+      region: 0,
+      tenant: 0,
       reserved: 0,
     });
     expect(body.time).toBe("2026-01-01T00:00:00.000Z");
@@ -108,5 +110,29 @@ describe("orbit-id cli", () => {
     expect(body.formatVersion).toBe(1);
     expect(body.node).toBe(7);
     expect(body.type).toBe(1);
+    expect(body.region).toBe(0);
+    expect(body.tenant).toBe(0);
+  });
+
+  it("generates v2 with --region and --tenant", () => {
+    const result = runBin([
+      "generate",
+      "--spec",
+      "v2",
+      "--type",
+      "1",
+      "--node",
+      "7",
+      "--region",
+      "3",
+      "--tenant",
+      "1000",
+    ]);
+    expect(result.status).toBe(0);
+    const parsed = runBin(["parse", "--spec", "v2", result.stdout.trim()]);
+    expect(parsed.status).toBe(0);
+    const body = JSON.parse(parsed.stdout);
+    expect(body.region).toBe(3);
+    expect(body.tenant).toBe(1000);
   });
 });
