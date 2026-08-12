@@ -14,26 +14,34 @@ pub const TIMESTAMP_BITS: u32 = 48;
 pub const TYPE_BITS: u32 = 16;
 pub const NODE_BITS: u32 = 16;
 pub const SEQUENCE_BITS: u32 = 16;
-pub const RESERVED_BITS: u32 = 28;
+pub const REGION_BITS: u32 = 4;
+pub const TENANT_BITS: u32 = 16;
+pub const RESERVED_BITS: u32 = 8;
 
 pub const FORMAT_VERSION_SHIFT: u32 = 124;
 pub const TIMESTAMP_SHIFT: u32 = 76;
 pub const TYPE_SHIFT: u32 = 60;
 pub const NODE_SHIFT: u32 = 44;
 pub const SEQUENCE_SHIFT: u32 = 28;
+pub const REGION_SHIFT: u32 = 24;
+pub const TENANT_SHIFT: u32 = 8;
 
 pub const FORMAT_VERSION_MASK: u128 = (1 << FORMAT_VERSION_BITS) - 1;
 pub const TIMESTAMP_MASK: u128 = (1 << TIMESTAMP_BITS) - 1;
 pub const TYPE_MASK: u128 = (1 << TYPE_BITS) - 1;
 pub const NODE_MASK: u128 = (1 << NODE_BITS) - 1;
 pub const SEQUENCE_MASK: u128 = (1 << SEQUENCE_BITS) - 1;
+pub const REGION_MASK: u128 = (1 << REGION_BITS) - 1;
+pub const TENANT_MASK: u128 = (1 << TENANT_BITS) - 1;
 pub const RESERVED_MASK: u128 = (1 << RESERVED_BITS) - 1;
 
 pub const MAX_TIMESTAMP: u64 = TIMESTAMP_MASK as u64;
 pub const MAX_TYPE: u16 = TYPE_MASK as u16;
 pub const MAX_NODE: u16 = NODE_MASK as u16;
 pub const MAX_SEQUENCE: u16 = SEQUENCE_MASK as u16;
-pub const MAX_RESERVED: u32 = RESERVED_MASK as u32;
+pub const MAX_REGION: u8 = REGION_MASK as u8;
+pub const MAX_TENANT: u16 = TENANT_MASK as u16;
+pub const MAX_RESERVED: u8 = RESERVED_MASK as u8;
 
 /// Issued Orbit ID v2 values MUST use FormatVersion = 1.
 pub const ISSUED_FORMAT_VERSION: u8 = 1;
@@ -45,7 +53,9 @@ pub struct OrbitFields {
     pub r#type: u16,
     pub node: u16,
     pub sequence: u16,
-    pub reserved: u32,
+    pub region: u8,
+    pub tenant: u16,
+    pub reserved: u8,
 }
 
 pub fn encode(fields: OrbitFields) -> Result<u128, OrbitError> {
@@ -67,6 +77,12 @@ pub fn encode(fields: OrbitFields) -> Result<u128, OrbitError> {
     if fields.sequence > MAX_SEQUENCE {
         return Err(OrbitError::new(OrbitErrorCode::InvalidSequence, "sequence out of range"));
     }
+    if fields.region > MAX_REGION {
+        return Err(OrbitError::new(OrbitErrorCode::InvalidRegion, "region out of range"));
+    }
+    if fields.tenant > MAX_TENANT {
+        return Err(OrbitError::new(OrbitErrorCode::InvalidTenant, "tenant out of range"));
+    }
     if fields.reserved != 0 {
         return Err(OrbitError::new(
             OrbitErrorCode::InvalidReserved,
@@ -77,7 +93,9 @@ pub fn encode(fields: OrbitFields) -> Result<u128, OrbitError> {
         | (u128::from(fields.timestamp) << TIMESTAMP_SHIFT)
         | (u128::from(fields.r#type) << TYPE_SHIFT)
         | (u128::from(fields.node) << NODE_SHIFT)
-        | (u128::from(fields.sequence) << SEQUENCE_SHIFT))
+        | (u128::from(fields.sequence) << SEQUENCE_SHIFT)
+        | (u128::from(fields.region) << REGION_SHIFT)
+        | (u128::from(fields.tenant) << TENANT_SHIFT))
 }
 
 pub fn decode(id: u128) -> Result<OrbitFields, OrbitError> {
@@ -88,7 +106,7 @@ pub fn decode(id: u128) -> Result<OrbitFields, OrbitError> {
             format!("unknown or reserved formatVersion: {format_version}"),
         ));
     }
-    let reserved = (id & RESERVED_MASK) as u32;
+    let reserved = (id & RESERVED_MASK) as u8;
     if reserved != 0 {
         return Err(OrbitError::new(
             OrbitErrorCode::InvalidReserved,
@@ -101,6 +119,8 @@ pub fn decode(id: u128) -> Result<OrbitFields, OrbitError> {
         r#type: ((id >> TYPE_SHIFT) & TYPE_MASK) as u16,
         node: ((id >> NODE_SHIFT) & NODE_MASK) as u16,
         sequence: ((id >> SEQUENCE_SHIFT) & SEQUENCE_MASK) as u16,
+        region: ((id >> REGION_SHIFT) & REGION_MASK) as u8,
+        tenant: ((id >> TENANT_SHIFT) & TENANT_MASK) as u16,
         reserved,
     })
 }
@@ -160,7 +180,15 @@ pub fn get_sequence(id: u128) -> Result<u16, OrbitError> {
     Ok(decode(id)?.sequence)
 }
 
-pub fn get_reserved(id: u128) -> Result<u32, OrbitError> {
+pub fn get_region(id: u128) -> Result<u8, OrbitError> {
+    Ok(decode(id)?.region)
+}
+
+pub fn get_tenant(id: u128) -> Result<u16, OrbitError> {
+    Ok(decode(id)?.tenant)
+}
+
+pub fn get_reserved(id: u128) -> Result<u8, OrbitError> {
     Ok(decode(id)?.reserved)
 }
 
@@ -176,6 +204,8 @@ pub fn from_unix_time_ms(unix_ms: u64) -> Result<u64, OrbitError> {
 
 pub struct GeneratorOptions {
     pub node: u16,
+    pub region: u8,
+    pub tenant: u16,
     pub clock: Arc<dyn OrbitClock>,
     pub clock_rollback_tolerance_ms: u64,
     pub on_sequence_exhausted: SequenceExhaustedMode,
@@ -186,6 +216,8 @@ impl GeneratorOptions {
     pub fn new(node: u16) -> Self {
         Self {
             node,
+            region: 0,
+            tenant: 0,
             clock: Arc::new(SystemOrbitClock),
             clock_rollback_tolerance_ms: DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS,
             on_sequence_exhausted: SequenceExhaustedMode::Wait,
@@ -211,6 +243,8 @@ struct GeneratorState {
 /// Thread-safe synchronous Orbit ID v2 generator.
 pub struct OrbitGenerator {
     node: u16,
+    region: u8,
+    tenant: u16,
     clock: Arc<dyn OrbitClock>,
     clock_rollback_tolerance_ms: u64,
     on_sequence_exhausted: SequenceExhaustedMode,
@@ -223,8 +257,16 @@ impl OrbitGenerator {
         if options.node > MAX_NODE {
             return Err(OrbitError::new(OrbitErrorCode::InvalidNode, "node out of range"));
         }
+        if options.region > MAX_REGION {
+            return Err(OrbitError::new(OrbitErrorCode::InvalidRegion, "region out of range"));
+        }
+        if options.tenant > MAX_TENANT {
+            return Err(OrbitError::new(OrbitErrorCode::InvalidTenant, "tenant out of range"));
+        }
         Ok(Self {
             node: options.node,
+            region: options.region,
+            tenant: options.tenant,
             clock: options.clock,
             clock_rollback_tolerance_ms: options.clock_rollback_tolerance_ms,
             on_sequence_exhausted: options.on_sequence_exhausted,
@@ -238,6 +280,14 @@ impl OrbitGenerator {
 
     pub const fn node(&self) -> u16 {
         self.node
+    }
+
+    pub const fn region(&self) -> u8 {
+        self.region
+    }
+
+    pub const fn tenant(&self) -> u16 {
+        self.tenant
     }
 
     pub fn last_timestamp(&self) -> u64 {
@@ -283,6 +333,8 @@ impl OrbitGenerator {
                         r#type,
                         node: self.node,
                         sequence,
+                        region: self.region,
+                        tenant: self.tenant,
                         reserved: 0,
                     })?;
                     *state = GeneratorState {
