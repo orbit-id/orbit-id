@@ -34,6 +34,10 @@ pub enum OrbitErrorCode {
     InvalidDecimal,
     /// Unknown / reserved FormatVersion (v2).
     InvalidFormatVersion,
+    /// Region field out of range (v2).
+    InvalidRegion,
+    /// Tenant field out of range (v2).
+    InvalidTenant,
     /// Non-zero Reserved on encode, or rejected on strict decode (v2).
     InvalidReserved,
     ClockRollback,
@@ -51,6 +55,8 @@ impl OrbitErrorCode {
             Self::InvalidTimestamp => "INVALID_TIMESTAMP",
             Self::InvalidDecimal => "INVALID_DECIMAL",
             Self::InvalidFormatVersion => "INVALID_FORMAT_VERSION",
+            Self::InvalidRegion => "INVALID_REGION",
+            Self::InvalidTenant => "INVALID_TENANT",
             Self::InvalidReserved => "INVALID_RESERVED",
             Self::ClockRollback => "CLOCK_ROLLBACK",
             Self::SequenceExhausted => "SEQUENCE_EXHAUSTED",
