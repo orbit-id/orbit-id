@@ -23,7 +23,7 @@ entry point.
 
 ## Compatibility
 
-Stable `v1.1.0` is the current v1 release. Interpretation of existing 64-bit values MUST NOT change
+Stable `v1.2.0` is the current v1 release. Interpretation of existing 64-bit values MUST NOT change
 within the v1 major line. **v1.x is in maintenance mode:** prefer bug fixes and documentation;
 do not add features by default. New format / API work belongs on the v2 (128-bit) track — see
 [Roadmap](roadmap.md) and [Why Orbit ID v2 is 128-bit](why-128bit.md).

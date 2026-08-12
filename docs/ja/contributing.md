@@ -20,7 +20,7 @@ Orbit ID は specification-first です。新しい言語パッケージより�
 
 ## Compatibility
 
-現行の v1 stable リリースは `v1.1.0` です。v1 major 内では既存の 64-bit 値の解釈を変更しません。
+現行の v1 stable リリースは `v1.2.0` です。v1 major 内では既存の 64-bit 値の解釈を変更しません。
 **v1.x は保守モード**です。バグ修正・ドキュメント整備を優先し、新機能は原則追加しません。
 新しい形式 / API の作業は v2（128-bit）トラックで行います — [Roadmap](roadmap.md) と
 [Orbit ID v2 (128-bit) を採用する理由](why-128bit.md) を参照。

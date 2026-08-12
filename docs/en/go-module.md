@@ -33,7 +33,7 @@ Declared in [`packages/go/go.mod`](../../packages/go/go.mod). Import with packag
 name `orbitid` (see [`packages/go/README.md`](../../packages/go/README.md)).
 
 ```bash
-go get github.com/orbit-id/go@v1.1.0
+go get github.com/orbit-id/go@v1.2.0
 ```
 
 The former subdirectory path `github.com/orbit-id/orbit-id/packages/go` is retired.
@@ -59,7 +59,7 @@ The `go` job in [`.github/workflows/publish.yml`](../../.github/workflows/publis
 
 ```bash
 GOPROXY=https://proxy.golang.org,direct \
-  go list -m github.com/orbit-id/go@v1.1.0
+  go list -m github.com/orbit-id/go@v1.2.0
 ```
 
 First fetch after a new tag can take a few minutes for the proxy to index. Use

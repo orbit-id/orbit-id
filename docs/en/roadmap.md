@@ -93,5 +93,5 @@ orbit-id/
 
 ## Stable release (v1)
 
-Current stable release is `v1.1.0`. The v1 wire format is frozen in [Orbit ID v1](orbit-id-v1.md).
+Current stable release is `v1.2.0`. The v1 wire format is frozen in [Orbit ID v1](orbit-id-v1.md).
 v1.x stays in maintenance mode; active design work for the next major line is v2 (128-bit).

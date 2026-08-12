@@ -9,7 +9,7 @@ the [`orbit-id/go`](https://github.com/orbit-id/go) mirror (same pattern as Pack
 ## Install
 
 ```bash
-go get github.com/orbit-id/go@v1.1.0
+go get github.com/orbit-id/go@v1.2.0
 ```
 
 Import as package `orbitid`:

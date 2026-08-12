@@ -118,15 +118,15 @@ Tagging checklist:
 
 ```bash
 # after merging version bumps to main
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.2.0
+git push origin v1.2.0
 # Publish workflow mirrors packages/go → orbit-id/go (+ same tag)
 ```
 
 Then verify:
 
 ```bash
-GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.1.0
+GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.2.0
 ```
 
 ## Security / provenance expectations

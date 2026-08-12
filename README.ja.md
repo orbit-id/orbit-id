@@ -19,7 +19,7 @@ ID の中に発行時刻、エンティティ種別、発行ノード、同一�
 データベースへ問い合わせずにそれらを解析できます。
 
 > [!IMPORTANT]
-> Orbit ID v1 は stable（`v1.1.0`）で **保守モード**です。バグ修正・ドキュメント整備のみで、
+> Orbit ID v1 は stable（`v1.2.0`）で **保守モード**です。バグ修正・ドキュメント整備のみで、
 > 新機能は原則追加しません。次の major は v2（128-bit）です — [Roadmap](docs/ja/roadmap.md) を参照。
 > [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
 > または CLI [`@orbit-id/cli`](https://www.npmjs.com/package/@orbit-id/cli) を使えます。

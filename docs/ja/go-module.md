@@ -34,7 +34,7 @@ github.com/orbit-id/go
 （[`packages/go/README.md`](../../packages/go/README.md)）。
 
 ```bash
-go get github.com/orbit-id/go@v1.1.0
+go get github.com/orbit-id/go@v1.2.0
 ```
 
 旧パス `github.com/orbit-id/orbit-id/packages/go` は廃止。
@@ -60,7 +60,7 @@ go get github.com/orbit-id/go@v1.1.0
 
 ```bash
 GOPROXY=https://proxy.golang.org,direct \
-  go list -m github.com/orbit-id/go@v1.1.0
+  go list -m github.com/orbit-id/go@v1.2.0
 ```
 
 新規タグ直後は proxy の反映に数分かかることがあります。すぐ確認するときは

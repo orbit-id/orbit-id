@@ -90,5 +90,5 @@ orbit-id/
 
 ## Stable release（v1）
 
-現行の stable リリースは `v1.1.0` です。v1 ワイヤ形式は [Orbit ID v1](orbit-id-v1.md) で凍結されています。
+現行の stable リリースは `v1.2.0` です。v1 ワイヤ形式は [Orbit ID v1](orbit-id-v1.md) で凍結されています。
 v1.x は保守モードとし、次 major の設計は v2（128-bit）で進めます。

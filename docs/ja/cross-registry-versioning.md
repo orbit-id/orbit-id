@@ -114,15 +114,15 @@ github.com/orbit-id/go
 手順:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.2.0
+git push origin v1.2.0
 # Publish workflow が packages/go → orbit-id/go（同名タグ）へミラー
 ```
 
 確認:
 
 ```bash
-GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.1.0
+GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.2.0
 ```
 
 ## セキュリティ / provenance
