@@ -134,6 +134,21 @@ function optionalIntFlag(
   return value;
 }
 
+/** `--region` / `--tenant` are v2-only; reject them on v1 instead of ignoring. */
+function rejectV2OnlyGenerateFlags(
+  flags: Record<string, string | boolean>,
+  spec: SpecVersion,
+): void {
+  if (spec === "v2") {
+    return;
+  }
+  for (const name of ["region", "tenant"] as const) {
+    if (flags[name] !== undefined && flags[name] !== false) {
+      fail(`--${name} requires --spec v2 (or --v2)`);
+    }
+  }
+}
+
 function resolveNode(
   flags: Record<string, string | boolean>,
   maxNode: number,
@@ -212,6 +227,7 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
 
 function cmdGenerate(flags: Record<string, string | boolean>, spec: SpecVersion): void {
   try {
+    rejectV2OnlyGenerateFlags(flags, spec);
     if (spec === "v2") {
       const type = requireIntFlag(flags, "type", 1, 65535);
       const node = resolveNode(flags, 65535);

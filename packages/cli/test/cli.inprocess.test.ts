@@ -177,6 +177,15 @@ describe("orbit-id cli in-process", () => {
     expect(body.tenant).toBe(1000);
   });
 
+  it("rejects --region/--tenant without --spec v2", () => {
+    const region = captureRun(["generate", "--type", "1", "--node", "1", "--region", "3"]);
+    expect(region.code).toBe(1);
+    expect(region.stderr).toContain("--region requires --spec v2");
+    const tenant = captureRun(["generate", "--type", "1", "--node", "1", "--tenant", "1000"]);
+    expect(tenant.code).toBe(1);
+    expect(tenant.stderr).toContain("--tenant requires --spec v2");
+  });
+
   it("rejects invalid --spec", () => {
     const result = captureRun(["parse", "--spec", "v3", "1"]);
     expect(result.code).toBe(1);
