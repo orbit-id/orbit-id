@@ -37,9 +37,12 @@ const (
 	ClockRollback     ErrorCode = "CLOCK_ROLLBACK"
 	SequenceExhausted ErrorCode = "SEQUENCE_EXHAUSTED"
 	NodeOwnershipLost ErrorCode = "NODE_OWNERSHIP_LOST"
-	// InvalidFormatVersion and InvalidReserved are used by the v2 (128-bit,
-	// internal/v2, alpha) format; see docs/en/library-api.md.
+	// InvalidFormatVersion, InvalidRegion, InvalidTenant, and InvalidReserved
+	// are used by the v2 (128-bit, internal/v2, alpha) format; see
+	// docs/en/library-api.md.
 	InvalidFormatVersion ErrorCode = "INVALID_FORMAT_VERSION"
+	InvalidRegion        ErrorCode = "INVALID_REGION"
+	InvalidTenant        ErrorCode = "INVALID_TENANT"
 	InvalidReserved      ErrorCode = "INVALID_RESERVED"
 )
 
