@@ -87,6 +87,7 @@ describe("generator coverage", () => {
   it("uses systemOrbitClock", () => {
     const clock = systemOrbitClock();
     expect(clock.currentOrbitTimestampMs()).toBeGreaterThan(0n);
+    expect(typeof new OrbitGenerator({ node: 1 }).generate(1)).toBe("bigint");
   });
 });
 
