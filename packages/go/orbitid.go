@@ -37,6 +37,10 @@ const (
 	ClockRollback     ErrorCode = "CLOCK_ROLLBACK"
 	SequenceExhausted ErrorCode = "SEQUENCE_EXHAUSTED"
 	NodeOwnershipLost ErrorCode = "NODE_OWNERSHIP_LOST"
+	// InvalidFormatVersion and InvalidReserved are used by the v2 (128-bit,
+	// internal/v2, alpha) format; see docs/en/library-api.md.
+	InvalidFormatVersion ErrorCode = "INVALID_FORMAT_VERSION"
+	InvalidReserved      ErrorCode = "INVALID_RESERVED"
 )
 
 // Error is returned for invalid Orbit input or failed generation.
