@@ -44,8 +44,13 @@ In addition to v1’s `timestamp` / `type` / `node` / `sequence`, each v2 case i
 
 | Field | Meaning |
 | --- | --- |
-| `formatVersion` | In-band version (alpha issues use `1`) |
-| `reserved` | Lower 28 bits (alpha encode MUST be `0`) |
+| `formatVersion` | In-band version (issued IDs use `1`) |
+| `region` | 4 bits (`0..15`) |
+| `tenant` | 16 bits (`0..65535`) |
+| `reserved` | Remaining lower 8 bits (encode MUST be `0`) |
+
+Optional on `decode-reject` cases: `code` (e.g. `INVALID_RESERVED`) when rejection is not
+`INVALID_DECIMAL` after a successful decimal parse.
 
 `time` MAY be `null` when the Timestamp is beyond portable calendar libraries (see
 `timestamp-max`).

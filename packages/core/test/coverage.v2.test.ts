@@ -17,6 +17,8 @@ describe("v2 generator coverage", () => {
     expect(generator.getLastTimestamp()).toBe(1000n);
     expect(generator.getSequence()).toBe(0);
     expect(v2.getFormatVersion(id)).toBe(1);
+    expect(v2.getRegion(id)).toBe(0);
+    expect(v2.getTenant(id)).toBe(0);
     expect(v2.getReserved(id)).toBe(0);
 
     now = 1000n;
@@ -94,6 +96,8 @@ describe("v2 encode/decode coverage", () => {
         type: 1,
         node: 1,
         sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 0,
       }),
     ).toThrow(/formatVersion/);
@@ -104,6 +108,8 @@ describe("v2 encode/decode coverage", () => {
         type: 1,
         node: 1,
         sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 0,
       }),
     ).toThrow(/timestamp out of range/);
@@ -114,6 +120,8 @@ describe("v2 encode/decode coverage", () => {
         type: 99_999,
         node: 1,
         sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 0,
       }),
     ).toThrow(/type out of range/);
@@ -124,6 +132,8 @@ describe("v2 encode/decode coverage", () => {
         type: 1,
         node: 99_999,
         sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 0,
       }),
     ).toThrow(/node out of range/);
@@ -134,6 +144,8 @@ describe("v2 encode/decode coverage", () => {
         type: 1,
         node: 1,
         sequence: 99_999,
+        region: 0,
+        tenant: 0,
         reserved: 0,
       }),
     ).toThrow(/sequence out of range/);
@@ -144,6 +156,32 @@ describe("v2 encode/decode coverage", () => {
         type: 1,
         node: 1,
         sequence: 0,
+        region: 99,
+        tenant: 0,
+        reserved: 0,
+      }),
+    ).toThrow(/region out of range/);
+    expect(() =>
+      v2.encode({
+        formatVersion: 1,
+        timestamp: 1n,
+        type: 1,
+        node: 1,
+        sequence: 0,
+        region: 0,
+        tenant: 99_999,
+        reserved: 0,
+      }),
+    ).toThrow(/tenant out of range/);
+    expect(() =>
+      v2.encode({
+        formatVersion: 1,
+        timestamp: 1n,
+        type: 1,
+        node: 1,
+        sequence: 0,
+        region: 0,
+        tenant: 0,
         reserved: 1,
       }),
     ).toThrow(/reserved must be 0/);
@@ -156,6 +194,8 @@ describe("v2 encode/decode coverage", () => {
       type: 1,
       node: 0,
       sequence: 0,
+      region: 0,
+      tenant: 0,
       reserved: 0,
     });
     // Force reserved bit without going through encode.
@@ -163,6 +203,22 @@ describe("v2 encode/decode coverage", () => {
     expect(() => v2.decode(badReserved)).toThrow(OrbitError);
     expect(() => v2.decode(0n)).toThrow(/formatVersion/);
     expect(v2.isValid(badReserved)).toBe(false);
+  });
+
+  it("accepts region/tenant on generate and rejects bad options", () => {
+    const generator = new v2.OrbitGeneratorV2({
+      node: 1,
+      region: 3,
+      tenant: 1000,
+      clock: { currentOrbitTimestampMs: () => 1n },
+    });
+    const id = generator.generate(1);
+    expect(v2.getRegion(id)).toBe(3);
+    expect(v2.getTenant(id)).toBe(1000);
+    expect(() => new v2.OrbitGeneratorV2({ node: 1, region: 99 })).toThrow(/region out of range/);
+    expect(() => new v2.OrbitGeneratorV2({ node: 1, tenant: 99_999 })).toThrow(
+      /tenant out of range/,
+    );
   });
 
   it("covers unix helpers, hex range, and isValid negatives", () => {

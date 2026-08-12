@@ -5,7 +5,9 @@ import {
   DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS,
   ISSUED_FORMAT_VERSION,
   MAX_NODE,
+  MAX_REGION,
   MAX_SEQUENCE,
+  MAX_TENANT,
   MAX_TIMESTAMP,
   MAX_TYPE,
 } from "./constants.js";
@@ -18,6 +20,8 @@ export type SequenceExhaustedMode = "wait" | "fail";
 
 export type GeneratorOptionsV2 = {
   node: number;
+  region?: number;
+  tenant?: number;
   clock?: OrbitClock;
   clockRollbackToleranceMs?: bigint;
   onSequenceExhausted?: SequenceExhaustedMode;
@@ -41,6 +45,8 @@ export type GenerateDecisionV2 =
 
 export class OrbitGeneratorV2 {
   readonly node: number;
+  readonly region: number;
+  readonly tenant: number;
   private readonly clock: OrbitClock;
   private readonly clockRollbackToleranceMs: bigint;
   private readonly onSequenceExhausted: SequenceExhaustedMode;
@@ -54,7 +60,17 @@ export class OrbitGeneratorV2 {
     if (!Number.isInteger(node) || node < 0 || node > MAX_NODE) {
       throw new OrbitError("INVALID_NODE", `node out of range: ${node}`);
     }
+    const region = options.region ?? 0;
+    const tenant = options.tenant ?? 0;
+    if (!Number.isInteger(region) || region < 0 || region > MAX_REGION) {
+      throw new OrbitError("INVALID_REGION", `region out of range: ${region}`);
+    }
+    if (!Number.isInteger(tenant) || tenant < 0 || tenant > MAX_TENANT) {
+      throw new OrbitError("INVALID_TENANT", `tenant out of range: ${tenant}`);
+    }
     this.node = node;
+    this.region = region;
+    this.tenant = tenant;
     this.clock = options.clock ?? systemOrbitClock();
     this.clockRollbackToleranceMs =
       options.clockRollbackToleranceMs ?? DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS;
@@ -135,6 +151,8 @@ export class OrbitGeneratorV2 {
             type,
             node: this.node,
             sequence: decision.sequence,
+            region: this.region,
+            tenant: this.tenant,
             reserved: 0,
           });
           this.lastTimestamp = decision.timestamp;

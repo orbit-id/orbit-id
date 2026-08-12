@@ -20,6 +20,8 @@ type EncodeDecodeFixture = {
     type: number;
     node: number;
     sequence: number;
+    region: number;
+    tenant: number;
     reserved: number;
     idDecimal: string;
     idHex: string;
@@ -27,7 +29,7 @@ type EncodeDecodeFixture = {
 };
 
 type RejectFixture = {
-  cases: Array<{ id: string; input: string; reason: string }>;
+  cases: Array<{ id: string; input: string; reason: string; code?: string }>;
 };
 
 type GeneratorFixture = {
@@ -60,6 +62,8 @@ describe("v2 conformance encode-decode", () => {
         type: c.type,
         node: c.node,
         sequence: c.sequence,
+        region: c.region,
+        tenant: c.tenant,
         reserved: c.reserved,
       };
       const id = v2.encode(fields);
@@ -74,6 +78,8 @@ describe("v2 conformance encode-decode", () => {
       expect(v2.getType(id)).toBe(fields.type);
       expect(v2.getNode(c.idDecimal)).toBe(fields.node);
       expect(v2.getSequence(id)).toBe(fields.sequence);
+      expect(v2.getRegion(id)).toBe(fields.region);
+      expect(v2.getTenant(id)).toBe(fields.tenant);
       expect(v2.getReserved(id)).toBe(fields.reserved);
       expect(v2.isValid(c.idDecimal)).toBe(true);
       expect(v2.isValid(id)).toBe(true);
@@ -86,12 +92,24 @@ describe("v2 conformance decode-reject", () => {
 
   for (const c of fixture.cases) {
     it(c.id, () => {
-      expect(() => v2.fromDecimalString(c.input)).toThrow(OrbitError);
-      try {
-        v2.fromDecimalString(c.input);
-      } catch (e) {
-        expect(e).toBeInstanceOf(OrbitError);
-        expect((e as OrbitError).code).toBe("INVALID_DECIMAL");
+      const code = c.code ?? "INVALID_DECIMAL";
+      if (code === "INVALID_DECIMAL") {
+        expect(() => v2.fromDecimalString(c.input)).toThrow(OrbitError);
+        try {
+          v2.fromDecimalString(c.input);
+        } catch (e) {
+          expect(e).toBeInstanceOf(OrbitError);
+          expect((e as OrbitError).code).toBe("INVALID_DECIMAL");
+        }
+      } else {
+        expect(v2.fromDecimalString(c.input)).toBeGreaterThanOrEqual(0n);
+        try {
+          v2.parse(c.input);
+          expect.unreachable("parse should throw");
+        } catch (e) {
+          expect(e).toBeInstanceOf(OrbitError);
+          expect((e as OrbitError).code).toBe(code);
+        }
       }
       expect(() => v2.parse(c.input)).toThrow(OrbitError);
       expect(v2.isValid(c.input)).toBe(false);
