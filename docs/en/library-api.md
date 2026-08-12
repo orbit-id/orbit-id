@@ -122,8 +122,9 @@ Operations stay the same (`generate` / `parse` / field getters / `isValid`), but
 
 Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_RESERVED`.
 
-Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Java ships an additive
-`com.github.orbitid.v2` package in 1.x; other language packages are still landing.
+Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Every public language package ships v2 as an
+additive namespace in 1.x (TypeScript, Java, Rust, PHP); Go keeps v2 under `internal/v2` until the
+`/v2` module path at package `2.0.0`.
 
 ### Per-language entry points (1.x → 2.0.0)
 
