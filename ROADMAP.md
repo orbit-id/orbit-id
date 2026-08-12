@@ -62,16 +62,18 @@ npm / Maven / Go modules / crates.io / Packagist publishing is live. Shared tagg
 | --- | --- |
 | **v1.x** | 64-bit Orbit ID. Wire format frozen. **Maintenance mode:** bug fixes and documentation only; new features are not added by default. |
 | **v2.0.0-alpha.\*** | 128-bit redesign track used while fields and APIs were still moving. Alpha exit criteria are now met ([v2 alpha exit](docs/en/v2-alpha-exit.md)). |
-| **v2.0.0-beta.\*** | Optional short freeze: spec and API nearly frozen before package majors. |
+| **v2.0.0-beta.\*** | Optional short freeze before package majors. **Skipped** for the current train ([#199](https://github.com/orbit-id/orbit-id/issues/199)). |
 | **v2.0.0** | Stable 128-bit Orbit ID (package majors move v2 to the root API). |
 
 Why 128-bit: [Why Orbit ID v2 is 128-bit](docs/en/why-128bit.md).  
 Draft spec (alpha exit criteria met): [Orbit ID v2 Specification](docs/en/orbit-id-v2.md).  
 Locked decisions: [Design Decisions (v2)](docs/en/design-decisions-v2.md).  
-Alpha exit / `2.0.0` promotion: [v2 alpha exit](docs/en/v2-alpha-exit.md).
+Alpha exit / promotion overview: [v2 alpha exit](docs/en/v2-alpha-exit.md).  
+**Package `2.0.0` execution plan:** [Package `2.0.0` promotion plan](docs/en/v2-package-2.0.0.md).
 
-Next process steps (not automatic): optional `v2.0.0-beta.*` freeze, then package-`2.0.0`
-promotion. Further Reserved carve-outs (for example Datacenter) wait until after package `2.0.0`.
+Next: implement the ordered slices in the promotion plan (spec Stable → languages → CLI →
+`v2.0.0` cut). Further Reserved carve-outs (for example Datacenter) wait until after package
+`2.0.0`.
 
 ## Repository layout (monorepo)
 
