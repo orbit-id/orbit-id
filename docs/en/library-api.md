@@ -106,13 +106,14 @@ Node allocation (static config or Redis lease) is outside the hot path of `gener
 ## Orbit ID v2 delta
 
 Status: **implemented** in `@orbit-id/core` as an additive namespace (`import * as v2 from
-"@orbit-id/core/v2"` or `import { v2 } from "@orbit-id/core"`). Spec Draft:
-[Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
-[Design Decisions (v2)](design-decisions-v2.md).
+"@orbit-id/core/v2"` or `import { v2 } from "@orbit-id/core"`). Spec Draft (alpha exit criteria
+met): [Orbit ID v2 Specification](orbit-id-v2.md). Decisions:
+[Design Decisions (v2)](design-decisions-v2.md). Promotion path:
+[v2 alpha exit](v2-alpha-exit.md).
 
 Operations stay the same (`generate` / `parse` / field getters / `isValid`), but:
 
-| Aspect | v1 | v2 (alpha Draft) |
+| Aspect | v1 | v2 (Draft) |
 | --- | --- | --- |
 | Value width | 64-bit | 128-bit |
 | In-memory (JS/TS) | `bigint` | `bigint` (full 128-bit) |
@@ -139,5 +140,5 @@ Policy: [Cross-registry versioning](cross-registry-versioning.md) · [#150](http
 | Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
 | Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
 | PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
-| Go | module `github.com/orbit-id/go` | not public (`internal/v2` in alpha) | module `/v2` path | prior major module |
+| Go | module `github.com/orbit-id/go` | not public (`internal/v2` until package `2.0.0`) | module `/v2` path | prior major module |
 | CLI | v1 flags / default | additive v2 flag (see CLI issues) | default → v2 | explicit v1 mode |

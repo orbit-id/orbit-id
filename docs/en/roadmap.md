@@ -63,14 +63,17 @@ npm / Maven / Go modules / crates.io / Packagist publishing is live. Shared tagg
 | Track | Meaning |
 | --- | --- |
 | **v1.x** | 64-bit Orbit ID. Wire format frozen. **Maintenance mode:** bug fixes and documentation only; new features are not added by default. |
-| **v2.0.0-alpha.\*** | 128-bit redesign (bit layout, string form, API). Breaking changes are allowed while alpha. |
-| **v2.0.0-beta.\*** | Spec and API are nearly frozen. |
-| **v2.0.0** | Stable 128-bit Orbit ID. |
+| **v2.0.0-alpha.\*** | 128-bit redesign track used while fields and APIs were still moving. Alpha exit criteria are now met ([v2 alpha exit](v2-alpha-exit.md)). |
+| **v2.0.0-beta.\*** | Optional short freeze: spec and API nearly frozen before package majors. |
+| **v2.0.0** | Stable 128-bit Orbit ID (package majors move v2 to the root API). |
 
 Why 128-bit: [Why Orbit ID v2 is 128-bit](why-128bit.md).  
-Draft spec: [Orbit ID v2 Specification](orbit-id-v2.md).  
-Locked alpha decisions: [Design Decisions (v2)](design-decisions-v2.md).  
+Draft spec (alpha exit criteria met): [Orbit ID v2 Specification](orbit-id-v2.md).  
+Locked decisions: [Design Decisions (v2)](design-decisions-v2.md).  
 Alpha exit / `2.0.0` promotion: [v2 alpha exit](v2-alpha-exit.md).
+
+Next process steps (not automatic): optional `v2.0.0-beta.*` freeze, then package-`2.0.0`
+promotion. Further Reserved carve-outs (for example Datacenter) wait until after package `2.0.0`.
 
 ## Repository layout (monorepo)
 

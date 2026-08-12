@@ -119,9 +119,9 @@ lease is lost. Do not call Redis on every `generate`.
 
 ## Orbit ID v2 (Draft)
 
-Normative Draft: [Orbit ID v2 Specification](orbit-id-v2.md). Node width is **16 bits**
-(`0..65535`). The production defaults and quarantine rules above still apply; only substitute the
-Node range for the format in use:
+Normative Draft (alpha exit criteria met): [Orbit ID v2 Specification](orbit-id-v2.md). Node width
+is **16 bits** (`0..65535`). The production defaults and quarantine rules above still apply; only
+substitute the Node range for the format in use:
 
 | Format | Node range | Notes |
 | --- | --- | --- |

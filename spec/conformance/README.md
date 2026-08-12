@@ -22,7 +22,7 @@ Naming pattern: `<category>.v1.json` / `<category>.v2.json`.
 | File set | `spec` field | Status |
 | --- | --- | --- |
 | `*.v1.json` | `"orbit-id/v1"` | Stable — loaded by language packages today |
-| `*.v2.json` | `"orbit-id/v2"` | Draft (`v2.0.0-alpha`) — loaded by `@orbit-id/core` v2 tests |
+| `*.v2.json` | `"orbit-id/v2"` | Draft (alpha exit criteria met) — loaded by v2 language harnesses |
 
 ## Common envelope
 

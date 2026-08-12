@@ -2,7 +2,7 @@
 
 [English](../en/orbit-id-v2.md)
 
-Status: Draft (`v2.0.0-alpha`) — 上位フィールドは frozen。[Design Decisions（v2）](design-decisions-v2.md) 参照  
+Status: Draft — alpha 終了条件を充足。beta 向けにレイアウト凍結（[v2 alpha 終了](v2-alpha-exit.md) 参照）  
 Epoch: `2026-01-01T00:00:00.000Z`
 
 freeze / 切り出しの判断: [Design Decisions（v2）](design-decisions-v2.md)。  
@@ -92,7 +92,8 @@ Tenant はアプリ割当ラベル（`0..65535`）。`0` は合法な既定 / �
 ### 3.8 Reserved
 
 encode 時 Reserved は MUST `0`。decode は非 0 Reserved を拒否 MUST（`INVALID_RESERVED`）。
-後続改訂で残 8 bit から追加フィールド（例: Datacenter）を切り出してよい（総幅 128 は変えない）。
+残 8 bit からの追加切り出し（例: Datacenter）はパッケージ **`2.0.0` 以降**へ延期し、新しい ADR が
+必要。総幅 128 は変えてはならない。
 
 ## 4. Encoding
 
@@ -175,7 +176,7 @@ Sequence より上位。Region・Tenant は Sequence より下位。
 | Dimension | Capacity |
 | --- | ---: |
 | Lifetime | 281,474,976,710,656 ms（≈ 8919.4 年） |
-| Format versions | 16（本 Draft は `1`） |
+| Format versions | 16（発行 ID は `1`） |
 | Types | 65,536（`0` 予約 → 利用 65,535） |
 | Nodes | 65,536 |
 | Regions | 16 |
