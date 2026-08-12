@@ -143,6 +143,8 @@ describe("orbit-id cli in-process", () => {
       type: 1,
       node: 7,
       sequence: 42,
+      region: 0,
+      tenant: 0,
       reserved: 0,
     });
   });
@@ -151,6 +153,37 @@ describe("orbit-id cli in-process", () => {
     const result = captureRun(["generate", "--spec", "v2", "--type", "100", "--node", "200"]);
     expect(result.code).toBeUndefined();
     expect(result.stdout.trim()).toMatch(/^\d+$/);
+  });
+
+  it("generates v2 with region and tenant flags", () => {
+    const result = captureRun([
+      "generate",
+      "--spec",
+      "v2",
+      "--type",
+      "1",
+      "--node",
+      "7",
+      "--region",
+      "3",
+      "--tenant",
+      "1000",
+    ]);
+    expect(result.code).toBeUndefined();
+    const parsed = captureRun(["parse", "--spec", "v2", result.stdout.trim()]);
+    expect(parsed.code).toBeUndefined();
+    const body = JSON.parse(parsed.stdout);
+    expect(body.region).toBe(3);
+    expect(body.tenant).toBe(1000);
+  });
+
+  it("rejects --region/--tenant without --spec v2", () => {
+    const region = captureRun(["generate", "--type", "1", "--node", "1", "--region", "3"]);
+    expect(region.code).toBe(1);
+    expect(region.stderr).toContain("--region requires --spec v2");
+    const tenant = captureRun(["generate", "--type", "1", "--node", "1", "--tenant", "1000"]);
+    expect(tenant.code).toBe(1);
+    expect(tenant.stderr).toContain("--tenant requires --spec v2");
   });
 
   it("rejects invalid --spec", () => {
