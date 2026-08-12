@@ -53,7 +53,9 @@ TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート�
 
 **alpha 終了条件**とパッケージ `2.0.0` を切る前のチェックリスト:
 [Orbit ID v2 alpha 終了と `2.0.0` 昇格](v2-alpha-exit.md)
-（[#138](https://github.com/orbit-id/orbit-id/issues/138)）。
+（[#138](https://github.com/orbit-id/orbit-id/issues/138)）。  
+**実行スライス順:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)
+（[#199](https://github.com/orbit-id/orbit-id/issues/199)。任意 beta 凍結はスキップ）。
 
 **Go の例外:** Go modules は major ≥ 2 で module path に `/v2` が必須なため、v1 module path から
 公開 v2 API を出せない。alpha 期間は `internal/v2` に置き、パッケージ `2.0.0` で path を上げると同時に

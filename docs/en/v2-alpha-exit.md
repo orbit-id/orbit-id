@@ -46,20 +46,24 @@ Exit is a **docs + process** gate, not an automatic publish of `2.0.0`.
 ### Criteria status
 
 As of [#197](https://github.com/orbit-id/orbit-id/issues/197), items **1–6 are met**. The
-specification remains **Draft** until an explicit `v2.0.0-beta.*` freeze (optional) or Stable /
-package-`2.0.0` promotion. No registry publish is implied.
+specification remains **Draft** until package-`2.0.0` promotion moves it to **Stable**.
+Optional `v2.0.0-beta.*` freeze: **skipped** ([#199](https://github.com/orbit-id/orbit-id/issues/199)).
+No registry publish is implied by alpha exit alone.
 
 ## Promotion to package `2.0.0` (root → v2)
 
-After alpha exit criteria are met (and optionally a short `v2.0.0-beta.*` freeze):
+After alpha exit criteria are met (optional `v2.0.0-beta.*` freeze **skipped**):
 
 | Step | Action |
 | --- | --- |
-| 1 | Freeze the v2 wire layout in the Draft → Stable (or beta-frozen) specification |
+| 1 | Freeze the v2 wire layout in the Draft → **Stable** specification |
 | 2 | Bump coordinated package majors to **`2.0.0`** via the monorepo release cut |
 | 3 | Make **v2 the root / default** public API in each language (see [Library API](library-api.md) table) |
 | 4 | Keep **v1** importable under an explicit `v1` namespace / module / flag |
 | 5 | Retire or re-export temporary additive paths (`@orbit-id/core/v2`) as aliases of the new root where helpful; document deprecation if they remain |
+
+**Execution plan (ordered slices):** [Package `2.0.0` promotion plan](v2-package-2.0.0.md)
+([#199](https://github.com/orbit-id/orbit-id/issues/199)).
 
 SemVer note: moving v2 to the root is a **breaking** change for consumers who imported root as v1 —
 that is why it is **X = 2**, not a 1.x minor. Spec track tags (`v2.0.0-alpha.*` / `v2.0.0-beta.*`)

@@ -43,21 +43,24 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
 
 ### 条件の充足状況
 
-[#197](https://github.com/orbit-id/orbit-id/issues/197) 時点で項目 **1–6 は充足**。仕様は明示的な
-`v2.0.0-beta.*` 凍結（任意）または Stable / パッケージ `2.0.0` 昇格まで **Draft** のまま。
-レジストリ公開は含意しない。
+[#197](https://github.com/orbit-id/orbit-id/issues/197) 時点で項目 **1–6 は充足**。仕様はパッケージ
+`2.0.0` 昇格で **Stable** にするまで **Draft**。任意の `v2.0.0-beta.*` 凍結は **スキップ**
+（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。alpha 終了だけではレジストリ公開しない。
 
 ## パッケージ `2.0.0` への昇格（ルート → v2）
 
-alpha 終了条件を満たしたあと（必要なら短い `v2.0.0-beta.*` 凍結のあと）:
+alpha 終了条件を満たしたあと（任意の `v2.0.0-beta.*` 凍結は **スキップ**）:
 
 | 手順 | 内容 |
 | --- | --- |
-| 1 | Draft → Stable（または beta 凍結）仕様で v2 ワイヤを凍結 |
+| 1 | Draft → **Stable** 仕様で v2 ワイヤを凍結 |
 | 2 | モノレポのリリースカットでパッケージ major を **`2.0.0`** に揃える |
 | 3 | 各言語で **v2 をルート / 既定**の公開 API にする（[Library API](library-api.md) の表） |
 | 4 | **v1** は明示的な `v1` 名前空間 / モジュール / フラグで残す |
 | 5 | 一時的な加算パス（`@orbit-id/core/v2`）は新ルートの別名にするか、残す場合は非推奨を文書化 |
+
+**実行計画（スライス順）:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)
+（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。
 
 SemVer: ルートを v2 にするのは、ルートを v1 としていた消費者への **破壊的変更**なので **X = 2**。
 仕様トラックのタグ（`v2.0.0-alpha.*` / `v2.0.0-beta.*`）は **形式のライフサイクル**、パッケージ
