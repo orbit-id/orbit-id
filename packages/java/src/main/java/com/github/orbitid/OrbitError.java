@@ -8,6 +8,8 @@ public final class OrbitError extends RuntimeException {
     public static final String INVALID_TIMESTAMP = "INVALID_TIMESTAMP";
     public static final String INVALID_DECIMAL = "INVALID_DECIMAL";
     public static final String INVALID_FORMAT_VERSION = "INVALID_FORMAT_VERSION";
+    public static final String INVALID_REGION = "INVALID_REGION";
+    public static final String INVALID_TENANT = "INVALID_TENANT";
     public static final String INVALID_RESERVED = "INVALID_RESERVED";
     public static final String CLOCK_ROLLBACK = "CLOCK_ROLLBACK";
     public static final String SEQUENCE_EXHAUSTED = "SEQUENCE_EXHAUSTED";
