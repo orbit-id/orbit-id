@@ -139,9 +139,8 @@ Machine-readable fixtures (canonical for automation):
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
 Layout: `FormatVersion=1`; remaining `Reserved=0`. Region (`0..15`) and Tenant (`0..65535`) are
-carved from the former 28-bit Reserved. Shared JSON fixtures currently keep `region=tenant=0` so
-packages still on the pre-carve 28-bit Reserved layout stay green; non-zero Region/Tenant cases are
-hand vectors below (and unit-tested in `@orbit-id/core`) until every language PR lands.
+carved from the former 28-bit Reserved. Shared JSON fixtures cover zero and non-zero Region/Tenant
+round-trips plus remaining-Reserved reject (`INVALID_RESERVED`).
 Every package that claims v2 support loads the shared fixtures: `@orbit-id/core`, Java, Rust, PHP,
 and Go (via `internal/v2`).
 
@@ -197,10 +196,9 @@ and Go (via `internal/v2`).
 | Decimal ID | `21267647932634211831339783976615149568` |
 | Hex ID | `0x10000000003e800010001ffff0000000` |
 
-### v2 Vector 4: Non-zero Region / Tenant (hand vector)
+### v2 Vector 4: Non-zero Region / Tenant
 
-Not yet in `encode-decode.v2.json` (deferred until all language packages encode Region/Tenant).
-Covered by `@orbit-id/core` unit tests today.
+Fixture id: `region-tenant-nonzero` in `encode-decode.v2.json`.
 
 | Field | Value |
 | --- | ---: |
@@ -227,11 +225,11 @@ Covered by `@orbit-id/core` unit tests today.
 | `-1` | Negative value |
 | `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
 | `01` | Leading zeros are not canonical |
+| `21267647932558653967613834469092360193` | Non-zero remaining Reserved → `INVALID_RESERVED` |
 
-Non-zero remaining Reserved (`21267647932558653967613834469092360193`) is a valid decimal but MUST
-fail `parse`/`decode` with `INVALID_RESERVED` once the carve-out ships in a language; it is not in
-`decode-reject.v2.json` yet (that file only lists non-canonical decimals until languages handle an
-optional `code` field).
+`21267647932558653967613834469092360193` is a valid unsigned decimal
+(`FormatVersion=1`, `Type=1`, remaining `Reserved=1`) but MUST fail `parse`/`decode` with
+`INVALID_RESERVED` (fixture id `nonzero-remaining-reserved`).
 
 Full table: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json).
 
