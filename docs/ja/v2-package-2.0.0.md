@@ -81,6 +81,7 @@ Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflo
 
 ローカル同等（任意）: `npm run release:bump -- 2.0.0` のあと手で PR。ロックステップ bump には
 Action を優先する。
+
 ## 消費者移行（要約）
 
 | いま（1.x） | `2.0.0` 後 |
