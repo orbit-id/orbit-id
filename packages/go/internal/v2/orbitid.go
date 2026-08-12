@@ -23,19 +23,25 @@ const (
 	TypeBits          = 16
 	NodeBits          = 16
 	SequenceBits      = 16
-	ReservedBits      = 28
+	RegionBits        = 4
+	TenantBits        = 16
+	ReservedBits      = 8
 
 	FormatVersionShift = 124
 	TimestampShift     = 76
 	TypeShift          = 60
 	NodeShift          = 44
 	SequenceShift      = 28
+	RegionShift        = 24
+	TenantShift        = 8
 
 	MaxFormatVersion int    = (1 << FormatVersionBits) - 1
 	MaxTimestamp     uint64 = (1 << TimestampBits) - 1
 	MaxType          int    = (1 << TypeBits) - 1
 	MaxNode          int    = (1 << NodeBits) - 1
 	MaxSequence      int    = (1 << SequenceBits) - 1
+	MaxRegion        int    = (1 << RegionBits) - 1
+	MaxTenant        int    = (1 << TenantBits) - 1
 	MaxReserved      uint32 = (1 << ReservedBits) - 1
 
 	// IssuedFormatVersion is the only FormatVersion issued Orbit ID v2 values
@@ -72,6 +78,8 @@ const (
 	InvalidTimestamp     = orbitid.InvalidTimestamp
 	InvalidDecimal       = orbitid.InvalidDecimal
 	InvalidFormatVersion = orbitid.InvalidFormatVersion
+	InvalidRegion        = orbitid.InvalidRegion
+	InvalidTenant        = orbitid.InvalidTenant
 	InvalidReserved      = orbitid.InvalidReserved
 	ClockRollback        = orbitid.ClockRollback
 	SequenceExhausted    = orbitid.SequenceExhausted
@@ -89,13 +97,15 @@ func orbitError(code ErrorCode, format string, args ...any) error {
 var u128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
 
 // Fields are the decoded Orbit ID v2 fields. Timestamp is milliseconds
-// since OrbitEpochUnixMs. Reserved is the low 28 bits, required to be 0.
+// since OrbitEpochUnixMs. Reserved is the low 8 bits, required to be 0.
 type Fields struct {
 	FormatVersion int
 	Timestamp     uint64
 	Type          int
 	Node          int
 	Sequence      int
+	Region        int
+	Tenant        int
 	Reserved      uint32
 }
 
@@ -117,6 +127,12 @@ func Encode(fields Fields) (*big.Int, error) {
 	if fields.Sequence < 0 || fields.Sequence > MaxSequence {
 		return nil, orbitError(InvalidSequence, "sequence out of range: %d", fields.Sequence)
 	}
+	if fields.Region < 0 || fields.Region > MaxRegion {
+		return nil, orbitError(InvalidRegion, "region out of range: %d", fields.Region)
+	}
+	if fields.Tenant < 0 || fields.Tenant > MaxTenant {
+		return nil, orbitError(InvalidTenant, "tenant out of range: %d", fields.Tenant)
+	}
 	if fields.Reserved != 0 {
 		return nil, orbitError(InvalidReserved, "reserved must be 0 on encode: %d", fields.Reserved)
 	}
@@ -125,6 +141,8 @@ func Encode(fields Fields) (*big.Int, error) {
 	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Type)), TypeShift))
 	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Node)), NodeShift))
 	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Sequence)), SequenceShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Region)), RegionShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Tenant)), TenantShift))
 	id.Or(id, new(big.Int).SetUint64(uint64(fields.Reserved)))
 	return id, nil
 }
@@ -142,18 +160,22 @@ func Decode(id *big.Int) (Fields, error) {
 	}
 	reserved := uint32(new(big.Int).And(id, big.NewInt(int64(MaxReserved))).Uint64())
 	if reserved != 0 {
-		return Fields{}, orbitError(InvalidReserved, "non-zero reserved is rejected in alpha: %d", reserved)
+		return Fields{}, orbitError(InvalidReserved, "non-zero reserved is rejected: %d", reserved)
 	}
 	timestamp := new(big.Int).And(new(big.Int).Rsh(id, TimestampShift), new(big.Int).SetUint64(MaxTimestamp)).Uint64()
 	typ := int(new(big.Int).And(new(big.Int).Rsh(id, TypeShift), big.NewInt(int64(MaxType))).Int64())
 	node := int(new(big.Int).And(new(big.Int).Rsh(id, NodeShift), big.NewInt(int64(MaxNode))).Int64())
 	sequence := int(new(big.Int).And(new(big.Int).Rsh(id, SequenceShift), big.NewInt(int64(MaxSequence))).Int64())
+	region := int(new(big.Int).And(new(big.Int).Rsh(id, RegionShift), big.NewInt(int64(MaxRegion))).Int64())
+	tenant := int(new(big.Int).And(new(big.Int).Rsh(id, TenantShift), big.NewInt(int64(MaxTenant))).Int64())
 	return Fields{
 		FormatVersion: formatVersion,
 		Timestamp:     timestamp,
 		Type:          typ,
 		Node:          node,
 		Sequence:      sequence,
+		Region:        region,
+		Tenant:        tenant,
 		Reserved:      reserved,
 	}, nil
 }
@@ -202,6 +224,16 @@ func GetNode(id any) (int, error) {
 func GetSequence(id any) (int, error) {
 	fields, err := Parse(id)
 	return fields.Sequence, err
+}
+
+func GetRegion(id any) (int, error) {
+	fields, err := Parse(id)
+	return fields.Region, err
+}
+
+func GetTenant(id any) (int, error) {
+	fields, err := Parse(id)
+	return fields.Tenant, err
 }
 
 func GetReserved(id any) (uint32, error) {
@@ -269,6 +301,8 @@ func FromUnixTimeMs(unixMs int64) int64 {
 
 type GeneratorOptions struct {
 	Node                     int
+	Region                   int
+	Tenant                   int
 	Clock                    Clock
 	ClockRollbackToleranceMs int64
 	OnSequenceExhausted      SequenceExhaustedMode
@@ -290,6 +324,8 @@ type GenerateDecision struct {
 // Sequence is shared across Types, matching v1.
 type Generator struct {
 	node                     int
+	region                   int
+	tenant                   int
 	clock                    Clock
 	clockRollbackToleranceMs int64
 	onSequenceExhausted      SequenceExhaustedMode
@@ -302,6 +338,12 @@ type Generator struct {
 func NewGenerator(options GeneratorOptions) (*Generator, error) {
 	if options.Node < 0 || options.Node > MaxNode {
 		return nil, orbitError(InvalidNode, "node out of range: %d", options.Node)
+	}
+	if options.Region < 0 || options.Region > MaxRegion {
+		return nil, orbitError(InvalidRegion, "region out of range: %d", options.Region)
+	}
+	if options.Tenant < 0 || options.Tenant > MaxTenant {
+		return nil, orbitError(InvalidTenant, "tenant out of range: %d", options.Tenant)
 	}
 	clock := options.Clock
 	if clock == nil {
@@ -322,13 +364,18 @@ func NewGenerator(options GeneratorOptions) (*Generator, error) {
 		return nil, orbitError(InvalidSequence, "invalid sequence exhaustion mode: %s", mode)
 	}
 	return &Generator{
-		node: options.Node, clock: clock, clockRollbackToleranceMs: tolerance,
+		node: options.Node, region: options.Region, tenant: options.Tenant,
+		clock: clock, clockRollbackToleranceMs: tolerance,
 		onSequenceExhausted: mode, confirmOwnership: options.ConfirmOwnership,
 		lastTimestamp: -1,
 	}, nil
 }
 
 func (g *Generator) Node() int { return g.node }
+
+func (g *Generator) Region() int { return g.region }
+
+func (g *Generator) Tenant() int { return g.tenant }
 
 func (g *Generator) GetLastTimestamp() uint64 {
 	g.mu.Lock()
@@ -413,7 +460,8 @@ func (g *Generator) Generate(typ int) (*big.Int, error) {
 		case DecisionIssue:
 			id, err := Encode(Fields{
 				FormatVersion: IssuedFormatVersion, Timestamp: decision.Timestamp,
-				Type: typ, Node: g.node, Sequence: decision.Sequence, Reserved: 0,
+				Type: typ, Node: g.node, Sequence: decision.Sequence,
+				Region: g.region, Tenant: g.tenant, Reserved: 0,
 			})
 			if err != nil {
 				return nil, err
