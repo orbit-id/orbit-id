@@ -1,4 +1,4 @@
-package v2_test
+package orbitid_test
 
 import (
 	"encoding/json"
@@ -11,8 +11,7 @@ import (
 	"strconv"
 	"testing"
 
-	orbitid "github.com/orbit-id/go"
-	v2 "github.com/orbit-id/go/internal/v2"
+	orbitid "github.com/orbit-id/go/v2"
 )
 
 type encodeDecodeFixture struct {
@@ -52,7 +51,7 @@ type generatorFixture struct {
 
 func fixturePath(name string) string {
 	_, file, _, _ := runtime.Caller(0)
-	return filepath.Join(filepath.Dir(file), "../../../../spec/conformance", name)
+	return filepath.Join(filepath.Dir(file), "../../spec/conformance", name)
 }
 
 func loadFixture(t *testing.T, name string, target any) {
@@ -80,58 +79,58 @@ func TestEncodeDecodeConformance(t *testing.T) {
 	loadFixture(t, "encode-decode.v2.json", &fixture)
 	for _, c := range fixture.Cases {
 		t.Run(c.ID, func(t *testing.T) {
-			fields := v2.Fields{
+			fields := orbitid.Fields{
 				FormatVersion: c.FormatVersion, Timestamp: uintValue(t, c.Timestamp),
 				Type: c.Type, Node: c.Node, Sequence: c.Sequence,
 				Region: c.Region, Tenant: c.Tenant, Reserved: uint32(c.Reserved),
 			}
-			id, err := v2.Encode(fields)
+			id, err := orbitid.Encode(fields)
 			if err != nil {
 				t.Fatal(err)
 			}
-			decimal, err := v2.ToDecimalString(id)
+			decimal, err := orbitid.ToDecimalString(id)
 			if err != nil || decimal != c.IDDecimal {
 				t.Fatalf("decimal = %q, %v, want %q", decimal, err, c.IDDecimal)
 			}
-			hex, err := v2.ToHexString(id)
+			hex, err := orbitid.ToHexString(id)
 			if err != nil || hex != c.IDHex {
 				t.Fatalf("hex = %q, %v, want %q", hex, err, c.IDHex)
 			}
-			got, err := v2.Decode(id)
+			got, err := orbitid.Decode(id)
 			if err != nil || !reflect.DeepEqual(got, fields) {
 				t.Fatalf("decode = %#v, %v, want %#v", got, err, fields)
 			}
 			for _, input := range []any{c.IDDecimal, id} {
-				got, err := v2.Parse(input)
+				got, err := orbitid.Parse(input)
 				if err != nil || !reflect.DeepEqual(got, fields) {
 					t.Fatalf("parse(%v) = %#v, %v; want %#v", input, got, err, fields)
 				}
 			}
-			if got, _ := v2.GetFormatVersion(c.IDDecimal); got != fields.FormatVersion {
+			if got, _ := orbitid.GetFormatVersion(c.IDDecimal); got != fields.FormatVersion {
 				t.Fatalf("formatVersion = %d, want %d", got, fields.FormatVersion)
 			}
-			if got, _ := v2.GetTimestamp(c.IDDecimal); got != fields.Timestamp {
+			if got, _ := orbitid.GetTimestamp(c.IDDecimal); got != fields.Timestamp {
 				t.Fatalf("timestamp = %d, want %d", got, fields.Timestamp)
 			}
-			if got, _ := v2.GetType(id); got != fields.Type {
+			if got, _ := orbitid.GetType(id); got != fields.Type {
 				t.Fatalf("type = %d, want %d", got, fields.Type)
 			}
-			if got, _ := v2.GetNode(c.IDDecimal); got != fields.Node {
+			if got, _ := orbitid.GetNode(c.IDDecimal); got != fields.Node {
 				t.Fatalf("node = %d, want %d", got, fields.Node)
 			}
-			if got, _ := v2.GetSequence(id); got != fields.Sequence {
+			if got, _ := orbitid.GetSequence(id); got != fields.Sequence {
 				t.Fatalf("sequence = %d, want %d", got, fields.Sequence)
 			}
-			if got, _ := v2.GetRegion(id); got != fields.Region {
+			if got, _ := orbitid.GetRegion(id); got != fields.Region {
 				t.Fatalf("region = %d, want %d", got, fields.Region)
 			}
-			if got, _ := v2.GetTenant(id); got != fields.Tenant {
+			if got, _ := orbitid.GetTenant(id); got != fields.Tenant {
 				t.Fatalf("tenant = %d, want %d", got, fields.Tenant)
 			}
-			if got, _ := v2.GetReserved(id); got != fields.Reserved {
+			if got, _ := orbitid.GetReserved(id); got != fields.Reserved {
 				t.Fatalf("reserved = %d, want %d", got, fields.Reserved)
 			}
-			if !v2.IsValid(c.IDDecimal) || !v2.IsValid(id) {
+			if !orbitid.IsValid(c.IDDecimal) || !orbitid.IsValid(id) {
 				t.Fatal("valid conformance ID rejected")
 			}
 		})
@@ -148,51 +147,51 @@ func TestDecimalRejectConformance(t *testing.T) {
 				expectedCode = orbitid.ErrorCode(c.Code)
 			}
 			if expectedCode == orbitid.InvalidDecimal {
-				_, err := v2.FromDecimalString(c.Input)
+				_, err := orbitid.FromDecimalString(c.Input)
 				var orbitErr *orbitid.Error
 				if !errors.As(err, &orbitErr) || orbitErr.Code != orbitid.InvalidDecimal {
 					t.Fatalf("error = %v, want INVALID_DECIMAL", err)
 				}
 			} else {
-				value, err := v2.FromDecimalString(c.Input)
+				value, err := orbitid.FromDecimalString(c.Input)
 				if err != nil || value.Sign() < 0 {
 					t.Fatalf("FromDecimalString = %v, %v", value, err)
 				}
-				_, err = v2.Parse(c.Input)
+				_, err = orbitid.Parse(c.Input)
 				var orbitErr *orbitid.Error
 				if !errors.As(err, &orbitErr) || orbitErr.Code != expectedCode {
 					t.Fatalf("parse error = %v, want %s", err, expectedCode)
 				}
 			}
-			if _, err := v2.Parse(c.Input); err == nil || v2.IsValid(c.Input) {
+			if _, err := orbitid.Parse(c.Input); err == nil || orbitid.IsValid(c.Input) {
 				t.Fatal("invalid input accepted")
 			}
 		})
 	}
 	// "0" is a canonical decimal string, but formatVersion 0 is reserved, so
 	// it is rejected as a v2 id (unlike v1, where every 64-bit pattern decodes).
-	zero, err := v2.FromDecimalString("0")
+	zero, err := orbitid.FromDecimalString("0")
 	if err != nil || zero.Sign() != 0 {
 		t.Fatalf("FromDecimalString(0) = %v, %v", zero, err)
 	}
-	if v2.IsValid("0") {
+	if orbitid.IsValid("0") {
 		t.Fatal("expected formatVersion 0 to be rejected as a v2 id")
 	}
-	if _, err := v2.Decode(zero); err == nil {
+	if _, err := orbitid.Decode(zero); err == nil {
 		t.Fatal("expected Decode(0) to be rejected (reserved formatVersion)")
 	}
 }
 
 func TestDecodeRejectsUnknownFormatVersionAndReserved(t *testing.T) {
-	fields := v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 0, Tenant: 0, Reserved: 0}
-	id, err := v2.Encode(fields)
+	fields := orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 0, Tenant: 0, Reserved: 0}
+	id, err := orbitid.Encode(fields)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	unknownVersion := new(big.Int).Set(id)
-	unknownVersion.Xor(unknownVersion, new(big.Int).Lsh(big.NewInt(1), v2.FormatVersionShift))
-	if _, err := v2.Decode(unknownVersion); err == nil {
+	unknownVersion.Xor(unknownVersion, new(big.Int).Lsh(big.NewInt(1), orbitid.FormatVersionShift))
+	if _, err := orbitid.Decode(unknownVersion); err == nil {
 		t.Fatal("expected unknown formatVersion to be rejected")
 	} else {
 		var orbitErr *orbitid.Error
@@ -202,7 +201,7 @@ func TestDecodeRejectsUnknownFormatVersionAndReserved(t *testing.T) {
 	}
 
 	nonZeroReserved := new(big.Int).Or(id, big.NewInt(1))
-	if _, err := v2.Decode(nonZeroReserved); err == nil {
+	if _, err := orbitid.Decode(nonZeroReserved); err == nil {
 		t.Fatal("expected non-zero reserved to be rejected")
 	} else {
 		var orbitErr *orbitid.Error
@@ -211,37 +210,37 @@ func TestDecodeRejectsUnknownFormatVersionAndReserved(t *testing.T) {
 		}
 	}
 
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 0, Timestamp: 1, Type: 1, Node: 1, Sequence: 0}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 0, Timestamp: 1, Type: 1, Node: 1, Sequence: 0}); err == nil {
 		t.Fatal("expected formatVersion 0 to be rejected on encode")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Reserved: 1}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Reserved: 1}); err == nil {
 		t.Fatal("expected non-zero reserved to be rejected on encode")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 99}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Region: 99}); err == nil {
 		t.Fatal("expected region overflow to be rejected on encode")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Tenant: 99_999}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: 0, Tenant: 99_999}); err == nil {
 		t.Fatal("expected tenant overflow to be rejected on encode")
 	}
 
-	if _, err := v2.Decode(nil); err == nil {
+	if _, err := orbitid.Decode(nil); err == nil {
 		t.Fatal("expected nil id to be rejected")
 	}
 	negative := big.NewInt(-1)
-	if _, err := v2.Decode(negative); err == nil {
+	if _, err := orbitid.Decode(negative); err == nil {
 		t.Fatal("expected negative id to be rejected")
 	}
 	overflow := new(big.Int).Add(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
-	if _, err := v2.Decode(overflow); err == nil {
+	if _, err := orbitid.Decode(overflow); err == nil {
 		t.Fatal("expected overflow id to be rejected")
 	}
-	if _, err := v2.ToDecimalString(negative); err == nil {
+	if _, err := orbitid.ToDecimalString(negative); err == nil {
 		t.Fatal("expected ToDecimalString to reject negative id")
 	}
-	if _, err := v2.ToHexString(negative); err == nil {
+	if _, err := orbitid.ToHexString(negative); err == nil {
 		t.Fatal("expected ToHexString to reject negative id")
 	}
-	if _, err := v2.Parse(42); err == nil {
+	if _, err := orbitid.Parse(42); err == nil {
 		t.Fatal("expected unsupported input type to be rejected")
 	}
 }
@@ -256,9 +255,9 @@ func TestGeneratorConformance(t *testing.T) {
 	tolerance := int64(uintValue(t, fixture.Defaults.ClockRollbackToleranceMs))
 	for _, c := range fixture.Cases {
 		t.Run(c.ID, func(t *testing.T) {
-			generator, err := v2.NewGenerator(v2.GeneratorOptions{
+			generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
 				Node: c.Node, Clock: fixedClock{now: int64(uintValue(t, c.NowTimestamp))},
-				ClockRollbackToleranceMs: tolerance, OnSequenceExhausted: v2.SequenceExhaustedFail,
+				ClockRollbackToleranceMs: tolerance, OnSequenceExhausted: orbitid.SequenceExhaustedFail,
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -269,19 +268,19 @@ func TestGeneratorConformance(t *testing.T) {
 			decision := generator.Decide(c.Type, int64(uintValue(t, c.NowTimestamp)))
 			switch c.Expect.Action {
 			case "issue":
-				if decision.Action != v2.DecisionIssue || decision.Timestamp != uintValue(t, c.Expect.Timestamp) || decision.Sequence != c.Expect.Sequence {
+				if decision.Action != orbitid.DecisionIssue || decision.Timestamp != uintValue(t, c.Expect.Timestamp) || decision.Sequence != c.Expect.Sequence {
 					t.Fatalf("decision = %#v", decision)
 				}
 			case "wait":
-				if decision.Action != v2.DecisionWait || decision.WaitUntilTimestamp != uintValue(t, c.Expect.WaitUntilTimestamp) {
+				if decision.Action != orbitid.DecisionWait || decision.WaitUntilTimestamp != uintValue(t, c.Expect.WaitUntilTimestamp) {
 					t.Fatalf("decision = %#v", decision)
 				}
 			case "wait_or_fail":
-				if decision.Action != v2.DecisionError || decision.Error != orbitid.SequenceExhausted {
+				if decision.Action != orbitid.DecisionError || decision.Error != orbitid.SequenceExhausted {
 					t.Fatalf("decision = %#v", decision)
 				}
 			case "error":
-				if decision.Action != v2.DecisionError || string(decision.Error) != c.Expect.Error {
+				if decision.Action != orbitid.DecisionError || string(decision.Error) != c.Expect.Error {
 					t.Fatalf("decision = %#v", decision)
 				}
 			}
@@ -290,17 +289,17 @@ func TestGeneratorConformance(t *testing.T) {
 }
 
 func TestGeneratorWaitModeAndReservedType(t *testing.T) {
-	generator, err := v2.NewGenerator(v2.GeneratorOptions{
-		Node: 7, Clock: fixedClock{now: 1000}, OnSequenceExhausted: v2.SequenceExhaustedWait,
+	generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 7, Clock: fixedClock{now: 1000}, OnSequenceExhausted: orbitid.SequenceExhaustedWait,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := generator.RestoreState(1000, v2.MaxSequence); err != nil {
+	if err := generator.RestoreState(1000, orbitid.MaxSequence); err != nil {
 		t.Fatal(err)
 	}
 	decision := generator.Decide(1, 1000)
-	if decision.Action != v2.DecisionWaitNextMs || decision.FromTimestamp != 1000 {
+	if decision.Action != orbitid.DecisionWaitNextMs || decision.FromTimestamp != 1000 {
 		t.Fatalf("decision = %#v", decision)
 	}
 	if _, err := generator.Generate(0); err == nil {
@@ -310,8 +309,8 @@ func TestGeneratorWaitModeAndReservedType(t *testing.T) {
 
 func TestGeneratorGenerateAndHelpers(t *testing.T) {
 	clock := &tickingClock{values: []int64{1000, 1000, 1001, 1001}}
-	generator, err := v2.NewGenerator(v2.GeneratorOptions{
-		Node: 7, Clock: clock, OnSequenceExhausted: v2.SequenceExhaustedWait,
+	generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 7, Clock: clock, OnSequenceExhausted: orbitid.SequenceExhaustedWait,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -332,14 +331,14 @@ func TestGeneratorGenerateAndHelpers(t *testing.T) {
 	if generator.GetLastTimestamp() == 0 {
 		t.Fatal("expected last timestamp to update")
 	}
-	if region, _ := v2.GetRegion(id); region != 0 {
+	if region, _ := orbitid.GetRegion(id); region != 0 {
 		t.Fatalf("region = %d", region)
 	}
-	if tenant, _ := v2.GetTenant(id); tenant != 0 {
+	if tenant, _ := orbitid.GetTenant(id); tenant != 0 {
 		t.Fatalf("tenant = %d", tenant)
 	}
 
-	configured, err := v2.NewGenerator(v2.GeneratorOptions{
+	configured, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
 		Node: 1, Region: 3, Tenant: 1000, Clock: fixedClock{now: 1},
 	})
 	if err != nil {
@@ -349,27 +348,27 @@ func TestGeneratorGenerateAndHelpers(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, _ := v2.GetRegion(configuredID); got != 3 {
+	if got, _ := orbitid.GetRegion(configuredID); got != 3 {
 		t.Fatalf("region = %d, want 3", got)
 	}
-	if got, _ := v2.GetTenant(configuredID); got != 1000 {
+	if got, _ := orbitid.GetTenant(configuredID); got != 1000 {
 		t.Fatalf("tenant = %d, want 1000", got)
 	}
-	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, Region: 99}); err == nil {
+	if _, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 1, Region: 99}); err == nil {
 		t.Fatal("expected region overflow")
 	}
-	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, Tenant: 99_999}); err == nil {
+	if _, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 1, Tenant: 99_999}); err == nil {
 		t.Fatal("expected tenant overflow")
 	}
 
 	waitClock := &tickingClock{values: []int64{1000, 1000, 1001, 1001}}
-	waiter, err := v2.NewGenerator(v2.GeneratorOptions{
-		Node: 7, Clock: waitClock, OnSequenceExhausted: v2.SequenceExhaustedWait,
+	waiter, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
+		Node: 7, Clock: waitClock, OnSequenceExhausted: orbitid.SequenceExhaustedWait,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := waiter.RestoreState(1000, v2.MaxSequence); err != nil {
+	if err := waiter.RestoreState(1000, orbitid.MaxSequence); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := waiter.Generate(1); err != nil {
@@ -379,41 +378,41 @@ func TestGeneratorGenerateAndHelpers(t *testing.T) {
 		t.Fatalf("wait last = %d", waiter.GetLastTimestamp())
 	}
 
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: v2.MaxTimestamp + 1, Type: 1, Node: 1, Sequence: 0}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: orbitid.MaxTimestamp + 1, Type: 1, Node: 1, Sequence: 0}); err == nil {
 		t.Fatal("expected timestamp overflow")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: v2.MaxType + 1, Node: 1, Sequence: 0}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: orbitid.MaxType + 1, Node: 1, Sequence: 0}); err == nil {
 		t.Fatal("expected type overflow")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: v2.MaxNode + 1, Sequence: 0}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: orbitid.MaxNode + 1, Sequence: 0}); err == nil {
 		t.Fatal("expected node overflow")
 	}
-	if _, err := v2.Encode(v2.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: v2.MaxSequence + 1}); err == nil {
+	if _, err := orbitid.Encode(orbitid.Fields{FormatVersion: 1, Timestamp: 1, Type: 1, Node: 1, Sequence: orbitid.MaxSequence + 1}); err == nil {
 		t.Fatal("expected sequence overflow")
 	}
-	if err := waiter.RestoreState(v2.MaxTimestamp+1, 0); err == nil {
+	if err := waiter.RestoreState(orbitid.MaxTimestamp+1, 0); err == nil {
 		t.Fatal("expected RestoreState timestamp overflow")
 	}
-	if err := waiter.RestoreState(0, v2.MaxSequence+1); err == nil {
+	if err := waiter.RestoreState(0, orbitid.MaxSequence+1); err == nil {
 		t.Fatal("expected RestoreState sequence overflow")
 	}
-	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: v2.MaxNode + 1}); err == nil {
+	if _, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: orbitid.MaxNode + 1}); err == nil {
 		t.Fatal("expected NewGenerator node overflow")
 	}
-	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, ClockRollbackToleranceMs: -1}); err == nil {
+	if _, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 1, ClockRollbackToleranceMs: -1}); err == nil {
 		t.Fatal("expected negative tolerance rejected")
 	}
-	if _, err := v2.NewGenerator(v2.GeneratorOptions{Node: 1, OnSequenceExhausted: "bogus"}); err == nil {
+	if _, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 1, OnSequenceExhausted: "bogus"}); err == nil {
 		t.Fatal("expected invalid sequence exhaustion mode rejected")
 	}
 
-	unix := v2.ToUnixTimeMs(0)
-	if v2.FromUnixTimeMs(int64(unix)) != 0 {
+	unix := orbitid.ToUnixTimeMs(0)
+	if orbitid.FromUnixTimeMs(int64(unix)) != 0 {
 		t.Fatal("unix roundtrip failed")
 	}
-	_ = v2.SystemClock().CurrentOrbitTimestampMs()
+	_ = orbitid.SystemClock().CurrentOrbitTimestampMs()
 
-	lost, err := v2.NewGenerator(v2.GeneratorOptions{
+	lost, err := orbitid.NewGenerator(orbitid.GeneratorOptions{
 		Node: 1, Clock: fixedClock{now: 5}, ConfirmOwnership: func() bool { return false },
 	})
 	if err != nil {

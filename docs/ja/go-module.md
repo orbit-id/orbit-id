@@ -27,18 +27,28 @@ proxy.golang.org / pkg.go.dev
 ## モジュールパス
 
 ```text
-github.com/orbit-id/go
+github.com/orbit-id/go/v2
 ```
 
 [`packages/go/go.mod`](../../packages/go/go.mod) で宣言。パッケージ名は `orbitid`
-（[`packages/go/README.md`](../../packages/go/README.md)）。
+（[`packages/go/README.md`](../../packages/go/README.md)）。レガシー v1 は
+`github.com/orbit-id/go/v2/v1`、および旧 major モジュール
+`github.com/orbit-id/go` の既存 `v1.x` タグでも解決できます。
 
 ```bash
-go get github.com/orbit-id/go@v1.1.0
+# 横断の v2.0.0 カット後:
+go get github.com/orbit-id/go/v2@v2.0.0
+
+# 旧 major（既存タグ）:
+go get github.com/orbit-id/go@v1.1.1
 ```
 
 旧パス `github.com/orbit-id/orbit-id/packages/go` は廃止。
 
+**注意:** ミラー `orbit-id/go` の `main` が `/v2` を宣言したあとは、その tip から
+新しい `v1.*` タグを切らないこと（`go.mod` が `/v2` なのに `v1` タグだと proxy が
+拒否します）。v1 のパッチが必要なら、まだ `github.com/orbit-id/go` を宣言している
+コミットからメンテナンスしてください。
 ## 初回セットアップ
 
 1. ミラー [`orbit-id/go`](https://github.com/orbit-id/go) があること。
@@ -59,17 +69,21 @@ go get github.com/orbit-id/go@v1.1.0
 ## 確認
 
 ```bash
+# v2.0.0 公開後:
 GOPROXY=https://proxy.golang.org,direct \
-  go list -m github.com/orbit-id/go@v1.1.0
+  go list -m github.com/orbit-id/go/v2@v2.0.0
+
+# 旧 major:
+GOPROXY=https://proxy.golang.org,direct \
+  go list -m github.com/orbit-id/go@v1.1.1
 ```
 
 新規タグ直後は proxy の反映に数分かかることがあります。すぐ確認するときは
 `GOPROXY=direct` を使えます。
-
 ## メンテナ checklist
 
 1. Go の変更を `main` にマージ。
 2. `GO_SPLIT_TOKEN` が設定済みであること。
 3. モノレポで `vX.Y.Z` を push（Publish の `go` job がミラーする）。
 4. [`orbit-id/go` のタグ](https://github.com/orbit-id/go/tags) と
-   [pkg.go.dev](https://pkg.go.dev/github.com/orbit-id/go) を確認。
+   [pkg.go.dev](https://pkg.go.dev/github.com/orbit-id/go/v2) を確認。

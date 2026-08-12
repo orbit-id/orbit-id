@@ -1,28 +1,53 @@
-// Package orbitid implements the Orbit ID v1 unsigned 64-bit format.
+// Package orbitid implements the Orbit ID v2 unsigned 128-bit format.
+//
+// The module path is github.com/orbit-id/go/v2. Legacy v1 lives under
+// github.com/orbit-id/go/v2/v1 (and remains available via the prior major
+// module github.com/orbit-id/go@v1.x).
 package orbitid
 
 import (
 	"fmt"
-	"strconv"
+	"math/big"
 	"strings"
 	"sync"
 	"time"
 )
 
 const (
-	OrbitEpochUnixMs                 int64  = 1767225600000
-	TimestampBits                           = 41
-	TypeBits                                = 6
-	NodeBits                                = 7
-	SequenceBits                            = 10
-	TimestampShift                          = 23
-	TypeShift                               = 17
-	NodeShift                               = 10
-	MaxTimestamp                     uint64 = (1 << TimestampBits) - 1
-	MaxType                            int   = (1 << TypeBits) - 1
-	MaxNode                            int   = (1 << NodeBits) - 1
-	MaxSequence                        int   = (1 << SequenceBits) - 1
-	DefaultClockRollbackToleranceMs  int64 = 5000
+	OrbitEpochUnixMs                int64 = 1767225600000
+	DefaultClockRollbackToleranceMs int64 = 5000
+)
+
+const (
+	FormatVersionBits = 4
+	TimestampBits     = 48
+	TypeBits          = 16
+	NodeBits          = 16
+	SequenceBits      = 16
+	RegionBits        = 4
+	TenantBits        = 16
+	ReservedBits      = 8
+
+	FormatVersionShift = 124
+	TimestampShift     = 76
+	TypeShift          = 60
+	NodeShift          = 44
+	SequenceShift      = 28
+	RegionShift        = 24
+	TenantShift        = 8
+
+	MaxFormatVersion int    = (1 << FormatVersionBits) - 1
+	MaxTimestamp     uint64 = (1 << TimestampBits) - 1
+	MaxType          int    = (1 << TypeBits) - 1
+	MaxNode          int    = (1 << NodeBits) - 1
+	MaxSequence      int    = (1 << SequenceBits) - 1
+	MaxRegion        int    = (1 << RegionBits) - 1
+	MaxTenant        int    = (1 << TenantBits) - 1
+	MaxReserved      uint32 = (1 << ReservedBits) - 1
+
+	// IssuedFormatVersion is the only FormatVersion issued Orbit ID v2 values
+	// may use; decode fails closed on any other value.
+	IssuedFormatVersion int = 1
 )
 
 // ErrorCode is a stable, machine-readable Orbit error code.
@@ -38,8 +63,7 @@ const (
 	SequenceExhausted ErrorCode = "SEQUENCE_EXHAUSTED"
 	NodeOwnershipLost ErrorCode = "NODE_OWNERSHIP_LOST"
 	// InvalidFormatVersion, InvalidRegion, InvalidTenant, and InvalidReserved
-	// are used by the v2 (128-bit, internal/v2, alpha) format; see
-	// docs/en/library-api.md.
+	// are used by the v2 (128-bit) format; see docs/en/library-api.md.
 	InvalidFormatVersion ErrorCode = "INVALID_FORMAT_VERSION"
 	InvalidRegion        ErrorCode = "INVALID_REGION"
 	InvalidTenant        ErrorCode = "INVALID_TENANT"
@@ -48,7 +72,7 @@ const (
 
 // Error is returned for invalid Orbit input or failed generation.
 type Error struct {
-	Code ErrorCode
+	Code    ErrorCode
 	Message string
 }
 
@@ -56,86 +80,149 @@ func (e *Error) Error() string {
 	return string(e.Code) + ": " + e.Message
 }
 
+type Clock interface {
+	CurrentOrbitTimestampMs() int64
+}
+
+type systemClock struct{}
+
+func (systemClock) CurrentOrbitTimestampMs() int64 {
+	return time.Now().UnixMilli() - OrbitEpochUnixMs
+}
+
+// SystemClock returns the production wall-clock Orbit timestamp source.
+func SystemClock() Clock { return systemClock{} }
+
+type SequenceExhaustedMode string
+
+const (
+	SequenceExhaustedWait SequenceExhaustedMode = "wait"
+	SequenceExhaustedFail SequenceExhaustedMode = "fail"
+)
+
+type DecisionAction string
+
+const (
+	DecisionIssue      DecisionAction = "issue"
+	DecisionWait       DecisionAction = "wait"
+	DecisionWaitNextMs DecisionAction = "wait_next_ms"
+	DecisionError      DecisionAction = "error"
+)
+
 func orbitError(code ErrorCode, format string, args ...any) error {
 	return &Error{Code: code, Message: fmt.Sprintf(format, args...)}
 }
 
-// Fields are the decoded Orbit ID fields. Timestamp is milliseconds since
-// OrbitEpochUnixMs.
+// u128Max is 2^128 - 1, the largest value an Orbit ID v2 may hold.
+var u128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
+
+// Fields are the decoded Orbit ID v2 fields. Timestamp is milliseconds
+// since OrbitEpochUnixMs. Reserved is the low 8 bits, required to be 0.
 type Fields struct {
-	Timestamp uint64
-	Type      int
-	Node      int
-	Sequence  int
+	FormatVersion int
+	Timestamp     uint64
+	Type          int
+	Node          int
+	Sequence      int
+	Region        int
+	Tenant        int
+	Reserved      uint32
 }
 
-// Encode validates fields and packs them into an unsigned 64-bit Orbit ID.
-func Encode(fields Fields) (uint64, error) {
+// Encode validates fields and packs them into an unsigned 128-bit Orbit ID.
+// Issued IDs MUST use FormatVersion 1 and Reserved 0.
+func Encode(fields Fields) (*big.Int, error) {
+	if fields.FormatVersion != IssuedFormatVersion {
+		return nil, orbitError(InvalidFormatVersion, "formatVersion must be %d: %d", IssuedFormatVersion, fields.FormatVersion)
+	}
 	if fields.Timestamp > MaxTimestamp {
-		return 0, orbitError(InvalidTimestamp, "timestamp out of range: %d", fields.Timestamp)
+		return nil, orbitError(InvalidTimestamp, "timestamp out of range: %d", fields.Timestamp)
 	}
 	if fields.Type < 0 || fields.Type > MaxType {
-		return 0, orbitError(InvalidType, "type out of range: %d", fields.Type)
+		return nil, orbitError(InvalidType, "type out of range: %d", fields.Type)
 	}
 	if fields.Node < 0 || fields.Node > MaxNode {
-		return 0, orbitError(InvalidNode, "node out of range: %d", fields.Node)
+		return nil, orbitError(InvalidNode, "node out of range: %d", fields.Node)
 	}
 	if fields.Sequence < 0 || fields.Sequence > MaxSequence {
-		return 0, orbitError(InvalidSequence, "sequence out of range: %d", fields.Sequence)
+		return nil, orbitError(InvalidSequence, "sequence out of range: %d", fields.Sequence)
 	}
-	return fields.Timestamp<<TimestampShift |
-		uint64(fields.Type)<<TypeShift |
-		uint64(fields.Node)<<NodeShift |
-		uint64(fields.Sequence), nil
+	if fields.Region < 0 || fields.Region > MaxRegion {
+		return nil, orbitError(InvalidRegion, "region out of range: %d", fields.Region)
+	}
+	if fields.Tenant < 0 || fields.Tenant > MaxTenant {
+		return nil, orbitError(InvalidTenant, "tenant out of range: %d", fields.Tenant)
+	}
+	if fields.Reserved != 0 {
+		return nil, orbitError(InvalidReserved, "reserved must be 0 on encode: %d", fields.Reserved)
+	}
+	id := new(big.Int).Lsh(big.NewInt(int64(fields.FormatVersion)), FormatVersionShift)
+	id.Or(id, new(big.Int).Lsh(new(big.Int).SetUint64(fields.Timestamp), TimestampShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Type)), TypeShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Node)), NodeShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Sequence)), SequenceShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Region)), RegionShift))
+	id.Or(id, new(big.Int).Lsh(big.NewInt(int64(fields.Tenant)), TenantShift))
+	id.Or(id, new(big.Int).SetUint64(uint64(fields.Reserved)))
+	return id, nil
 }
 
-// Decode unpacks an unsigned 64-bit Orbit ID.
-func Decode(id uint64) Fields {
+// Decode unpacks and validates an unsigned 128-bit Orbit ID. Unlike v1's
+// unconditional Decode, this fails closed on an unknown FormatVersion or a
+// non-zero Reserved, per the v2 Draft.
+func Decode(id *big.Int) (Fields, error) {
+	if id == nil || id.Sign() < 0 || id.Cmp(u128Max) > 0 {
+		return Fields{}, orbitError(InvalidDecimal, "id out of unsigned 128-bit range")
+	}
+	formatVersion := int(new(big.Int).And(new(big.Int).Rsh(id, FormatVersionShift), big.NewInt(int64(MaxFormatVersion))).Int64())
+	if formatVersion != IssuedFormatVersion {
+		return Fields{}, orbitError(InvalidFormatVersion, "unknown or reserved formatVersion: %d", formatVersion)
+	}
+	reserved := uint32(new(big.Int).And(id, big.NewInt(int64(MaxReserved))).Uint64())
+	if reserved != 0 {
+		return Fields{}, orbitError(InvalidReserved, "non-zero reserved is rejected: %d", reserved)
+	}
+	timestamp := new(big.Int).And(new(big.Int).Rsh(id, TimestampShift), new(big.Int).SetUint64(MaxTimestamp)).Uint64()
+	typ := int(new(big.Int).And(new(big.Int).Rsh(id, TypeShift), big.NewInt(int64(MaxType))).Int64())
+	node := int(new(big.Int).And(new(big.Int).Rsh(id, NodeShift), big.NewInt(int64(MaxNode))).Int64())
+	sequence := int(new(big.Int).And(new(big.Int).Rsh(id, SequenceShift), big.NewInt(int64(MaxSequence))).Int64())
+	region := int(new(big.Int).And(new(big.Int).Rsh(id, RegionShift), big.NewInt(int64(MaxRegion))).Int64())
+	tenant := int(new(big.Int).And(new(big.Int).Rsh(id, TenantShift), big.NewInt(int64(MaxTenant))).Int64())
 	return Fields{
-		Timestamp: (id >> TimestampShift) & MaxTimestamp,
-		Type:      int((id >> TypeShift) & uint64(MaxType)),
-		Node:      int((id >> NodeShift) & uint64(MaxNode)),
-		Sequence:  int(id & uint64(MaxSequence)),
-	}
+		FormatVersion: formatVersion,
+		Timestamp:     timestamp,
+		Type:          typ,
+		Node:          node,
+		Sequence:      sequence,
+		Region:        region,
+		Tenant:        tenant,
+		Reserved:      reserved,
+	}, nil
 }
 
-// Parse accepts a uint64 Orbit ID or canonical decimal string and decodes it.
+// Parse accepts a *big.Int Orbit ID or canonical decimal string and decodes it.
 func Parse(id any) (Fields, error) {
 	value, err := parseID(id)
 	if err != nil {
 		return Fields{}, err
 	}
-	return Decode(value), nil
+	return Decode(value)
 }
 
-func parseID(id any) (uint64, error) {
+func parseID(id any) (*big.Int, error) {
 	switch value := id.(type) {
-	case uint64:
+	case *big.Int:
 		return value, nil
 	case string:
 		return FromDecimalString(value)
-	case uint:
-		return uint64(value), nil
-	case uint32:
-		return uint64(value), nil
-	case uint16:
-		return uint64(value), nil
-	case uint8:
-		return uint64(value), nil
-	case int:
-		if value >= 0 {
-			return uint64(value), nil
-		}
-	case int64:
-		if value >= 0 {
-			return uint64(value), nil
-		}
-	case int32:
-		if value >= 0 {
-			return uint64(value), nil
-		}
 	}
-	return 0, orbitError(InvalidDecimal, "id must be an unsigned integer or canonical decimal string")
+	return nil, orbitError(InvalidDecimal, "id must be a *big.Int or canonical decimal string")
+}
+
+// GetFormatVersion returns the in-band format identifier.
+func GetFormatVersion(id any) (int, error) {
+	fields, err := Parse(id)
+	return fields.FormatVersion, err
 }
 
 // GetTimestamp returns milliseconds since Orbit Epoch.
@@ -159,43 +246,67 @@ func GetSequence(id any) (int, error) {
 	return fields.Sequence, err
 }
 
+func GetRegion(id any) (int, error) {
+	fields, err := Parse(id)
+	return fields.Region, err
+}
+
+func GetTenant(id any) (int, error) {
+	fields, err := Parse(id)
+	return fields.Tenant, err
+}
+
+func GetReserved(id any) (uint32, error) {
+	fields, err := Parse(id)
+	return fields.Reserved, err
+}
+
 // IsValid reports syntactic validity only; it does not prove an ID was issued.
 func IsValid(id any) bool {
-	_, err := parseID(id)
+	_, err := Parse(id)
 	return err == nil
 }
 
-func ToDecimalString(id uint64) string {
-	return strconv.FormatUint(id, 10)
+func ToDecimalString(id *big.Int) (string, error) {
+	if id == nil || id.Sign() < 0 || id.Cmp(u128Max) > 0 {
+		return "", orbitError(InvalidDecimal, "id out of unsigned 128-bit range")
+	}
+	return id.String(), nil
 }
 
-// FromDecimalString accepts only canonical, unsigned base-10 uint64 strings.
-func FromDecimalString(input string) (uint64, error) {
+// FromDecimalString accepts only canonical, unsigned base-10 uint128 strings.
+func FromDecimalString(input string) (*big.Int, error) {
 	if input == "" {
-		return 0, orbitError(InvalidDecimal, "empty decimal string")
+		return nil, orbitError(InvalidDecimal, "empty decimal string")
 	}
 	if strings.HasPrefix(input, "+") || strings.HasPrefix(input, "-") ||
 		strings.TrimSpace(input) != input || strings.Contains(input, ".") ||
 		strings.Contains(strings.ToLower(input), "x") {
-		return 0, orbitError(InvalidDecimal, "non-canonical decimal string")
+		return nil, orbitError(InvalidDecimal, "non-canonical decimal string")
 	}
 	if len(input) > 1 && input[0] == '0' {
-		return 0, orbitError(InvalidDecimal, "leading zeros are not canonical")
+		return nil, orbitError(InvalidDecimal, "leading zeros are not canonical")
 	}
 	for _, r := range input {
 		if r < '0' || r > '9' {
-			return 0, orbitError(InvalidDecimal, "non-canonical decimal string")
+			return nil, orbitError(InvalidDecimal, "non-canonical decimal string")
 		}
 	}
-	value, err := strconv.ParseUint(input, 10, 64)
-	if err != nil {
-		return 0, orbitError(InvalidDecimal, "decimal value outside unsigned 64-bit range")
+	value, ok := new(big.Int).SetString(input, 10)
+	if !ok {
+		return nil, orbitError(InvalidDecimal, "invalid decimal string")
+	}
+	if value.Sign() < 0 || value.Cmp(u128Max) > 0 {
+		return nil, orbitError(InvalidDecimal, "decimal value outside unsigned 128-bit range")
 	}
 	return value, nil
 }
 
-func ToHexString(id uint64) string {
-	return fmt.Sprintf("0x%016x", id)
+func ToHexString(id *big.Int) (string, error) {
+	if id == nil || id.Sign() < 0 || id.Cmp(u128Max) > 0 {
+		return "", orbitError(InvalidDecimal, "id out of unsigned 128-bit range")
+	}
+	return fmt.Sprintf("0x%032x", id), nil
 }
 
 func ToUnixTimeMs(timestamp uint64) uint64 {
@@ -208,44 +319,16 @@ func FromUnixTimeMs(unixMs int64) int64 {
 	return unixMs - OrbitEpochUnixMs
 }
 
-// Clock supplies milliseconds since Orbit Epoch. It is injectable for tests.
-type Clock interface {
-	CurrentOrbitTimestampMs() int64
-}
-
-type systemClock struct{}
-
-func (systemClock) CurrentOrbitTimestampMs() int64 {
-	return time.Now().UnixMilli() - OrbitEpochUnixMs
-}
-
-// SystemClock returns the production wall-clock Orbit timestamp source.
-func SystemClock() Clock { return systemClock{} }
-
-type SequenceExhaustedMode string
-
-const (
-	SequenceExhaustedWait SequenceExhaustedMode = "wait"
-	SequenceExhaustedFail SequenceExhaustedMode = "fail"
-)
-
 type GeneratorOptions struct {
 	Node                     int
+	Region                   int
+	Tenant                   int
 	Clock                    Clock
 	ClockRollbackToleranceMs int64
 	OnSequenceExhausted      SequenceExhaustedMode
 	// ConfirmOwnership may fail closed when a node lease is lost.
 	ConfirmOwnership func() bool
 }
-
-type DecisionAction string
-
-const (
-	DecisionIssue      DecisionAction = "issue"
-	DecisionWait       DecisionAction = "wait"
-	DecisionWaitNextMs DecisionAction = "wait_next_ms"
-	DecisionError      DecisionAction = "error"
-)
 
 // GenerateDecision describes the next safe generator action.
 type GenerateDecision struct {
@@ -257,9 +340,12 @@ type GenerateDecision struct {
 	Error              ErrorCode
 }
 
-// Generator issues Orbit IDs for one exclusively assigned node.
+// Generator issues Orbit ID v2 values for one exclusively assigned node.
+// Sequence is shared across Types, matching v1.
 type Generator struct {
 	node                     int
+	region                   int
+	tenant                   int
 	clock                    Clock
 	clockRollbackToleranceMs int64
 	onSequenceExhausted      SequenceExhaustedMode
@@ -272,6 +358,12 @@ type Generator struct {
 func NewGenerator(options GeneratorOptions) (*Generator, error) {
 	if options.Node < 0 || options.Node > MaxNode {
 		return nil, orbitError(InvalidNode, "node out of range: %d", options.Node)
+	}
+	if options.Region < 0 || options.Region > MaxRegion {
+		return nil, orbitError(InvalidRegion, "region out of range: %d", options.Region)
+	}
+	if options.Tenant < 0 || options.Tenant > MaxTenant {
+		return nil, orbitError(InvalidTenant, "tenant out of range: %d", options.Tenant)
 	}
 	clock := options.Clock
 	if clock == nil {
@@ -292,13 +384,18 @@ func NewGenerator(options GeneratorOptions) (*Generator, error) {
 		return nil, orbitError(InvalidSequence, "invalid sequence exhaustion mode: %s", mode)
 	}
 	return &Generator{
-		node: options.Node, clock: clock, clockRollbackToleranceMs: tolerance,
+		node: options.Node, region: options.Region, tenant: options.Tenant,
+		clock: clock, clockRollbackToleranceMs: tolerance,
 		onSequenceExhausted: mode, confirmOwnership: options.ConfirmOwnership,
 		lastTimestamp: -1,
 	}, nil
 }
 
 func (g *Generator) Node() int { return g.node }
+
+func (g *Generator) Region() int { return g.region }
+
+func (g *Generator) Tenant() int { return g.tenant }
 
 func (g *Generator) GetLastTimestamp() uint64 {
 	g.mu.Lock()
@@ -374,29 +471,33 @@ func (g *Generator) decideLocked(typ int, nowTimestamp ...int64) GenerateDecisio
 
 // Generate serializes state changes and returns a newly issued ID. Type 0 is
 // reserved and is rejected.
-func (g *Generator) Generate(typ int) (uint64, error) {
+func (g *Generator) Generate(typ int) (*big.Int, error) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	for {
 		decision := g.decideLocked(typ)
 		switch decision.Action {
 		case DecisionIssue:
-			id, err := Encode(Fields{Timestamp: decision.Timestamp, Type: typ, Node: g.node, Sequence: decision.Sequence})
+			id, err := Encode(Fields{
+				FormatVersion: IssuedFormatVersion, Timestamp: decision.Timestamp,
+				Type: typ, Node: g.node, Sequence: decision.Sequence,
+				Region: g.region, Tenant: g.tenant, Reserved: 0,
+			})
 			if err != nil {
-				return 0, err
+				return nil, err
 			}
 			g.lastTimestamp, g.sequence = int64(decision.Timestamp), decision.Sequence
 			return id, nil
 		case DecisionWait:
 			if err := g.waitUntil(func(t int64) bool { return t >= int64(decision.WaitUntilTimestamp) }); err != nil {
-				return 0, err
+				return nil, err
 			}
 		case DecisionWaitNextMs:
 			if err := g.waitUntil(func(t int64) bool { return t > int64(decision.FromTimestamp) }); err != nil {
-				return 0, err
+				return nil, err
 			}
 		case DecisionError:
-			return 0, orbitError(decision.Error, "generate failed: %s", decision.Error)
+			return nil, orbitError(decision.Error, "generate failed: %s", decision.Error)
 		}
 	}
 }

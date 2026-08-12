@@ -1,64 +1,73 @@
 # Orbit ID for Go
 
-Go implementation of the Orbit ID v1 unsigned 64-bit format.
+Go implementation of Orbit ID.
 
-Source of truth lives in the monorepo under `packages/go`. Published module path is
-the [`orbit-id/go`](https://github.com/orbit-id/go) mirror (same pattern as Packagist /
-`orbit-id/php`).
+- **v2** (default): module `github.com/orbit-id/go/v2` — Stable 128-bit (`*big.Int`)
+- **v1**: package `github.com/orbit-id/go/v2/v1` — stable 64-bit (`uint64`); also still
+  available via the prior major module `github.com/orbit-id/go@v1.x`
+
+Until package major `2.0.0` is cut on registries, treat this module-path swap as the
+in-tree API for the promotion train
+([#208](https://github.com/orbit-id/orbit-id/issues/208)).
 
 ## Install
 
-```bash
-go get github.com/orbit-id/go@v1.1.0
+```sh
+# After the v2.0.0 registry cut:
+go get github.com/orbit-id/go/v2@v2.0.0
 ```
 
-Import as package `orbitid`:
+Until then, depend on a commit / pseudo-version of this monorepo path, or use a
+local `replace`.
 
 ```go
 import (
-    "fmt"
+    "math/big"
 
-    orbitid "github.com/orbit-id/go"
+    orbitid "github.com/orbit-id/go/v2"
+    v1 "github.com/orbit-id/go/v2/v1"
 )
 
-func main() {
-    generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 7})
-    if err != nil {
-        panic(err)
-    }
-    id, err := generator.Generate(1)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println(orbitid.ToDecimalString(id))
+// v2 (default)
+generator, err := orbitid.NewGenerator(orbitid.GeneratorOptions{Node: 7})
+if err != nil {
+    panic(err)
 }
+id, err := generator.Generate(1) // *big.Int
+_ = id
+
+// v1
+v1Gen, err := v1.NewGenerator(v1.GeneratorOptions{Node: 7})
+if err != nil {
+    panic(err)
+}
+v1ID, err := v1Gen.Generate(1) // uint64
+_ = v1ID
 ```
 
 ## Version tags
 
-On each monorepo `vX.Y.Z` release, CI mirrors `packages/go` to
-[`orbit-id/go`](https://github.com/orbit-id/go) and pushes the same tag there.
-Consumers use that mirror tag via [`proxy.golang.org`](https://proxy.golang.org/).
-
-See [Cross-registry versioning](../../docs/en/cross-registry-versioning.md) and
+The Go consumer module is published from the [`orbit-id/go`](https://github.com/orbit-id/go)
+mirror (subtree of `packages/go`). Tags match the monorepo release tags. See
 [Go module publishing](../../docs/en/go-module.md).
 
-## API notes
+## Layout
 
-Use `Encode` / `Decode` for fields, `Parse` for a `uint64` or canonical decimal
-string, and `IsValid` for syntactic validation only. Decimal strings must be
-unsigned and canonical (no signs, whitespace, or leading zeroes).
+v2:
 
-## Orbit ID v2 (alpha)
-
-The Draft 128-bit format ([spec](../../docs/en/orbit-id-v2.md)) is implemented under
-`internal/v2` and is **not part of the public API** for the Go 1.x module — see
-[Library API](../../docs/en/library-api.md) ("not public, `internal/v2` in alpha"). It is
-exercised by this module's own conformance tests against `spec/conformance/*.v2.json` and
-will become the default at the `/v2` module path in a later major version.
-
-## Test
-
-```sh
-go test ./...
+```text
+formatVersion: 4 | timestamp: 48 | type: 16 | node: 16 | sequence: 16
+| region: 4 | tenant: 16 | reserved: 8
 ```
+
+v1:
+
+```text
+timestamp: 41 | type: 6 | node: 7 | sequence: 10
+```
+
+Conformance fixtures live in [`../../spec/conformance/`](../../spec/conformance/).
+
+## License
+
+Apache-2.0. See [LICENSE](LICENSE).
