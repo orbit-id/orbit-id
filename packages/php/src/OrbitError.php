@@ -11,6 +11,8 @@ final class OrbitError extends \RuntimeException
     public const INVALID_SEQUENCE = 'INVALID_SEQUENCE';
     public const INVALID_TIMESTAMP = 'INVALID_TIMESTAMP';
     public const INVALID_DECIMAL = 'INVALID_DECIMAL';
+    public const INVALID_FORMAT_VERSION = 'INVALID_FORMAT_VERSION';
+    public const INVALID_RESERVED = 'INVALID_RESERVED';
     public const CLOCK_ROLLBACK = 'CLOCK_ROLLBACK';
     public const SEQUENCE_EXHAUSTED = 'SEQUENCE_EXHAUSTED';
     public const NODE_OWNERSHIP_LOST = 'NODE_OWNERSHIP_LOST';
