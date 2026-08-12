@@ -122,8 +122,8 @@ Operations stay the same (`generate` / `parse` / field getters / `isValid`), but
 
 Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_RESERVED`.
 
-Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Other language packages do not implement v2
-yet.
+Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Java ships an additive
+`com.github.orbitid.v2` package in 1.x; other language packages are still landing.
 
 ### Per-language entry points (1.x → 2.0.0)
 
