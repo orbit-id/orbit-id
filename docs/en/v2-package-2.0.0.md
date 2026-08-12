@@ -34,27 +34,22 @@ Per-language entry points: [Library API § Per-language entry points](library-ap
 
 Prefer small reviewable PRs. Do **not** land the version bump / tag until slices A–H are on `main`.
 
-| Slice | Scope | Notes |
-| --- | --- | --- |
-| **A. Spec → Stable** | EN/JA `orbit-id-v2`, design-decisions, test-vectors status lines; conformance README | No wire change — status + freeze wording only |
-| **B. `@orbit-id/core`** | Root exports become v2; move current root to `v1` / `@orbit-id/core/v1`; keep `@orbit-id/core/v2` as alias of root | Maintain 100% coverage; update package README / exports map |
-| **C. `@orbit-id/typescript`** | Mirror core’s root / `v1` / `v2` policy | Thin re-export package |
-| **D. Java** | `com.github.orbitid` → v2 types; ship former root under `com.github.orbitid.v1`; keep `.v2` as alias if useful | Update Maven samples / README |
-| **E. Rust** | Crate root → v2; `orbit_id::v1` for 64-bit; `orbit_id::v2` alias | Update crate docs |
-| **F. PHP** | `OrbitId\` → v2; `OrbitId\V1`; `OrbitId\V2` alias | Composer / Packagist README |
-| **G. Go** | Module path **`github.com/orbit-id/go/v2`**; lift `internal/v2` to public; leave `github.com/orbit-id/go` as v1 major line | Update `go.mod`, mirror split docs, [go-module.md](go-module.md) |
-| **H. CLI + playground** | Default `--spec` / UI → v2; keep explicit v1 mode | Do not break scripts that pass `--spec v1` |
-| **I. Docs polish** | Migration notes (1.x → 2.0.0), CHANGELOG, README install snippets, cross-registry Go `/v2` section | Can land with I or just before J |
-| **J. Release cut** | Run [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) with `version=2.0.0`, merge that PR, then GitHub Release **`v2.0.0`** (stable tag → Publish) | See [When to run Bump release PR](#when-to-run-bump-release-pr) |
+| Slice | Issue | Scope | Notes |
+| --- | --- | --- | --- |
+| **A. Spec → Stable** | [#201](https://github.com/orbit-id/orbit-id/issues/201) | EN/JA `orbit-id-v2`, design-decisions, test-vectors status lines; conformance README | No wire change — status + freeze wording only |
+| **B. `@orbit-id/core`** | [#203](https://github.com/orbit-id/orbit-id/issues/203) | Root exports become v2; move current root to `v1` / `@orbit-id/core/v1`; keep `@orbit-id/core/v2` as alias of root | Maintain 100% coverage; update package README / exports map |
+| **C. `@orbit-id/typescript`** | [#204](https://github.com/orbit-id/orbit-id/issues/204) | Mirror core’s root / `v1` / `v2` policy | Thin re-export package |
+| **D. Java** | [#205](https://github.com/orbit-id/orbit-id/issues/205) | `com.github.orbitid` → v2 types; ship former root under `com.github.orbitid.v1`; keep `.v2` as alias if useful | Update Maven samples / README |
+| **E. Rust** | [#206](https://github.com/orbit-id/orbit-id/issues/206) | Crate root → v2; `orbit_id::v1` for 64-bit; `orbit_id::v2` alias | Update crate docs |
+| **F. PHP** | [#207](https://github.com/orbit-id/orbit-id/issues/207) | `OrbitId\` → v2; `OrbitId\V1`; `OrbitId\V2` alias | Composer / Packagist README |
+| **G. Go** | [#208](https://github.com/orbit-id/orbit-id/issues/208) | Module path **`github.com/orbit-id/go/v2`**; lift `internal/v2` to public; leave `github.com/orbit-id/go` as v1 major line | Update `go.mod`, mirror split docs, [go-module.md](go-module.md) |
+| **H. CLI + playground** | [#209](https://github.com/orbit-id/orbit-id/issues/209) | Default `--spec` / UI → v2; keep explicit v1 mode | Do not break scripts that pass `--spec v1` |
+| **I. Docs polish** | [#210](https://github.com/orbit-id/orbit-id/issues/210) | Migration notes (1.x → 2.0.0), CHANGELOG, README install snippets, cross-registry Go `/v2` section | Can land with I or just before J |
+| **J. Release cut** | [#211](https://github.com/orbit-id/orbit-id/issues/211) | Run [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) with `version=2.0.0`, merge that PR, then GitHub Release **`v2.0.0`** (stable tag → Publish) | See [When to run Bump release PR](#when-to-run-bump-release-pr) |
 
-### Suggested Issue titles
+### Issue titles
 
-Reuse this tracker as the epic; open child Issues when starting each slice, for example:
-
-- `feat(core): make v2 the root API for package 2.0.0`
-- `feat(go): publish Orbit ID v2 under module path /v2`
-- `chore(release): cut coordinated v2.0.0`
-
+Child Issues under epic [#199](https://github.com/orbit-id/orbit-id/issues/199) (one per slice above).
 ## When to run Bump release PR
 
 Workflow: [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml)
