@@ -1,4 +1,4 @@
-//! Orbit ID v2 Draft: unsigned 128-bit, time-sortable identifiers.
+//! Orbit ID v2: unsigned 128-bit, time-sortable identifiers.
 
 use std::sync::{Arc, Mutex};
 use std::thread;
