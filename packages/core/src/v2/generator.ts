@@ -1,6 +1,6 @@
 import { OrbitError } from "../errors.js";
-import type { OrbitClock } from "../generator.js";
-import { systemOrbitClock } from "../generator.js";
+import type { OrbitClock } from "../v1/generator.js";
+import { systemOrbitClock } from "../v1/generator.js";
 import {
   DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS,
   ISSUED_FORMAT_VERSION,

@@ -6,7 +6,7 @@ import {
   parse,
   toDecimalString,
   toHexString,
-} from "@orbit-id/core";
+} from "@orbit-id/core/v1";
 import * as v2 from "@orbit-id/core/v2";
 import {
   type Locale,

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { MAX_NODE } from "@orbit-id/core";
+import { MAX_NODE } from "@orbit-id/core/v1";
 import type { HeldLease, LeaseStore, NodeLeaseOptions } from "./types.js";
 
 const DEFAULT_TTL_MS = 30_000;

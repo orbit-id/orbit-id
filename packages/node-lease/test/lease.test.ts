@@ -1,4 +1,4 @@
-import { OrbitGenerator } from "@orbit-id/core";
+import { OrbitGenerator } from "@orbit-id/core/v1";
 import { describe, expect, it } from "vitest";
 import { MemoryLeaseStore, NodeLeaseClient } from "../src/index.js";
 

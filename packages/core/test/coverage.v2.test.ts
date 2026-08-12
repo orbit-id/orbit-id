@@ -205,6 +205,11 @@ describe("v2 encode/decode coverage", () => {
     expect(v2.isValid(badReserved)).toBe(false);
   });
 
+  it("uses systemOrbitClock when options.clock is omitted", () => {
+    const generator = new v2.OrbitGeneratorV2({ node: 1 });
+    expect(typeof generator.generate(1)).toBe("bigint");
+  });
+
   it("accepts region/tenant on generate and rejects bad options", () => {
     const generator = new v2.OrbitGeneratorV2({
       node: 1,

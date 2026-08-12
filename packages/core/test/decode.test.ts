@@ -14,7 +14,7 @@ import {
   parse,
   toDecimalString,
   toUnixTimeMs,
-} from "../src/index.js";
+} from "../src/v1/index.js";
 
 const SAMPLE = {
   timestamp: 16_762_354_567n,

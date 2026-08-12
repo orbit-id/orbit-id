@@ -3,11 +3,13 @@ import {
   OrbitError,
   OrbitGenerator,
   encode,
+  fromDecimalString,
   fromUnixTimeMs,
   isValid,
   systemOrbitClock,
+  toDecimalString,
   toUnixTimeMs,
-} from "../src/index.js";
+} from "../src/v1/index.js";
 
 describe("generator coverage", () => {
   it("generate issues ids and exposes state getters", () => {
@@ -109,5 +111,50 @@ describe("encode validation coverage", () => {
     expect(fromUnixTimeMs(toUnixTimeMs(123n))).toBe(123n);
     expect(isValid(true)).toBe(false);
     expect(isValid(1)).toBe(false);
+  });
+
+  it("covers decide error paths and defensive helpers", () => {
+    const generator = new OrbitGenerator({
+      node: 1,
+      clock: { currentOrbitTimestampMs: () => 1n },
+    });
+    expect(generator.decide(0)).toEqual({ action: "error", error: "INVALID_TYPE" });
+    expect(generator.decide(1, -1n)).toEqual({ action: "error", error: "INVALID_TIMESTAMP" });
+    expect(() => toDecimalString(-1n)).toThrow(OrbitError);
+    expect(() => fromDecimalString(1 as unknown as string)).toThrow(OrbitError);
+    expect(() => fromDecimalString("1_2")).toThrow(OrbitError);
+
+    let nested = false;
+    const reentrant = new OrbitGenerator({
+      node: 1,
+      clock: {
+        currentOrbitTimestampMs: () => {
+          if (!nested) {
+            nested = true;
+            expect(() => reentrant.generate(1)).toThrow(/re-entrant/);
+          }
+          return 1n;
+        },
+      },
+    });
+    expect(typeof reentrant.generate(1)).toBe("bigint");
+
+    const originalNow = Date.now;
+    let wallCalls = 0;
+    Date.now = () => {
+      wallCalls += 1;
+      return wallCalls === 1 ? 0 : 31_000;
+    };
+    try {
+      const waiting = new OrbitGenerator({
+        node: 1,
+        onSequenceExhausted: "wait",
+        clock: { currentOrbitTimestampMs: () => 1000n },
+      });
+      waiting.restoreState(1000n, 1023);
+      expect(() => waiting.generate(1)).toThrow(/timed out waiting/);
+    } finally {
+      Date.now = originalNow;
+    }
   });
 });

@@ -9,7 +9,8 @@ Redis uses an O(1) free-pool acquire when `maxNode > 127` (sets a durable `mode=
 the prefix). Do not mix linear-scan (`maxNode ≤ 127`) and free-pool acquires on the same prefix.
 
 ```ts
-import { OrbitGenerator, v2 } from "@orbit-id/core";
+import { OrbitGenerator } from "@orbit-id/core/v1";
+import * as v2 from "@orbit-id/core/v2";
 import { MemoryLeaseStore, NodeLeaseClient } from "@orbit-id/node-lease";
 
 // v1 (default)
