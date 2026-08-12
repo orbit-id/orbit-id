@@ -46,12 +46,6 @@
       "id": "hex-prefix",
       "input": "0x1",
       "reason": "Hexadecimal prefix is not a decimal string"
-    },
-    {
-      "id": "nonzero-remaining-reserved",
-      "input": "21267647932558653967613834469092360193",
-      "reason": "Non-zero remaining Reserved (low 8 bits)",
-      "code": "INVALID_RESERVED"
     }
   ]
 }

@@ -38,8 +38,27 @@ export type OrbitFieldsV2 = {
   reserved: number;
 };
 
-export function encode(fields: OrbitFieldsV2): bigint {
-  const { formatVersion, timestamp, type, node, sequence, region, tenant, reserved } = fields;
+/** Encode input; region/tenant/reserved default to `0` when omitted. */
+export type OrbitFieldsV2Encode = {
+  formatVersion: number;
+  timestamp: bigint;
+  type: number;
+  node: number;
+  sequence: number;
+  region?: number;
+  tenant?: number;
+  reserved?: number;
+};
+
+export function encode(fields: OrbitFieldsV2Encode): bigint {
+  const formatVersion = fields.formatVersion;
+  const timestamp = fields.timestamp;
+  const type = fields.type;
+  const node = fields.node;
+  const sequence = fields.sequence;
+  const region = fields.region ?? 0;
+  const tenant = fields.tenant ?? 0;
+  const reserved = fields.reserved ?? 0;
   if (!Number.isInteger(formatVersion) || formatVersion !== ISSUED_FORMAT_VERSION) {
     throw new OrbitError(
       "INVALID_FORMAT_VERSION",

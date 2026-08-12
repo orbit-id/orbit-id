@@ -221,6 +221,34 @@ describe("v2 encode/decode coverage", () => {
     );
   });
 
+  it("defaults omitted region/tenant/reserved on encode", () => {
+    const id = v2.encode({
+      formatVersion: 1,
+      timestamp: 0n,
+      type: 1,
+      node: 7,
+      sequence: 42,
+    });
+    expect(v2.toDecimalString(id)).toBe("21267647932558653967613957625668960256");
+    expect(v2.decode(id)).toMatchObject({ region: 0, tenant: 0, reserved: 0 });
+  });
+
+  it("round-trips non-zero region and tenant", () => {
+    const fields = {
+      formatVersion: 1,
+      timestamp: 0n,
+      type: 1,
+      node: 7,
+      sequence: 42,
+      region: 3,
+      tenant: 1000,
+      reserved: 0,
+    };
+    const id = v2.encode(fields);
+    expect(v2.toHexString(id)).toBe("0x100000000000000010007002a303e800");
+    expect(v2.decode(id)).toEqual(fields);
+  });
+
   it("covers unix helpers, hex range, and isValid negatives", () => {
     expect(v2.toUnixTimeMs(0n)).toBeGreaterThan(0n);
     expect(v2.fromUnixTimeMs(v2.toUnixTimeMs(123n))).toBe(123n);

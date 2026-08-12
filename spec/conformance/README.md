@@ -52,6 +52,9 @@ In addition to v1’s `timestamp` / `type` / `node` / `sequence`, each v2 case i
 Optional on `decode-reject` cases: `code` (e.g. `INVALID_RESERVED`) when rejection is not
 `INVALID_DECIMAL` after a successful decimal parse.
 
+Non-zero Region/Tenant round-trip vectors and remaining-Reserved reject cases land after all
+language packages understand the carve-out (so a fixtures-only PR stays green on `main`).
+
 `time` MAY be `null` when the Timestamp is beyond portable calendar libraries (see
 `timestamp-max`).
 

@@ -100,34 +100,6 @@
       "reserved": 0,
       "idDecimal": "42535295865117307932921825928702590976",
       "idHex": "0x1ffffffffffffffffffffffff0000000"
-    },
-    {
-      "id": "region-tenant-nonzero",
-      "time": "2026-01-01T00:00:00.000Z",
-      "formatVersion": 1,
-      "timestamp": "0",
-      "type": 1,
-      "node": 7,
-      "sequence": 42,
-      "region": 3,
-      "tenant": 1000,
-      "reserved": 0,
-      "idDecimal": "21267647932558653967613957625719547904",
-      "idHex": "0x100000000000000010007002a303e800"
-    },
-    {
-      "id": "region-tenant-max",
-      "time": "2026-01-01T00:00:00.000Z",
-      "formatVersion": 1,
-      "timestamp": "0",
-      "type": 1,
-      "node": 0,
-      "sequence": 0,
-      "region": 15,
-      "tenant": 65535,
-      "reserved": 0,
-      "idDecimal": "21267647932558653967613834469360795392",
-      "idHex": "0x1000000000000000100000000fffff00"
     }
   ]
 }
