@@ -5,7 +5,7 @@ import {
   parse,
   toDecimalString,
   toUnixTimeMs,
-} from "@orbit-id/core";
+} from "@orbit-id/core/v1";
 import * as v2 from "@orbit-id/core/v2";
 
 type SpecVersion = "v1" | "v2";

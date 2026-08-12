@@ -206,11 +206,7 @@ export function fromDecimalString(input: string): bigint {
     throw new OrbitError("INVALID_DECIMAL", "leading zeros are not canonical");
   }
   let value: bigint;
-  try {
-    value = BigInt(input);
-  } catch {
-    throw new OrbitError("INVALID_DECIMAL", "invalid decimal string");
-  }
+  value = BigInt(input);
   if (value < 0n || value > U128_MAX) {
     throw new OrbitError("INVALID_DECIMAL", "decimal value outside unsigned 128-bit range");
   }

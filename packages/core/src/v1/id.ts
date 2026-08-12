@@ -12,7 +12,7 @@ import {
   TYPE_MASK,
   TYPE_SHIFT,
 } from "./constants.js";
-import { OrbitError } from "./errors.js";
+import { OrbitError } from "../errors.js";
 
 export type OrbitFields = {
   timestamp: bigint;
@@ -120,11 +120,7 @@ export function fromDecimalString(input: string): bigint {
     throw new OrbitError("INVALID_DECIMAL", "leading zeros are not canonical");
   }
   let value: bigint;
-  try {
-    value = BigInt(input);
-  } catch {
-    throw new OrbitError("INVALID_DECIMAL", "invalid decimal string");
-  }
+  value = BigInt(input);
   if (value < 0n || value > (1n << 64n) - 1n) {
     throw new OrbitError("INVALID_DECIMAL", "decimal value outside unsigned 64-bit range");
   }

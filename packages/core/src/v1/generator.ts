@@ -6,7 +6,7 @@ import {
   MAX_TYPE,
   ORBIT_EPOCH_UNIX_MS,
 } from "./constants.js";
-import { OrbitError } from "./errors.js";
+import { OrbitError } from "../errors.js";
 import { encode } from "./id.js";
 
 export type OrbitClock = {

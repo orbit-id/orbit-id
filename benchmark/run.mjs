@@ -3,7 +3,8 @@
  * Measured throughput for a single-Node TypeScript generator.
  * Spec / README "1,024 ID/ms" (v1) / formal v2 capacity figures are not this bench.
  */
-import { OrbitGenerator, v2 } from "@orbit-id/core";
+import { OrbitGenerator } from "@orbit-id/core/v1";
+import * as v2 from "@orbit-id/core/v2";
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);

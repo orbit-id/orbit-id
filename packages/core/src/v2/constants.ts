@@ -1,5 +1,5 @@
 /** Same Orbit Epoch as v1. */
-export { ORBIT_EPOCH_UNIX_MS, DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS } from "../constants.js";
+export { ORBIT_EPOCH_UNIX_MS, DEFAULT_CLOCK_ROLLBACK_TOLERANCE_MS } from "../v1/constants.js";
 
 export const FORMAT_VERSION_BITS = 4n;
 export const TIMESTAMP_BITS = 48n;
