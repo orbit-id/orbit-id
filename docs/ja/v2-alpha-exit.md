@@ -13,7 +13,7 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)。
 
 | 規則 | 内容 |
 | --- | --- |
-| 仕様ステータス | [Orbit ID v2](orbit-id-v2.md) は **Draft**。ビット配分はまだ変わり得る |
+| 仕様ステータス | [Orbit ID v2](orbit-id-v2.md) は **Draft**。FormatVersion / Timestamp / Type / Node / Sequence は **frozen**。残 Reserved（8）は切り出し MAY（例: Datacenter） |
 | パッケージ既定 | **1.x** のルートは **v1** |
 | v2 の使い方 | 加算名前空間のみ（`v2` / `@orbit-id/core/v2`、`com.github.orbitid.v2` など） |
 | レジストリタグ | 安定版 `vX.Y.Z` のみ公開。pre-release Git タグは公開しない（[#148](https://github.com/orbit-id/orbit-id/issues/148)） |
@@ -23,15 +23,15 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)。
 
 次を **すべて**満たしたときだけ alpha を終えてよい（beta / 凍結へ進める）:
 
-1. **レイアウト凍結** — [design-decisions-v2](design-decisions-v2.md) のフィールド集合とビット幅が
-   凍結されている（または「これ以上 alpha でレイアウトを変えない」ADR がマージ済み）。
-   Timestamp / Type / Node / Sequence / FormatVersion の再分割提案が alpha ブロッカーとして残っていない。
-2. **Reserved の切り出し** — beta まで encode は Reserved=0 のまま、**または** stable decode に必要な
-   Region / Tenant 切り出しが仕様化され fixture でカバーされている。
+1. **レイアウト凍結** — [design-decisions-v2](design-decisions-v2.md) が FormatVersion /
+   Timestamp / Type / Node / Sequence を frozen と明記
+   （[#171](https://github.com/orbit-id/orbit-id/issues/171)）。それらを alpha で再分割する提案が残っていない。
+2. **Reserved の切り出し** — Region（4）+ Tenant（16）を切り出し済み。残 Reserved（8）は encode MUST `0` で
+   fixture カバー済み。残 8 bit からの Datacenter 等の切り出しは exit 前の任意項目。
 3. **Conformance green** — v2 対応を謳う公開言語パッケージで `spec/conformance/*.v2.json` が通る
    （TypeScript/`@orbit-id/core`、Java、Rust、PHP。Go は `internal/v2` テスト）。
 4. **API 面** — [Library API](library-api.md) の v2 差分どおり（`generate` / `parse` / getters /
-   `isValid` + FormatVersion / Reserved）。CLI・playground は v1 既定を壊さず v2 を扱える。
+   `isValid` + FormatVersion / Region / Tenant / Reserved）。CLI・playground は v1 既定を壊さず v2 を扱える。
 5. **ドキュメント** — Draft → beta 向け文言へ移せる状態。node-management / library-api / roadmap が
    範囲と下記昇格パスで一致している。
 6. **ブロッカー Issue なし** — 上記に必要な open な `v2-alpha` 実装 Issue がクローズ、または

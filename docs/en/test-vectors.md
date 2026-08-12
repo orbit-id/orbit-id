@@ -138,8 +138,12 @@ Machine-readable fixtures (canonical for automation):
 - [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json)
 - [`generator.v2.json`](../../spec/conformance/generator.v2.json)
 
-Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 support loads these:
-`@orbit-id/core`, Java, Rust, PHP, and Go (via `internal/v2`).
+Layout: `FormatVersion=1`; remaining `Reserved=0`. Region (`0..15`) and Tenant (`0..65535`) are
+carved from the former 28-bit Reserved. Shared JSON fixtures currently keep `region=tenant=0` so
+packages still on the pre-carve 28-bit Reserved layout stay green; non-zero Region/Tenant cases are
+hand vectors below (and unit-tested in `@orbit-id/core`) until every language PR lands.
+Every package that claims v2 support loads the shared fixtures: `@orbit-id/core`, Java, Rust, PHP,
+and Go (via `internal/v2`).
 
 ### v2 Vector 1: Epoch
 
@@ -151,12 +155,14 @@ Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 supp
 | Type | `1` |
 | Node | `7` |
 | Sequence | `42` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21267647932558653967613957625668960256` |
 | Hex ID | `0x100000000000000010007002a0000000` |
 
 ```text
-(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | 0
+(1 << 124) | (0 << 76) | (1 << 60) | (7 << 44) | (42 << 28) | (0 << 24) | (0 << 8) | 0
 ```
 
 ### v2 Vector 2: Representative timestamp
@@ -169,6 +175,8 @@ Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 supp
 | Type | `2` |
 | Node | `7` |
 | Sequence | `42` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21268914460260752812362294599660601344` |
 | Hex ID | `0x10003e71d3b8700020007002a0000000` |
@@ -183,9 +191,34 @@ Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 supp
 | Type | `1` |
 | Node | `1` |
 | Sequence | `65,535` |
+| Region | `0` |
+| Tenant | `0` |
 | Reserved | `0` |
 | Decimal ID | `21267647932634211831339783976615149568` |
 | Hex ID | `0x10000000003e800010001ffff0000000` |
+
+### v2 Vector 4: Non-zero Region / Tenant (hand vector)
+
+Not yet in `encode-decode.v2.json` (deferred until all language packages encode Region/Tenant).
+Covered by `@orbit-id/core` unit tests today.
+
+| Field | Value |
+| --- | ---: |
+| FormatVersion | `1` |
+| Time | `2026-01-01T00:00:00.000Z` |
+| Timestamp | `0` |
+| Type | `1` |
+| Node | `7` |
+| Sequence | `42` |
+| Region | `3` |
+| Tenant | `1000` |
+| Reserved | `0` |
+| Decimal ID | `21267647932558653967613957625719547904` |
+| Hex ID | `0x100000000000000010007002a303e800` |
+
+```text
+(1 << 124) | (1 << 60) | (7 << 44) | (42 << 28) | (3 << 24) | (1000 << 8) | 0
+```
 
 ### v2 decoder rejection (highlights)
 
@@ -194,6 +227,11 @@ Alpha layout: `FormatVersion=1`, `Reserved=0`. Every package that claims v2 supp
 | `-1` | Negative value |
 | `340282366920938463463374607431768211456` | Greater than `2^128 - 1` |
 | `01` | Leading zeros are not canonical |
+
+Non-zero remaining Reserved (`21267647932558653967613834469092360193`) is a valid decimal but MUST
+fail `parse`/`decode` with `INVALID_RESERVED` once the carve-out ships in a language; it is not in
+`decode-reject.v2.json` yet (that file only lists non-canonical decimals until languages handle an
+optional `code` field).
 
 Full table: [`decode-reject.v2.json`](../../spec/conformance/decode-reject.v2.json).
 
