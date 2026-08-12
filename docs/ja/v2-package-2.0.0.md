@@ -34,26 +34,22 @@ Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
 
 レビューしやすい小さな PR にする。バージョン bump / タグはスライス A–H が `main` に入ってから。
 
-| スライス | 範囲 | メモ |
-| --- | --- | --- |
-| **A. Spec → Stable** | EN/JA `orbit-id-v2`、design-decisions、test-vectors の Status。conformance README | ワイヤ変更なし。文言のみ |
-| **B. `@orbit-id/core`** | ルートを v2 に。現行ルートを `v1` / `@orbit-id/core/v1` へ。`@orbit-id/core/v2` はルートの別名 | カバレッジ 100%。exports / README 更新 |
-| **C. `@orbit-id/typescript`** | core と同じルート / `v1` / `v2` 方針 | 薄い re-export |
-| **D. Java** | `com.github.orbitid` → v2。旧ルートは `com.github.orbitid.v1`。`.v2` は別名可 | Maven サンプル / README |
-| **E. Rust** | crate root → v2。`orbit_id::v1`。`orbit_id::v2` 別名 | crate docs |
-| **F. PHP** | `OrbitId\` → v2。`OrbitId\V1`。`OrbitId\V2` 別名 | Composer / Packagist README |
-| **G. Go** | モジュール **`github.com/orbit-id/go/v2`**。`internal/v2` を公開化。`github.com/orbit-id/go` は v1 のまま | `go.mod`、mirror、[go-module.md](go-module.md) |
-| **H. CLI + playground** | 既定 `--spec` / UI → v2。明示的 v1 モードは残す | `--spec v1` を壊さない |
-| **I. Docs 仕上げ** | 1.x → 2.0.0 移行メモ、CHANGELOG、README、Go `/v2` 節 | I 単独または J 直前 |
-| **J. リリースカット** | [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) を `version=2.0.0` で実行 → その PR をマージ → GitHub Release **`v2.0.0`**（安定タグ → Publish） | [Bump release PR をいつ実行するか](#bump-release-pr-をいつ実行するか) 参照 |
+| スライス | Issue | 範囲 | メモ |
+| --- | --- | --- | --- |
+| **A. Spec → Stable** | [#201](https://github.com/orbit-id/orbit-id/issues/201) | EN/JA `orbit-id-v2`、design-decisions、test-vectors の Status。conformance README | ワイヤ変更なし。文言のみ |
+| **B. `@orbit-id/core`** | [#203](https://github.com/orbit-id/orbit-id/issues/203) | ルートを v2 に。現行ルートを `v1` / `@orbit-id/core/v1` へ。`@orbit-id/core/v2` はルートの別名 | カバレッジ 100%。exports / README 更新 |
+| **C. `@orbit-id/typescript`** | [#204](https://github.com/orbit-id/orbit-id/issues/204) | core と同じルート / `v1` / `v2` 方針 | 薄い re-export |
+| **D. Java** | [#205](https://github.com/orbit-id/orbit-id/issues/205) | `com.github.orbitid` → v2。旧ルートは `com.github.orbitid.v1`。`.v2` は別名可 | Maven サンプル / README |
+| **E. Rust** | [#206](https://github.com/orbit-id/orbit-id/issues/206) | crate root → v2。`orbit_id::v1`。`orbit_id::v2` 別名 | crate docs |
+| **F. PHP** | [#207](https://github.com/orbit-id/orbit-id/issues/207) | `OrbitId\` → v2。`OrbitId\V1`。`OrbitId\V2` 別名 | Composer / Packagist README |
+| **G. Go** | [#208](https://github.com/orbit-id/orbit-id/issues/208) | モジュール **`github.com/orbit-id/go/v2`**。`internal/v2` を公開化。`github.com/orbit-id/go` は v1 のまま | `go.mod`、mirror、[go-module.md](go-module.md) |
+| **H. CLI + playground** | [#209](https://github.com/orbit-id/orbit-id/issues/209) | 既定 `--spec` / UI → v2。明示的 v1 モードは残す | `--spec v1` を壊さない |
+| **I. Docs 仕上げ** | [#210](https://github.com/orbit-id/orbit-id/issues/210) | 1.x → 2.0.0 移行メモ、CHANGELOG、README、Go `/v2` 節 | I 単独または J 直前 |
+| **J. リリースカット** | [#211](https://github.com/orbit-id/orbit-id/issues/211) | [Bump release PR](https://github.com/orbit-id/orbit-id/actions/workflows/bump-release-pr.yml) を `version=2.0.0` で実行 → その PR をマージ → GitHub Release **`v2.0.0`**（安定タグ → Publish） | [Bump release PR をいつ実行するか](#bump-release-pr-をいつ実行するか) 参照 |
 
-### Issue タイトル案
+### Issue タイトル
 
-本 Issue を epic にし、着手時に子 Issue を切る例:
-
-- `feat(core): make v2 the root API for package 2.0.0`
-- `feat(go): publish Orbit ID v2 under module path /v2`
-- `chore(release): cut coordinated v2.0.0`
+epic [#199](https://github.com/orbit-id/orbit-id/issues/199) 配下の子 Issue（上表どおり 1 スライス 1 Issue）。
 
 ## Bump release PR をいつ実行するか
 
@@ -112,5 +108,9 @@ Action を優先する。
 
 ## ステータス
 
-スライス **A**（Spec → Stable）は [#201](https://github.com/orbit-id/orbit-id/issues/201)。
-残り B–J は A 合流後。
+| スライス | Issue |
+| --- | --- |
+| A | [#201](https://github.com/orbit-id/orbit-id/issues/201) |
+| B–J | [#203](https://github.com/orbit-id/orbit-id/issues/203)–[#211](https://github.com/orbit-id/orbit-id/issues/211) |
+
+Epic: [#199](https://github.com/orbit-id/orbit-id/issues/199)。
