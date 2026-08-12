@@ -6,19 +6,30 @@ import {
   toDecimalString,
   toUnixTimeMs,
 } from "@orbit-id/core";
+import * as v2 from "@orbit-id/core/v2";
+
+type SpecVersion = "v1" | "v2";
 
 function printUsage(stream: NodeJS.WritableStream = process.stderr): void {
   stream.write(`Usage:
-  orbit-id parse <id>
-  orbit-id generate --type <1-63> [--node <0-127>]
+  orbit-id parse <id> [--spec v1|v2]
+  orbit-id generate --type <n> [--node <n>] [--spec v1|v2]
+
+Options:
+  --spec v1|v2   Wire format (default: v1). Alias: --v2 for --spec v2
 
 Environment:
   ORBIT_NODE_ID   Default Node ID when --node is omitted (generate)
 
+Ranges:
+  v1  type 1..63, node 0..127
+  v2  type 1..65535, node 0..65535  (Draft; FormatVersion=1)
+
 Examples:
   orbit-id parse 140612821619842090
+  orbit-id parse --spec v2 21267647932558653967613957625668960256
   ORBIT_NODE_ID=7 orbit-id generate --type 1
-  orbit-id generate --type 2 --node 7
+  orbit-id generate --spec v2 --type 1 --node 7
 `);
 }
 
@@ -42,6 +53,10 @@ function parseArgs(argv: string[]): {
       flags.help = true;
       continue;
     }
+    if (arg === "--v2") {
+      flags.spec = "v2";
+      continue;
+    }
     if (arg.startsWith("--")) {
       const key = arg.slice(2);
       const next = rest[i + 1];
@@ -57,6 +72,20 @@ function parseArgs(argv: string[]): {
   }
 
   return { command, positional, flags };
+}
+
+function resolveSpec(flags: Record<string, string | boolean>): SpecVersion {
+  const raw = flags.spec;
+  if (raw === undefined || raw === false) {
+    return "v1";
+  }
+  if (raw === true) {
+    fail("--spec requires v1 or v2");
+  }
+  if (raw !== "v1" && raw !== "v2") {
+    fail(`Invalid --spec: ${raw} (expected v1 or v2)`);
+  }
+  return raw;
 }
 
 function requireIntFlag(
@@ -79,11 +108,55 @@ function requireIntFlag(
   return value;
 }
 
-function cmdParse(idArg: string | undefined): void {
+function resolveNode(
+  flags: Record<string, string | boolean>,
+  maxNode: number,
+): number {
+  const nodeRaw =
+    typeof flags.node === "string" ? flags.node : process.env.ORBIT_NODE_ID;
+  if (nodeRaw === undefined || nodeRaw === "") {
+    fail(`generate requires --node <0-${maxNode}> or ORBIT_NODE_ID`);
+  }
+  if (!/^\d+$/.test(nodeRaw)) {
+    fail(`Invalid node: ${nodeRaw}`);
+  }
+  const node = Number(nodeRaw);
+  if (!Number.isInteger(node) || node < 0 || node > maxNode) {
+    fail(`node must be an integer in 0..${maxNode}`);
+  }
+  return node;
+}
+
+function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
   if (!idArg) {
     fail("parse requires <id> (unsigned decimal string)");
   }
   try {
+    if (spec === "v2") {
+      const fields = v2.parse(idArg);
+      const unixMs = v2.toUnixTimeMs(fields.timestamp);
+      const time = new Date(Number(unixMs)).toISOString();
+      process.stdout.write(
+        `${JSON.stringify(
+          {
+            spec: "v2",
+            id: idArg,
+            formatVersion: fields.formatVersion,
+            timestamp: fields.timestamp.toString(10),
+            time,
+            type: fields.type,
+            node: fields.node,
+            sequence: fields.sequence,
+            reserved: fields.reserved,
+            hex: v2.toHexString(v2.fromDecimalString(idArg)),
+          },
+          null,
+          2,
+        )}\n`,
+      );
+      return;
+    }
+
     const fields = parse(idArg);
     const unixMs = toUnixTimeMs(fields.timestamp);
     const time = new Date(Number(unixMs)).toISOString();
@@ -109,22 +182,19 @@ function cmdParse(idArg: string | undefined): void {
   }
 }
 
-function cmdGenerate(flags: Record<string, string | boolean>): void {
-  const type = requireIntFlag(flags, "type", 1, 63);
-  const nodeRaw =
-    typeof flags.node === "string" ? flags.node : process.env.ORBIT_NODE_ID;
-  if (nodeRaw === undefined || nodeRaw === "") {
-    fail("generate requires --node <0-127> or ORBIT_NODE_ID");
-  }
-  if (!/^\d+$/.test(nodeRaw)) {
-    fail(`Invalid node: ${nodeRaw}`);
-  }
-  const node = Number(nodeRaw);
-  if (!Number.isInteger(node) || node < 0 || node > 127) {
-    fail("node must be an integer in 0..127");
-  }
-
+function cmdGenerate(flags: Record<string, string | boolean>, spec: SpecVersion): void {
   try {
+    if (spec === "v2") {
+      const type = requireIntFlag(flags, "type", 1, 65535);
+      const node = resolveNode(flags, 65535);
+      const generator = new v2.OrbitGeneratorV2({ node });
+      const id = generator.generate(type);
+      process.stdout.write(`${v2.toDecimalString(id)}\n`);
+      return;
+    }
+
+    const type = requireIntFlag(flags, "type", 1, 63);
+    const node = resolveNode(flags, 127);
     const generator = new OrbitGenerator({ node });
     const id = generator.generate(type);
     process.stdout.write(`${toDecimalString(id)}\n`);
@@ -144,12 +214,14 @@ export function run(argv: string[]): void {
     process.exit(command && flags.help ? 0 : 1);
   }
 
+  const spec = resolveSpec(flags);
+
   switch (command) {
     case "parse":
-      cmdParse(positional[0]);
+      cmdParse(positional[0], spec);
       break;
     case "generate":
-      cmdGenerate(flags);
+      cmdGenerate(flags, spec);
       break;
     default:
       fail(`Unknown command: ${command}`);

@@ -127,4 +127,35 @@ describe("orbit-id cli in-process", () => {
     const boolFlag = captureRun(["generate", "--type", "1", "--node", "1", "--verbose"]);
     expect(boolFlag.code).toBeUndefined();
   });
+
+  it("parses a known v2 decimal id", () => {
+    const result = captureRun([
+      "parse",
+      "--spec",
+      "v2",
+      "21267647932558653967613957625668960256",
+    ]);
+    expect(result.code).toBeUndefined();
+    const body = JSON.parse(result.stdout);
+    expect(body).toMatchObject({
+      spec: "v2",
+      formatVersion: 1,
+      type: 1,
+      node: 7,
+      sequence: 42,
+      reserved: 0,
+    });
+  });
+
+  it("generates with --spec v2 and wider ranges", () => {
+    const result = captureRun(["generate", "--spec", "v2", "--type", "100", "--node", "200"]);
+    expect(result.code).toBeUndefined();
+    expect(result.stdout.trim()).toMatch(/^\d+$/);
+  });
+
+  it("rejects invalid --spec", () => {
+    const result = captureRun(["parse", "--spec", "v3", "1"]);
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("Invalid --spec");
+  });
 });
