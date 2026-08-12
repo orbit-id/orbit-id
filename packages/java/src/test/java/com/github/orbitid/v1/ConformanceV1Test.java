@@ -1,4 +1,8 @@
-package com.github.orbitid;
+package com.github.orbitid.v1;
+import com.github.orbitid.GenerateDecision;
+import com.github.orbitid.GeneratorOptions;
+import com.github.orbitid.OrbitError;
+import com.github.orbitid.SequenceExhaustedMode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ConformanceTest {
+class ConformanceV1Test {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Path FIXTURES = Path.of("..", "..", "spec", "conformance");
 
@@ -139,8 +143,6 @@ class ConformanceTest {
                 .build());
         assertThrows(OrbitError.class, () -> lost.generate(1));
     }
-
-
 
     private static JsonNode fixture(String fileName) throws IOException {
         return JSON.readTree(FIXTURES.resolve(fileName).toFile());

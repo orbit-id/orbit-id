@@ -1,21 +1,21 @@
-package com.github.orbitid.v2;
+package com.github.orbitid.v1;
 
-import com.github.orbitid.GenerateDecision;
-import com.github.orbitid.GeneratorOptions;
-import com.github.orbitid.OrbitClock;
-import com.github.orbitid.OrbitError;
 import com.github.orbitid.SequenceExhaustedMode;
 
-import java.math.BigInteger;
+import com.github.orbitid.OrbitClock;
+
+import com.github.orbitid.GeneratorOptions;
+
+import com.github.orbitid.GenerateDecision;
+
+import com.github.orbitid.OrbitError;
+
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
-import java.util.function.LongPredicate;
 
-/** Thread-safe Orbit ID v2 generator for one node. */
+/** Thread-safe Orbit ID v1 generator for one node. */
 public final class OrbitGenerator {
     private final int node;
-    private final int region;
-    private final int tenant;
     private final OrbitClock clock;
     private final long clockRollbackToleranceMs;
     private final SequenceExhaustedMode onSequenceExhausted;
@@ -31,11 +31,7 @@ public final class OrbitGenerator {
     public OrbitGenerator(GeneratorOptions options) {
         Objects.requireNonNull(options, "options");
         OrbitId.validateNode(options.node());
-        OrbitId.validateRegion(options.region());
-        OrbitId.validateTenant(options.tenant());
         this.node = options.node();
-        this.region = options.region();
-        this.tenant = options.tenant();
         this.clock = options.clock() == null ? systemOrbitClock() : options.clock();
         this.clockRollbackToleranceMs = options.clockRollbackToleranceMs();
         this.onSequenceExhausted = options.onSequenceExhausted();
@@ -48,14 +44,6 @@ public final class OrbitGenerator {
 
     public int getNode() {
         return node;
-    }
-
-    public int getRegion() {
-        return region;
-    }
-
-    public int getTenant() {
-        return tenant;
     }
 
     public synchronized long getLastTimestamp() {
@@ -114,20 +102,12 @@ public final class OrbitGenerator {
      * Issues an ID. This method is synchronized, so a generator instance never
      * issues duplicate sequence values when shared across threads.
      */
-    public synchronized BigInteger generate(int type) {
+    public synchronized long generate(int type) {
         for (;;) {
             GenerateDecision decision = decide(type);
             if (decision instanceof GenerateDecision.Issue) {
                 GenerateDecision.Issue issue = (GenerateDecision.Issue) decision;
-                BigInteger id = OrbitId.encode(
-                        OrbitId.ISSUED_FORMAT_VERSION,
-                        issue.timestamp(),
-                        type,
-                        node,
-                        issue.sequence(),
-                        region,
-                        tenant,
-                        0);
+                long id = OrbitId.encode(issue.timestamp(), type, node, issue.sequence());
                 lastTimestamp = issue.timestamp();
                 sequence = issue.sequence();
                 return id;
@@ -147,7 +127,7 @@ public final class OrbitGenerator {
         }
     }
 
-    private void waitUntil(LongPredicate predicate) {
+    private void waitUntil(java.util.function.LongPredicate predicate) {
         long startNanos = System.nanoTime();
         while (!predicate.test(clock.currentOrbitTimestampMs())) {
             if (System.nanoTime() - startNanos > 30_000_000_000L) {
