@@ -2,29 +2,24 @@
 
 declare(strict_types=1);
 
-namespace OrbitId;
+namespace OrbitId\V1;
 
-/** @param array{formatVersion: int, timestamp: string|int, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int} $fields */
+/** @param array{timestamp: string|int, type: int, node: int, sequence: int} $fields */
 function encode(array $fields): string
 {
     return OrbitId::encode($fields);
 }
 
-/** @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int} */
+/** @return array{timestamp: string, type: int, node: int, sequence: int} */
 function decode(mixed $id): array
 {
     return OrbitId::decode($id);
 }
 
-/** @return array{formatVersion: int, timestamp: string, type: int, node: int, sequence: int, region: int, tenant: int, reserved: int} */
+/** @return array{timestamp: string, type: int, node: int, sequence: int} */
 function parse(mixed $id): array
 {
     return OrbitId::parse($id);
-}
-
-function getFormatVersion(mixed $id): int
-{
-    return OrbitId::getFormatVersion($id);
 }
 
 function getTimestamp(mixed $id): string
@@ -45,21 +40,6 @@ function getNode(mixed $id): int
 function getSequence(mixed $id): int
 {
     return OrbitId::getSequence($id);
-}
-
-function getRegion(mixed $id): int
-{
-    return OrbitId::getRegion($id);
-}
-
-function getTenant(mixed $id): int
-{
-    return OrbitId::getTenant($id);
-}
-
-function getReserved(mixed $id): int
-{
-    return OrbitId::getReserved($id);
 }
 
 function isValid(mixed $id): bool

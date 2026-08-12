@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace OrbitId\Tests;
 
 use OrbitId\OrbitError;
-use OrbitId\V2\OrbitGenerator;
-use OrbitId\V2\OrbitId;
+use OrbitId\OrbitGenerator;
+use OrbitId\OrbitId;
 use PHPUnit\Framework\TestCase;
 
 final class ConformanceV2Test extends TestCase

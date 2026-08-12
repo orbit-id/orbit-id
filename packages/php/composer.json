@@ -1,6 +1,6 @@
 {
   "name": "orbit-id/php",
-  "description": "Orbit ID v1 reference implementation for PHP",
+  "description": "Orbit ID reference implementation for PHP (v2 root; v1 under OrbitId\\V1)",
   "license": "Apache-2.0",
   "type": "library",
   "keywords": ["id", "uuid", "snowflake", "identifier", "orbit"],
@@ -27,7 +27,8 @@
       "OrbitId\\": "src/"
     },
     "files": [
-      "src/functions.php"
+      "src/functions.php",
+      "src/V1/functions.php"
     ]
   },
   "autoload-dev": {
