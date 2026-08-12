@@ -1,11 +1,7 @@
-package com.github.orbitid.v2;
+package com.github.orbitid;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.orbitid.GenerateDecision;
-import com.github.orbitid.GeneratorOptions;
-import com.github.orbitid.OrbitError;
-import com.github.orbitid.SequenceExhaustedMode;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
