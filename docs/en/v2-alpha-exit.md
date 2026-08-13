@@ -18,7 +18,7 @@ This document locks **when alpha ends** and how package majors move v2 to the ro
 | Package default | **1.x** keeps **v1** at the package root |
 | How to use v2 | Additive namespace only (`v2` / `@orbit-id/core/v2`, `com.github.orbitid.v2`, …) |
 | Registry tags | Stable `vX.Y.Z` only publish; pre-release Git tags do **not** publish ([#148](https://github.com/orbit-id/orbit-id/issues/148)) |
-| Go | Public v2 stays under `internal/v2` until module path `/v2` at package `2.0.0` |
+| Go | Public v2 stayed under `internal/v2` until module path `/v2` (now `github.com/orbit-id/go/v2`) |
 
 ## Alpha exit criteria (checklist)
 
@@ -32,11 +32,11 @@ Alpha MAY end (and beta / freeze may start) only when **all** of the following a
    on encode and is fixture-covered. Further Datacenter-style carve-outs from the remaining 8 bits
    are **deferred to post-package-`2.0.0`** (new ADR); they are not required before alpha exit.
 3. **Conformance green** — `spec/conformance/*.v2.json` pass in every public language package that
-   claims v2 support (TypeScript/`@orbit-id/core`, Java, Rust, PHP; Go via `internal/v2` tests).
+   claims v2 support (TypeScript/`@orbit-id/core`, Java, Rust, PHP, Go `/v2`).
 4. **API surface** — Library operations match [Library API](library-api.md) v2 delta
    (`generate` / `parse` / getters / `isValid` + FormatVersion / Region / Tenant / Reserved). CLI and
-   playground can exercise v2 without breaking v1 defaults.
-5. **Docs** — Normative Draft wording, node-management / library-api / roadmap agree on ranges and
+   playground default to v2 with explicit v1 mode retained.
+5. **Docs** — Spec Stable wording, node-management / library-api / roadmap agree on ranges and
    the promotion path below.
 6. **No blocking alpha issues** — Open `v2-alpha` implementation trackers required for the above are
    closed or explicitly deferred to post-`2.0.0`.
@@ -48,20 +48,21 @@ Exit is a **docs + process** gate, not an automatic publish of `2.0.0`.
 As of [#197](https://github.com/orbit-id/orbit-id/issues/197), items **1–6 are met**. Spec status
 moved to **Stable** in slice A ([#201](https://github.com/orbit-id/orbit-id/issues/201)).
 Optional `v2.0.0-beta.*` freeze: **skipped** ([#199](https://github.com/orbit-id/orbit-id/issues/199)).
-Package-`2.0.0` root API swap and registry publish are still tracked by the
-[promotion plan](v2-package-2.0.0.md).
+In-tree root API swap (slices B–H) is done. Registry publish of package `2.0.0` remains slice **J**
+in the [promotion plan](v2-package-2.0.0.md). Consumer guide:
+[Migrating from package 1.x to 2.0.0](migration-1x-to-2.0.0.md).
 
 ## Promotion to package `2.0.0` (root → v2)
 
 After alpha exit criteria are met (optional `v2.0.0-beta.*` freeze **skipped**):
 
-| Step | Action |
-| --- | --- |
-| 1 | Freeze the v2 wire layout in the Draft → **Stable** specification |
-| 2 | Bump coordinated package majors to **`2.0.0`** via the monorepo release cut |
-| 3 | Make **v2 the root / default** public API in each language (see [Library API](library-api.md) table) |
-| 4 | Keep **v1** importable under an explicit `v1` namespace / module / flag |
-| 5 | Retire or re-export temporary additive paths (`@orbit-id/core/v2`) as aliases of the new root where helpful; document deprecation if they remain |
+| Step | Action | Status |
+| --- | --- | --- |
+| 1 | Freeze the v2 wire layout in the **Stable** specification | Done (slice A) |
+| 2 | Bump coordinated package majors to **`2.0.0`** via the monorepo release cut | Slice **J** |
+| 3 | Make **v2 the root / default** public API in each language | Done (slices B–H) |
+| 4 | Keep **v1** importable under an explicit `v1` namespace / module / flag | Done |
+| 5 | Retire or re-export temporary additive paths as aliases of the new root | Done |
 
 **Execution plan (ordered slices):** [Package `2.0.0` promotion plan](v2-package-2.0.0.md)
 ([#199](https://github.com/orbit-id/orbit-id/issues/199)).

@@ -18,7 +18,7 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
 | パッケージ既定 | **1.x** のルートは **v1** |
 | v2 の使い方 | 加算名前空間のみ（`v2` / `@orbit-id/core/v2`、`com.github.orbitid.v2` など） |
 | レジストリタグ | 安定版 `vX.Y.Z` のみ公開。pre-release Git タグは公開しない（[#148](https://github.com/orbit-id/orbit-id/issues/148)） |
-| Go | パッケージ `2.0.0` でモジュール `/v2` になるまで公開 v2 は `internal/v2` |
+| Go | 公開 v2 は `internal/v2` にあった（現在は `github.com/orbit-id/go/v2`） |
 
 ## alpha 終了条件（チェックリスト）
 
@@ -31,10 +31,10 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
    fixture カバー済み。残 8 bit からの Datacenter 等の切り出しは **パッケージ `2.0.0` 以降へ延期**
    （新しい ADR）。alpha 終了前の必須ではない。
 3. **Conformance green** — v2 対応を謳う公開言語パッケージで `spec/conformance/*.v2.json` が通る
-   （TypeScript/`@orbit-id/core`、Java、Rust、PHP。Go は `internal/v2` テスト）。
+   （TypeScript/`@orbit-id/core`、Java、Rust、PHP、Go `/v2`）。
 4. **API 面** — [Library API](library-api.md) の v2 差分どおり（`generate` / `parse` / getters /
    `isValid` + FormatVersion / Region / Tenant / Reserved）。CLI・playground は v1 既定を壊さず v2 を扱える。
-5. **ドキュメント** — 規範 Draft の文言、node-management / library-api / roadmap が範囲と下記昇格パスで
+5. **ドキュメント** — Stable 仕様の文言、node-management / library-api / roadmap が範囲と下記昇格パスで
    一致している。
 6. **ブロッカー Issue なし** — 上記に必要な open な `v2-alpha` 実装 Issue がクローズ、または
    `2.0.0` 以降へ明示的に延期されている。
@@ -46,20 +46,21 @@ Tracker: [#138](https://github.com/orbit-id/orbit-id/issues/138)（条件文）�
 [#197](https://github.com/orbit-id/orbit-id/issues/197) 時点で項目 **1–6 は充足**。仕様ステータスは
 スライス A で **Stable**（[#201](https://github.com/orbit-id/orbit-id/issues/201)）。
 任意の `v2.0.0-beta.*` 凍結は **スキップ**（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。
-パッケージ `2.0.0` のルート API 入れ替えとレジストリ公開は
-[昇格計画](v2-package-2.0.0.md) で追跡。
+in-tree のルート API 入れ替え（スライス B–H）は完了。レジストリへのパッケージ `2.0.0` 公開は
+[昇格計画](v2-package-2.0.0.md) のスライス **J**。利用者向け:
+[パッケージ 1.x → 2.0.0 移行ガイド](migration-1x-to-2.0.0.md)。
 
 ## パッケージ `2.0.0` への昇格（ルート → v2）
 
 alpha 終了条件を満たしたあと（任意の `v2.0.0-beta.*` 凍結は **スキップ**）:
 
-| 手順 | 内容 |
-| --- | --- |
-| 1 | Draft → **Stable** 仕様で v2 ワイヤを凍結 |
-| 2 | モノレポのリリースカットでパッケージ major を **`2.0.0`** に揃える |
-| 3 | 各言語で **v2 をルート / 既定**の公開 API にする（[Library API](library-api.md) の表） |
-| 4 | **v1** は明示的な `v1` 名前空間 / モジュール / フラグで残す |
-| 5 | 一時的な加算パス（`@orbit-id/core/v2`）は新ルートの別名にするか、残す場合は非推奨を文書化 |
+| 手順 | 内容 | 状態 |
+| --- | --- | --- |
+| 1 | **Stable** 仕様で v2 ワイヤを凍結 | 完了（スライス A） |
+| 2 | モノレポのリリースカットでパッケージ major を **`2.0.0`** に揃える | スライス **J** |
+| 3 | 各言語で **v2 をルート / 既定**の公開 API にする | 完了（スライス B–H） |
+| 4 | **v1** は明示的な `v1` 名前空間 / モジュール / フラグで残す | 完了 |
+| 5 | 一時的な加算パスは新ルートの別名にする | 完了 |
 
 **実行計画（スライス順）:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)
 （[#199](https://github.com/orbit-id/orbit-id/issues/199)）。

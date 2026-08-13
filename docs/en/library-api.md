@@ -2,14 +2,14 @@
 
 [日本語](../ja/library-api.md)
 
-Status: Stable (`v1.1.0`) — implemented in `@orbit-id/core` / `@orbit-id/typescript`.
+Status: Stable — package roots default to Orbit ID **v2** (128-bit); v1 remains under explicit namespaces. See [migration guide](migration-1x-to-2.0.0.md).
 
 This document describes the common API surface for Orbit ID libraries.
 
 ## Goals
 
 - Same operations across TypeScript, Java, Go, Rust, PHP, and CLI
-- Encode / decode against the [Orbit ID v1 Specification](orbit-id-v1.md)
+- Encode / decode against the [Orbit ID v2 Specification](orbit-id-v2.md) by default; v1 via retained entry points ([Orbit ID v1](orbit-id-v1.md))
 - Pass the [Canonical Test Vectors](test-vectors.md) / [`spec/conformance/`](../../spec/conformance/)
 
 ## Operations
@@ -121,24 +121,23 @@ Operations stay the same (`generate` / `parse` / field getters / `isValid`), but
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence ranges | 6 / 7 / 10 bits | 16 / 16 / 16 bits |
 | Extra fields | — | `FormatVersion` (MUST `1`), `Region` (`0..15`), `Tenant` (`0..65535`), remaining `Reserved` (MUST `0` on encode) |
-| Package entry | `@orbit-id/core` | `@orbit-id/core/v2` (also `v2` namespace on root) |
+| Package entry | `@orbit-id/core` (v1 in 1.x) | `@orbit-id/core` root → v2 (`/v2` alias) |
 
 Additional error codes used by v2: `INVALID_FORMAT_VERSION`, `INVALID_REGION`, `INVALID_TENANT`,
 `INVALID_RESERVED`.
 
-Libraries MUST NOT reinterpret a v1 64-bit ID as v2. Every public language package ships v2 as an
-additive namespace in 1.x (TypeScript, Java, Rust, PHP); Go keeps v2 under `internal/v2` until the
-`/v2` module path at package `2.0.0`.
+Libraries MUST NOT reinterpret a v1 64-bit ID as v2.
 
 ### Per-language entry points (1.x → 2.0.0)
 
-Policy: [Cross-registry versioning](cross-registry-versioning.md) · [#150](https://github.com/orbit-id/orbit-id/issues/150).
+Policy: [Cross-registry versioning](cross-registry-versioning.md) ·
+[Migration guide](migration-1x-to-2.0.0.md) · [#150](https://github.com/orbit-id/orbit-id/issues/150).
 
 | Language | 1.x default (v1) | 1.x additive v2 | 2.0.0 default (v2) | 2.0.0 retained v1 |
 | --- | --- | --- | --- | --- |
-| TypeScript | `@orbit-id/core` root | `v2` / `@orbit-id/core/v2` | root → v2 | `v1` namespace |
-| Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
-| Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
-| PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
-| Go | module `github.com/orbit-id/go` | not public (`internal/v2` until package `2.0.0`) | module `/v2` path | prior major module |
-| CLI | v1 flags / default | additive v2 flag (see CLI issues) | default → v2 | explicit v1 mode |
+| TypeScript | `@orbit-id/core` root | `v2` / `@orbit-id/core/v2` | root → v2 (`/v2` alias) | `v1` / `@orbit-id/core/v1` |
+| Java | `com.github.orbitid` | `com.github.orbitid.v2` (removed after promotion) | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
+| Rust | crate root | `orbit_id::v2` | crate root → v2 (`v2` alias) | `orbit_id::v1` |
+| PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 (`V2` class alias) | `OrbitId\V1` |
+| Go | module `github.com/orbit-id/go` | (not public in 1.x) | module `github.com/orbit-id/go/v2` | `…/v2/v1` or prior major `@v1.x` |
+| CLI | default v1 | `--spec v2` / `--v2` | default v2 | `--spec v1` |

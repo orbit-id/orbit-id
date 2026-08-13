@@ -6,9 +6,7 @@ Go implementation of Orbit ID.
 - **v1**: package `github.com/orbit-id/go/v2/v1` — stable 64-bit (`uint64`); also still
   available via the prior major module `github.com/orbit-id/go@v1.x`
 
-Until package major `2.0.0` is cut on registries, treat this module-path swap as the
-in-tree API for the promotion train
-([#208](https://github.com/orbit-id/orbit-id/issues/208)).
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
 
 ## Install
 

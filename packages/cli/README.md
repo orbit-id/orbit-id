@@ -3,9 +3,7 @@
 Minimal CLI for Orbit ID. Default wire format is **v2**; pass `--spec v1` for the
 legacy 64-bit layout. `--v2` remains an alias for `--spec v2`.
 
-Until package major `2.0.0` is cut on registries, treat this default swap as the
-in-tree CLI behavior for the promotion train
-([#209](https://github.com/orbit-id/orbit-id/issues/209)).
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
 
 ```bash
 npm install -g @orbit-id/cli

@@ -9,31 +9,40 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.orbit-id/orbit-id?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.orbit-id/orbit-id)
 [![crates.io](https://img.shields.io/crates/v/orbit-id)](https://crates.io/crates/orbit-id)
 [![Packagist](https://img.shields.io/packagist/v/orbit-id/php?label=Packagist)](https://packagist.org/packages/orbit-id/php)
-[![Go](https://img.shields.io/github/v/tag/orbit-id/go?filter=v*&label=go&logo=go)](https://pkg.go.dev/github.com/orbit-id/go)
+[![Go](https://img.shields.io/github/v/tag/orbit-id/go?filter=v*&label=go&logo=go)](https://pkg.go.dev/github.com/orbit-id/go/v2)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 Playground: [orbit-id.github.io/orbit-id](https://orbit-id.github.io/orbit-id/)
 
-Orbit ID is a specification for generating unique 64-bit IDs in distributed environments.
-Each ID embeds the issuance timestamp, entity type, issuing node, and a per-millisecond sequence,
-so those fields can be decoded without querying a database.
+Orbit ID is a specification for generating unique, time-sortable IDs in distributed environments.
+**v2** (128-bit, Stable) is the package-root default toward `2.0.0`; **v1** (64-bit) remains available
+for legacy IDs. Each ID embeds issuance time and related fields so they can be decoded without a
+database round-trip.
 
 > [!IMPORTANT]
-> Orbit ID v1 is stable (`v1.1.0`) and in **maintenance mode**: bug fixes and documentation only;
-> new features are not added by default. Next major work is v2 (128-bit) — see the
-> [Roadmap](docs/en/roadmap.md). Install [`@orbit-id/typescript`](https://www.npmjs.com/package/@orbit-id/typescript)
-> or use the [`orbit-id`](https://www.npmjs.com/package/@orbit-id/cli) CLI.
+> Package roots default to **Orbit ID v2**. v1 is still supported under explicit namespaces /
+> `--spec v1`. See the [1.x → 2.0.0 migration guide](docs/en/migration-1x-to-2.0.0.md). Registry
+> `2.0.0` cut is tracked in the [promotion plan](docs/en/v2-package-2.0.0.md).
 
 ## Features
 
 - Generatable on each node without a central allocator
 - Roughly time-ordered at millisecond resolution
-- Timestamp / type / node / sequence recoverable from the ID
-- Up to 1,024 IDs/ms per node (theoretically 1,024,000 IDs/s)
-- Up to 64 types and 128 nodes
-- Usable for about 69.7 years from 2026-01-01
+- Timestamp / type / node / sequence (and v2 region / tenant) recoverable from the ID
+- v2: up to 65,536 IDs/ms per node; 65,536 types; 65,536 nodes; Region `0..15`; Tenant `0..65535`
+- v1 (legacy): up to 1,024 IDs/ms per node; 64 types; 128 nodes
+- Shared Orbit Epoch: `2026-01-01T00:00:00.000Z`
 
-## Orbit ID v1
+## Orbit ID v2 (default)
+
+```text
+formatVersion: 4 | timestamp: 48 | type: 16 | node: 16 | sequence: 16
+| region: 4 | tenant: 16 | reserved: 8
+```
+
+Full layout: [Orbit ID v2 Specification](docs/en/orbit-id-v2.md).
+
+## Orbit ID v1 (legacy)
 
 ```text
 MSB                                                             LSB
@@ -66,12 +75,13 @@ id = (timestamp << 23) | (type << 17) | (node << 10) | sequence
 
 ## Handling
 
-The canonical representation of an Orbit ID is an unsigned 64-bit integer. In JavaScript / TypeScript,
-use `bigint` rather than `number`. In JSON and HTTP APIs, pass it as a decimal string.
+The canonical representation is an unsigned integer as a **decimal string** (v2: 128-bit; v1: 64-bit).
+In JavaScript / TypeScript, use `bigint` rather than `number`. Binary form is 16-byte BE (v2) or
+8-byte BE (v1).
 
 ```json
 {
-  "id": "140612821619842090"
+  "id": "21267647932558653967613957625668960256"
 }
 ```
 
@@ -81,8 +91,10 @@ is required for external exposure, or as authorization tokens.
 
 ## Documentation
 
-- [Orbit ID v1 Specification](docs/en/orbit-id-v1.md)
-- [Orbit ID v2 Specification](docs/en/orbit-id-v2.md) (Stable)
+- [Orbit ID v2 Specification](docs/en/orbit-id-v2.md) (Stable, default)
+- [Orbit ID v1 Specification](docs/en/orbit-id-v1.md) (legacy)
+- [Migrating 1.x → 2.0.0](docs/en/migration-1x-to-2.0.0.md)
+- [CHANGELOG](CHANGELOG.md)
 - [Canonical Test Vectors](docs/en/test-vectors.md)
 - [Node Management](docs/en/node-management.md)
 - [Design Decisions](docs/en/design-decisions.md)
@@ -103,18 +115,25 @@ is required for external exposure, or as authorization tokens.
 
 ## Current Scope
 
-Orbit ID v2 is Stable at the package root (promotion train toward `2.0.0`). Install from npm
-(and other registries):
+Package roots default to Orbit ID v2. After the coordinated registry cut, install `2.0.0` (until
+then, in-tree / current npm majors already expose the v2 root API):
 
 ```bash
 npm install @orbit-id/typescript
 npm install -g @orbit-id/cli
 orbit-id parse 21267647932558653967613957625668960256
+# legacy v1:
+orbit-id parse --spec v1 140612821619842090
 ```
 
-See [`packages/`](packages/), [npm Trusted Publishing](docs/en/npm-trusted-publishing.md), and
-[Cross-registry versioning](docs/en/cross-registry-versioning.md) for releases. Redis (when used)
-manages Node leases only — ID generation stays local to each Orbit node.
+```go
+go get github.com/orbit-id/go/v2@v2.0.0 // after the v2.0.0 registry cut
+```
+
+Migration details: [1.x → 2.0.0](docs/en/migration-1x-to-2.0.0.md). See [`packages/`](packages/),
+[npm Trusted Publishing](docs/en/npm-trusted-publishing.md), and
+[Cross-registry versioning](docs/en/cross-registry-versioning.md). Redis (when used) manages Node
+leases only — ID generation stays local to each Orbit node.
 
 ## License
 

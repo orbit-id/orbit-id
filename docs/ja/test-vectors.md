@@ -141,7 +141,7 @@ Calculation:
 レイアウト: `FormatVersion=1`、残 `Reserved=0`。Region（`0..15`）と Tenant（`0..65535`）は旧 28-bit
 Reserved から切り出し。共有 JSON fixture は Region/Tenant のゼロ／非ゼロ往復と、残 Reserved 拒否
 （`INVALID_RESERVED`）をカバーする。
-v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-id/core`、Java、Rust、PHP、Go（`internal/v2` 経由）。
+v2 を提供する全パッケージが共有 fixture を読み込む: `@orbit-id/core`、Java、Rust、PHP、Go（`github.com/orbit-id/go/v2`）。
 
 ### v2 Vector 1: Epoch
 

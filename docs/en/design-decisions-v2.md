@@ -110,8 +110,8 @@ unsigned 128-bit type.
 
 - Never re-decode an existing v1 ID under the v2 layout.
 - Migration is an application/storage concern (new columns, dual-write, envelopes).
-- v1 stays in maintenance mode; v2 remains Draft until an explicit beta / Stable step, then package
-  `2.0.0` moves v2 to the root API ([v2 alpha exit](v2-alpha-exit.md)).
+- v1 stays in maintenance mode; v2 is **Stable** and is the package-root default at `2.0.0`
+  ([migration guide](migration-1x-to-2.0.0.md) · [v2 alpha exit](v2-alpha-exit.md)).
 
 ## Related
 

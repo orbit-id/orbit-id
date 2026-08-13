@@ -8,9 +8,7 @@ works without GMP or BCMath.
 - **v2** (`OrbitId\` / `OrbitId\V2\` alias): Stable 128-bit wire format
 - **v1** (`OrbitId\V1\`): stable 64-bit wire format
 
-Until package major `2.0.0` is cut on registries, treat this root swap as the
-in-tree API for the promotion train
-([#207](https://github.com/orbit-id/orbit-id/issues/207)).
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
 
 ## Install
 

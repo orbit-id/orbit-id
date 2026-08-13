@@ -5,6 +5,9 @@ Java 17+ implementation of Orbit ID.
 - **v2** (default): `com.github.orbitid` — Stable 128-bit wire format
 - **v1**: `com.github.orbitid.v1` — stable 64-bit wire format
 
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is
+slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
+
 Coordinates after Maven Central publish ([#54](https://github.com/orbit-id/orbit-id/issues/54)):
 
 ```xml

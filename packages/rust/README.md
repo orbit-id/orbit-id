@@ -5,8 +5,7 @@ Rust implementation of Orbit ID.
 - **v2** (crate root / `orbit_id::v2`): Stable unsigned 128-bit, time-sortable IDs
 - **v1** (`orbit_id::v1`): stable unsigned 64-bit, time-sortable IDs
 
-Until package major `2.0.0` is cut on registries, treat this root swap as the in-tree API
-for the promotion train ([#206](https://github.com/orbit-id/orbit-id/issues/206)).
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
 
 ## Install
 
