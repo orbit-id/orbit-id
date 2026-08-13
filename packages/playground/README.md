@@ -2,7 +2,9 @@
 
 Local web UI for encode / decode / generate ([#20](https://github.com/orbit-id/orbit-id/issues/20)).
 
-Supports **Orbit ID v1** (default) and **v2 Draft** via a Format selector ([#145](https://github.com/orbit-id/orbit-id/issues/145)).
+Supports **Orbit ID v2** (default) and **v1** via a Format selector
+([#145](https://github.com/orbit-id/orbit-id/issues/145),
+[#209](https://github.com/orbit-id/orbit-id/issues/209)).
 UI strings support **English (default)** and Japanese; language and format choice are stored in `localStorage`.
 
 ## Local

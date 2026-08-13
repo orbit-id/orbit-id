@@ -59,8 +59,8 @@ afterEach(() => {
 });
 
 describe("orbit-id cli in-process", () => {
-  it("parses a known decimal id", () => {
-    const result = captureRun(["parse", "140612821619842090"]);
+  it("parses a known v1 decimal id", () => {
+    const result = captureRun(["parse", "--spec", "v1", "140612821619842090"]);
     expect(result.code).toBeUndefined();
     const body = JSON.parse(result.stdout);
     expect(body).toMatchObject({
@@ -104,8 +104,9 @@ describe("orbit-id cli in-process", () => {
 
   it("rejects invalid type and node flags", () => {
     expect(captureRun(["generate", "--type", "abc", "--node", "1"]).stderr).toContain("Invalid --type");
-    expect(captureRun(["generate", "--type", "99", "--node", "1"]).stderr).toContain("must be an integer");
-    expect(captureRun(["generate", "--type", "1", "--node", "999"]).stderr).toContain("0..127");
+    expect(captureRun(["generate", "--spec", "v1", "--type", "99", "--node", "1"]).stderr).toContain("must be an integer");
+    expect(captureRun(["generate", "--spec", "v1", "--type", "1", "--node", "999"]).stderr).toContain("0..127");
+    expect(captureRun(["generate", "--type", "1", "--node", "99999"]).stderr).toContain("0..65535");
     expect(captureRun(["generate", "--type", "1", "--node", "x"]).stderr).toContain("Invalid node");
   });
 
@@ -128,11 +129,9 @@ describe("orbit-id cli in-process", () => {
     expect(boolFlag.code).toBeUndefined();
   });
 
-  it("parses a known v2 decimal id", () => {
+  it("parses a known v2 decimal id by default", () => {
     const result = captureRun([
       "parse",
-      "--spec",
-      "v2",
       "21267647932558653967613957625668960256",
     ]);
     expect(result.code).toBeUndefined();
@@ -149,8 +148,8 @@ describe("orbit-id cli in-process", () => {
     });
   });
 
-  it("generates with --spec v2 and wider ranges", () => {
-    const result = captureRun(["generate", "--spec", "v2", "--type", "100", "--node", "200"]);
+  it("generates with wider v2 ranges by default", () => {
+    const result = captureRun(["generate", "--type", "100", "--node", "200"]);
     expect(result.code).toBeUndefined();
     expect(result.stdout.trim()).toMatch(/^\d+$/);
   });
@@ -158,8 +157,6 @@ describe("orbit-id cli in-process", () => {
   it("generates v2 with region and tenant flags", () => {
     const result = captureRun([
       "generate",
-      "--spec",
-      "v2",
       "--type",
       "1",
       "--node",
@@ -170,20 +167,69 @@ describe("orbit-id cli in-process", () => {
       "1000",
     ]);
     expect(result.code).toBeUndefined();
-    const parsed = captureRun(["parse", "--spec", "v2", result.stdout.trim()]);
+    const parsed = captureRun(["parse", result.stdout.trim()]);
     expect(parsed.code).toBeUndefined();
     const body = JSON.parse(parsed.stdout);
     expect(body.region).toBe(3);
     expect(body.tenant).toBe(1000);
   });
 
-  it("rejects --region/--tenant without --spec v2", () => {
-    const region = captureRun(["generate", "--type", "1", "--node", "1", "--region", "3"]);
+  it("rejects --region/--tenant with --spec v1", () => {
+    const region = captureRun(["generate", "--spec", "v1", "--type", "1", "--node", "1", "--region", "3"]);
     expect(region.code).toBe(1);
-    expect(region.stderr).toContain("--region requires --spec v2");
-    const tenant = captureRun(["generate", "--type", "1", "--node", "1", "--tenant", "1000"]);
+    expect(region.stderr).toContain("--region is not supported with --spec v1");
+    const tenant = captureRun(["generate", "--spec", "v1", "--type", "1", "--node", "1", "--tenant", "1000"]);
     expect(tenant.code).toBe(1);
-    expect(tenant.stderr).toContain("--tenant requires --spec v2");
+    expect(tenant.stderr).toContain("--tenant is not supported with --spec v1");
+  });
+
+  it("covers --v2 alias and optional flag validation", () => {
+    const alias = captureRun(["generate", "--v2", "--type", "1", "--node", "7"]);
+    expect(alias.code).toBeUndefined();
+    expect(alias.stdout.trim()).toMatch(/^\d+$/);
+
+    expect(captureRun(["parse", "--spec"]).stderr).toContain("--spec requires v1 or v2");
+    expect(captureRun(["generate", "--type", "--node", "1"]).stderr).toContain("Missing --type");
+    expect(captureRun(["generate", "--type", "1", "--node", "1", "--region"]).stderr).toContain(
+      "--region requires an integer",
+    );
+    expect(captureRun(["generate", "--type", "1", "--node", "1", "--region", "abc"]).stderr).toContain(
+      "Invalid --region",
+    );
+    expect(captureRun(["generate", "--type", "1", "--node", "1", "--region", "99"]).stderr).toContain(
+      "0..15",
+    );
+    expect(captureRun(["generate", "--type", "1.", "--node", "1"]).stderr).toContain("Invalid --type");
+  });
+
+  it("covers OrbitError on generate", async () => {
+    const core = await import("@orbit-id/core");
+    const orbitErr = vi
+      .spyOn(core.OrbitGeneratorV2.prototype, "generate")
+      .mockImplementation(() => {
+        throw new core.OrbitError("INVALID_TYPE", "type out of range");
+      });
+    const zero = captureRun(["generate", "--type", "1", "--node", "1"]);
+    expect(zero.code).toBe(1);
+    expect(zero.stderr).toContain("INVALID_TYPE");
+    orbitErr.mockRestore();
+  });
+
+  it("rethrows unexpected generate and parse errors", async () => {
+    const core = await import("@orbit-id/core");
+    const genSpy = vi.spyOn(core.OrbitGeneratorV2.prototype, "generate").mockImplementation(() => {
+      throw new Error("boom-generate");
+    });
+    expect(() => captureRun(["generate", "--type", "1", "--node", "1"])).toThrow("boom-generate");
+    genSpy.mockRestore();
+
+    const parseSpy = vi.spyOn(core, "parse").mockImplementation(() => {
+      throw new Error("boom-parse");
+    });
+    expect(() =>
+      captureRun(["parse", "21267647932558653967613957625668960256"]),
+    ).toThrow("boom-parse");
+    parseSpy.mockRestore();
   });
 
   it("rejects invalid --spec", () => {

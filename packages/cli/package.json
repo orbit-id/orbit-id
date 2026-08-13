@@ -1,7 +1,7 @@
 {
   "name": "@orbit-id/cli",
   "version": "1.1.1",
-  "description": "Minimal CLI for Orbit ID (v1 default + v2 Draft via --spec)",
+  "description": "Minimal CLI for Orbit ID (v2 default; v1 via --spec)",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {

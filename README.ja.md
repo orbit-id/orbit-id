@@ -102,12 +102,12 @@ ID は発行時刻などを隠しません。また、推測耐性、改ざん�
 
 ## 現在のスコープ
 
-Orbit ID v1 は stable で保守モードです。npm（および他レジストリ）から利用できます。
+Orbit ID v2 はパッケージルートで Stable です（`2.0.0` 向けの promotion train）。npm（および他レジストリ）から利用できます。
 
 ```bash
 npm install @orbit-id/typescript
 npm install -g @orbit-id/cli
-orbit-id parse 140612821619842090
+orbit-id parse 21267647932558653967613957625668960256
 ```
 
 パッケージは [`packages/`](packages/) 、公開手順は

@@ -24,8 +24,8 @@ function runBin(args: string[], env: NodeJS.ProcessEnv = {}): {
 }
 
 describe("orbit-id cli", () => {
-  it("parses a known decimal id", () => {
-    const result = runBin(["parse", "140612821619842090"]);
+  it("parses a known v1 decimal id", () => {
+    const result = runBin(["parse", "--spec", "v1", "140612821619842090"]);
     expect(result.status).toBe(0);
     const body = JSON.parse(result.stdout);
     expect(body).toMatchObject({
@@ -74,11 +74,9 @@ describe("orbit-id cli", () => {
     expect(typeof run).toBe("function");
   });
 
-  it("parses a known v2 decimal id", () => {
+  it("parses a known v2 decimal id by default", () => {
     const result = runBin([
       "parse",
-      "--spec",
-      "v2",
       "21267647932558653967613957625668960256",
     ]);
     expect(result.status).toBe(0);
@@ -99,12 +97,12 @@ describe("orbit-id cli", () => {
     expect(body.hex).toBe("0x100000000000000010007002a0000000");
   });
 
-  it("generates a v2 decimal id with --spec v2", () => {
-    const result = runBin(["generate", "--v2", "--type", "1", "--node", "7"]);
+  it("generates a v2 decimal id by default", () => {
+    const result = runBin(["generate", "--type", "1", "--node", "7"]);
     expect(result.status).toBe(0);
     const id = result.stdout.trim();
     expect(id).toMatch(/^\d+$/);
-    const parsed = runBin(["parse", "--spec", "v2", id]);
+    const parsed = runBin(["parse", id]);
     expect(parsed.status).toBe(0);
     const body = JSON.parse(parsed.stdout);
     expect(body.formatVersion).toBe(1);
@@ -117,8 +115,6 @@ describe("orbit-id cli", () => {
   it("generates v2 with --region and --tenant", () => {
     const result = runBin([
       "generate",
-      "--spec",
-      "v2",
       "--type",
       "1",
       "--node",
@@ -129,10 +125,16 @@ describe("orbit-id cli", () => {
       "1000",
     ]);
     expect(result.status).toBe(0);
-    const parsed = runBin(["parse", "--spec", "v2", result.stdout.trim()]);
+    const parsed = runBin(["parse", result.stdout.trim()]);
     expect(parsed.status).toBe(0);
     const body = JSON.parse(parsed.stdout);
     expect(body.region).toBe(3);
     expect(body.tenant).toBe(1000);
+  });
+
+  it("rejects v1 id without --spec v1", () => {
+    const result = runBin(["parse", "140612821619842090"]);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("INVALID_FORMAT_VERSION");
   });
 });

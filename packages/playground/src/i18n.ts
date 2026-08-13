@@ -58,9 +58,9 @@ export const messages: Record<Locale, Messages> = {
     badge: "Runs in your browser · no signup",
     pageTitle: "Orbit ID Playground",
     pageDescV1:
-      "Generate, parse, and encode Orbit ID v1 values locally. Invalid input shows the rejection reason.",
+      "Generate, parse, and encode Orbit ID v1 (64-bit) values locally. Invalid input shows the rejection reason.",
     pageDescV2:
-      "Generate, parse, and encode Orbit ID v2 Draft (128-bit) values locally. Default remains v1 until you switch.",
+      "Generate, parse, and encode Orbit ID v2 (128-bit) values locally. Invalid input shows the rejection reason.",
     checkLocal: "Processing stays in the browser",
     checkNoServer: "Input is never sent to a server",
     parse: "Parse",
@@ -86,8 +86,8 @@ export const messages: Record<Locale, Messages> = {
     langEn: "English",
     langJa: "日本語",
     versionLabel: "Format",
-    versionV1: "v1 (stable)",
-    versionV2: "v2 (Draft)",
+    versionV1: "v1 (64-bit)",
+    versionV2: "v2 (stable)",
     docsSpecV1: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/orbit-id-v1.md",
     docsSpecV2: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/orbit-id-v2.md",
     docsVectors: "https://github.com/orbit-id/orbit-id/blob/main/docs/en/test-vectors.md",
@@ -105,9 +105,9 @@ export const messages: Record<Locale, Messages> = {
     badge: "ブラウザ完結 · 登録不要",
     pageTitle: "Orbit ID プレイグラウンド",
     pageDescV1:
-      "Orbit ID v1 の生成・解析・エンコードをその場で試せます。不正な入力は拒否理由を表示します。",
+      "Orbit ID v1（64-bit）の生成・解析・エンコードをその場で試せます。不正な入力は拒否理由を表示します。",
     pageDescV2:
-      "Orbit ID v2 Draft（128-bit）の生成・解析・エンコードをその場で試せます。切り替えない限り既定は v1 です。",
+      "Orbit ID v2（128-bit）の生成・解析・エンコードをその場で試せます。不正な入力は拒否理由を表示します。",
     checkLocal: "処理はブラウザ内で完結します",
     checkNoServer: "入力データはサーバーへ送りません",
     parse: "解析",
@@ -133,8 +133,8 @@ export const messages: Record<Locale, Messages> = {
     langEn: "English",
     langJa: "日本語",
     versionLabel: "形式",
-    versionV1: "v1（stable）",
-    versionV2: "v2（Draft）",
+    versionV1: "v1（64-bit）",
+    versionV2: "v2（stable）",
     docsSpecV1: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/orbit-id-v1.md",
     docsSpecV2: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/orbit-id-v2.md",
     docsVectors: "https://github.com/orbit-id/orbit-id/blob/main/docs/ja/test-vectors.md",
@@ -151,7 +151,7 @@ export function resolveLocale(raw: string | null | undefined): Locale {
 }
 
 export function resolveSpec(raw: string | null | undefined): SpecVersion {
-  return raw === "v2" ? "v2" : "v1";
+  return raw === "v1" ? "v1" : "v2";
 }
 
 export function readStoredLocale(): Locale {
@@ -174,7 +174,7 @@ export function readStoredSpec(): SpecVersion {
   try {
     return resolveSpec(localStorage.getItem(SPEC_KEY));
   } catch {
-    return "v1";
+    return "v2";
   }
 }
 
