@@ -15,3 +15,4 @@ spl_autoload_register(static function (string $class): void {
 });
 
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/V1/functions.php';

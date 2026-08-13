@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace OrbitId\Tests;
 
 use OrbitId\OrbitError;
-use OrbitId\OrbitGenerator;
-use OrbitId\OrbitId;
+use OrbitId\V1\OrbitGenerator;
+use OrbitId\V1\OrbitId;
 use PHPUnit\Framework\TestCase;
 
-final class ConformanceTest extends TestCase
+final class ConformanceV1Test extends TestCase
 {
     public function testEncodeDecodeFixtures(): void
     {
@@ -133,30 +133,30 @@ final class ConformanceTest extends TestCase
         self::assertSame('1001', (string) $waiter->getLastTimestamp());
 
         $sample = '140612821619842090';
-        self::assertSame('16762354567', \OrbitId\getTimestamp($sample));
-        self::assertSame(2, \OrbitId\getType($sample));
-        self::assertSame(7, \OrbitId\getNode($sample));
-        self::assertSame(42, \OrbitId\getSequence($sample));
-        self::assertTrue(\OrbitId\isValid($sample));
-        self::assertSame($sample, \OrbitId\toDecimalString($sample));
-        self::assertSame($sample, \OrbitId\fromDecimalString($sample));
-        self::assertSame(strtolower(OrbitId::toHexString($sample)), \OrbitId\toHexString($sample));
-        self::assertSame(OrbitId::decode($sample), \OrbitId\decode($sample));
-        self::assertSame(OrbitId::parse($sample), \OrbitId\parse($sample));
+        self::assertSame('16762354567', \OrbitId\V1\getTimestamp($sample));
+        self::assertSame(2, \OrbitId\V1\getType($sample));
+        self::assertSame(7, \OrbitId\V1\getNode($sample));
+        self::assertSame(42, \OrbitId\V1\getSequence($sample));
+        self::assertTrue(\OrbitId\V1\isValid($sample));
+        self::assertSame($sample, \OrbitId\V1\toDecimalString($sample));
+        self::assertSame($sample, \OrbitId\V1\fromDecimalString($sample));
+        self::assertSame(strtolower(OrbitId::toHexString($sample)), \OrbitId\V1\toHexString($sample));
+        self::assertSame(OrbitId::decode($sample), \OrbitId\V1\decode($sample));
+        self::assertSame(OrbitId::parse($sample), \OrbitId\V1\parse($sample));
         self::assertSame(OrbitId::encode([
             'timestamp' => '16762354567',
             'type' => 2,
             'node' => 7,
             'sequence' => 42,
-        ]), \OrbitId\encode([
+        ]), \OrbitId\V1\encode([
             'timestamp' => '16762354567',
             'type' => 2,
             'node' => 7,
             'sequence' => 42,
         ]));
-        $unix = \OrbitId\toUnixTimeMs(0);
-        self::assertSame('0', \OrbitId\fromUnixTimeMs($unix));
-        self::assertIsCallable(\OrbitId\systemOrbitClock());
+        $unix = \OrbitId\V1\toUnixTimeMs(0);
+        self::assertSame('0', \OrbitId\V1\fromUnixTimeMs($unix));
+        self::assertIsCallable(\OrbitId\V1\systemOrbitClock());
 
         $lost = new OrbitGenerator([
             'node' => 1,
