@@ -5,6 +5,7 @@ import {
   parse,
   toDecimalString,
   toHexString,
+  toBase64UrlString,
   toUnixTimeMs,
 } from "@orbit-id/core";
 import * as v1 from "@orbit-id/core/v1";
@@ -188,6 +189,8 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
             type: fields.type,
             node: fields.node,
             sequence: fields.sequence,
+            hex: v1.toHexString(v1.fromDecimalString(idArg)),
+            base64url: v1.toBase64UrlString(v1.fromDecimalString(idArg)),
           },
           null,
           2,
@@ -214,6 +217,7 @@ function cmdParse(idArg: string | undefined, spec: SpecVersion): void {
           tenant: fields.tenant,
           reserved: fields.reserved,
           hex: toHexString(fromDecimalString(idArg)),
+          base64url: toBase64UrlString(fromDecimalString(idArg)),
         },
         null,
         2,

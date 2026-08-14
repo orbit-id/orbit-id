@@ -1,6 +1,7 @@
 use orbit_id::v1::{
     decode, encode, from_decimal_string, is_valid, parse, to_decimal_string, to_hex_string,
-    GenerateDecision, GeneratorOptions, OrbitErrorCode, OrbitFields, OrbitGenerator,
+    to_base64url_string, from_base64url_string, GenerateDecision, GeneratorOptions, OrbitErrorCode,
+    OrbitFields, OrbitGenerator,
     SequenceExhaustedMode,
 };
 use serde::Deserialize;
@@ -84,6 +85,10 @@ fn encode_decode_conformance() {
         let id = encode(fields).unwrap();
         assert_eq!(to_decimal_string(id), case.id_decimal);
         assert_eq!(to_hex_string(id), case.id_hex.to_lowercase());
+        assert_eq!(
+            from_base64url_string(&to_base64url_string(id)).unwrap(),
+            id
+        );
         assert_eq!(decode(id), fields);
         assert_eq!(parse(&case.id_decimal).unwrap(), fields);
         assert_eq!(from_decimal_string(&case.id_decimal).unwrap(), id);

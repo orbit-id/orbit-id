@@ -26,8 +26,11 @@ This document describes the common API surface for Orbit ID libraries.
 
 `isValid` MUST NOT claim that an ID was issued by an Orbit generator. See specification §11.
 
-Optional helpers MAY be provided (`encode(fields)`, `toDecimalString(id)`, `fromDecimalString(s)`)
-but MUST NOT diverge from the operations above.
+Optional helpers MAY be provided (`encode(fields)`, `toDecimalString(id)`, `fromDecimalString(s)`,
+`toHexString(id)`, `toBase64UrlString(id)`, `fromBase64UrlString(s)`) but MUST NOT diverge from the
+operations above. Decimal remains the JSON / HTTP canonical string; hex and Base64 URL are
+**non-canonical** display / compact-copy forms (Base64 URL = RFC 4648 §5, unpadded, big-endian
+bytes).
 
 ## Value representation
 
@@ -35,7 +38,8 @@ but MUST NOT diverge from the operations above.
 | --- | --- |
 | In-memory (JS/TS) | `bigint` |
 | JSON / HTTP | unsigned decimal string |
-| Binary | 8-byte big-endian |
+| Binary | v1: 8-byte big-endian; v2: **16-byte big-endian** |
+| Compact display (optional) | unpadded Base64 URL (v1: 11 chars; v2: 22 chars) |
 
 Example JSON:
 
@@ -56,6 +60,7 @@ Libraries SHOULD expose these stable code strings (or language enums mapping to 
 | `INVALID_SEQUENCE` | Sequence outside `0..1023` when encoding fields |
 | `INVALID_TIMESTAMP` | Timestamp outside the 41-bit range when encoding fields |
 | `INVALID_DECIMAL` | Non-canonical or out-of-range decimal string |
+| `INVALID_BASE64URL` | Malformed / padded / wrong-length Base64 URL string |
 | `INVALID_FORMAT_VERSION` | Unknown / reserved FormatVersion (v2) |
 | `INVALID_REGION` | Region outside `0..15` (v2) |
 | `INVALID_TENANT` | Tenant outside `0..65535` (v2) |

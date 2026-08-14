@@ -5,6 +5,8 @@
 package v1
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"strconv"
 	"strings"
@@ -55,6 +57,7 @@ const (
 	InvalidSequence      = orbitid.InvalidSequence
 	InvalidTimestamp     = orbitid.InvalidTimestamp
 	InvalidDecimal       = orbitid.InvalidDecimal
+	InvalidBase64Url     = orbitid.InvalidBase64Url
 	InvalidFormatVersion = orbitid.InvalidFormatVersion
 	InvalidRegion        = orbitid.InvalidRegion
 	InvalidTenant        = orbitid.InvalidTenant
@@ -206,6 +209,30 @@ func FromDecimalString(input string) (uint64, error) {
 
 func ToHexString(id uint64) string {
 	return fmt.Sprintf("0x%016x", id)
+}
+
+// ToBase64UrlString returns the unpadded Base64 URL form of the 8-byte big-endian id.
+func ToBase64UrlString(id uint64) string {
+	var buf [8]byte
+	binary.BigEndian.PutUint64(buf[:], id)
+	return base64.RawURLEncoding.EncodeToString(buf[:])
+}
+
+// FromBase64UrlString parses an unpadded Base64 URL string (exactly 11 chars).
+func FromBase64UrlString(input string) (uint64, error) {
+	if len(input) != 11 {
+		return 0, orbitError(InvalidBase64Url, "base64url length must be 11")
+	}
+	for _, r := range input {
+		if !((r >= 'A' && r <= 'Z') || (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' || r == '_') {
+			return 0, orbitError(InvalidBase64Url, "invalid base64url alphabet")
+		}
+	}
+	raw, err := base64.RawURLEncoding.DecodeString(input)
+	if err != nil || len(raw) != 8 {
+		return 0, orbitError(InvalidBase64Url, "invalid base64url string")
+	}
+	return binary.BigEndian.Uint64(raw), nil
 }
 
 func ToUnixTimeMs(timestamp uint64) uint64 {

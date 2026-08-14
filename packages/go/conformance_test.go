@@ -96,6 +96,14 @@ func TestEncodeDecodeConformance(t *testing.T) {
 			if err != nil || hex != c.IDHex {
 				t.Fatalf("hex = %q, %v, want %q", hex, err, c.IDHex)
 			}
+			b64, err := orbitid.ToBase64UrlString(id)
+			if err != nil {
+				t.Fatal(err)
+			}
+			roundTrip, err := orbitid.FromBase64UrlString(b64)
+			if err != nil || roundTrip.Cmp(id) != 0 {
+				t.Fatalf("base64url round-trip = %v, %v", roundTrip, err)
+			}
 			got, err := orbitid.Decode(id)
 			if err != nil || !reflect.DeepEqual(got, fields) {
 				t.Fatalf("decode = %#v, %v, want %#v", got, err, fields)

@@ -203,6 +203,18 @@ final class OrbitId
         return '0x' . str_pad(strrev($hex), 32, '0', STR_PAD_LEFT);
     }
 
+    /** Unpadded Base64 URL of the 16-byte big-endian id (display / compact copy). */
+    public static function toBase64UrlString(mixed $id): string
+    {
+        return Base64Url::encode(Base64Url::decimalToBigEndian(self::id($id), 16));
+    }
+
+    /** Parse unpadded Base64 URL (exactly 22 chars) into a canonical decimal id. */
+    public static function fromBase64UrlString(string $input): string
+    {
+        return Base64Url::bigEndianToDecimal(Base64Url::decode($input, 16));
+    }
+
     /** @param string|int $timestamp */
     public static function toUnixTimeMs(string|int $timestamp): string
     {

@@ -95,6 +95,7 @@ describe("orbit-id cli", () => {
     });
     expect(body.time).toBe("2026-01-01T00:00:00.000Z");
     expect(body.hex).toBe("0x100000000000000010007002a0000000");
+    expect(body.base64url).toBe("EAAAAAAAAAAQAHACoAAAAA");
   });
 
   it("generates a v2 decimal id by default", () => {

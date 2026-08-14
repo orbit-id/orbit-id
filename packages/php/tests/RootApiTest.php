@@ -45,6 +45,10 @@ final class RootApiTest extends TestCase
         self::assertSame($sample, \OrbitId\toDecimalString($sample));
         self::assertSame($sample, \OrbitId\fromDecimalString($sample));
         self::assertSame(strtolower(OrbitId::toHexString($sample)), \OrbitId\toHexString($sample));
+        self::assertSame(OrbitId::toBase64UrlString($sample), \OrbitId\toBase64UrlString($sample));
+        self::assertSame($sample, OrbitId::fromBase64UrlString(OrbitId::toBase64UrlString($sample)));
+        self::assertSame('EABIpmobcAAQABAAAAAAAA', OrbitId::toBase64UrlString('21269121450763675199002670464474546176'));
+
         self::assertSame(OrbitId::decode($sample), \OrbitId\decode($sample));
         self::assertSame(OrbitId::parse($sample), \OrbitId\parse($sample));
         $fields = OrbitId::decode($sample);

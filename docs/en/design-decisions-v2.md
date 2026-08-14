@@ -83,8 +83,10 @@ Unknown `FormatVersion` values MUST fail closed on decode.
 | JSON / HTTP | Unsigned **decimal** string of the 128-bit integer (no sign, no leading `+`) |
 | Binary | 16-byte big-endian |
 | Optional | Lowercase hex (32 hex digits, no `0x`) MAY be accepted by libraries; decimal remains canonical |
+| Optional (display) | Unpadded **Base64 URL** (RFC 4648 §5) of the 16-byte big-endian value MAY be provided (`toBase64UrlString` / `fromBase64UrlString`); not for JSON/HTTP interchange |
 
 ULID-style or UUID 8-4-4-4-12 strings are **not** canonical for Orbit ID v2 (MAY be revisited later).
+Base64 URL is an optional **non-canonical** compact form for humans / logs, not a wire replacement.
 
 ## 7. In-memory value type (JS/TS)
 
