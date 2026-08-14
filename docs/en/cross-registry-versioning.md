@@ -158,7 +158,7 @@ In-tree bumps (Action / `npm run release:bump`):
 
 | Ecosystem | Files |
 |-----------|--------|
-| npm | root + `packages/{core,typescript,cli}/package.json`, lockfile; `@orbit-id/core` dep in node-lease / playground when present |
+| npm | root + `packages/{core,typescript,cli}/package.json`, lockfile; `@orbit-id/core` dep in node-lease / playground / benchmark when present |
 | Maven | `packages/java/pom.xml` |
 | crates.io | `packages/rust/Cargo.toml` |
 | Go | none (mirror of `packages/go` on `v*` — see [go-module.md](go-module.md)) |

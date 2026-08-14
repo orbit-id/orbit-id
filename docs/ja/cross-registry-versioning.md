@@ -154,7 +154,7 @@ Go / PHP ミラーも同じ `vX.Y.Z` から Publish workflow が更新する。
 
 | エコシステム | 対象 |
 |--------------|------|
-| npm | root + `packages/{core,typescript,cli}/package.json`、lockfile。node-lease / playground の `@orbit-id/core` dep（ある場合） |
+| npm | root + `packages/{core,typescript,cli}/package.json`、lockfile。node-lease / playground / benchmark の `@orbit-id/core` dep（ある場合） |
 | Maven | `packages/java/pom.xml` |
 | crates.io | `packages/rust/Cargo.toml` |
 | Go | なし（`packages/go` を `v*` でミラー — [go-module.md](go-module.md)） |
