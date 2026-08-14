@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] — 2026-08-15
+
 ### Added
 
 - Optional **Base64 URL** helpers (`toBase64UrlString` / `fromBase64UrlString`) across language
@@ -54,6 +56,7 @@ See [Migrating from package 1.x to 2.0.0](docs/en/migration-1x-to-2.0.0.md).
 - Cross-language conformance and packaging maintenance on the v1 default line (see Git history and
   prior release notes on registries).
 
-[Unreleased]: https://github.com/orbit-id/orbit-id/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/orbit-id/orbit-id/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/orbit-id/orbit-id/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/orbit-id/orbit-id/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/orbit-id/orbit-id/releases/tag/v1.1.1
