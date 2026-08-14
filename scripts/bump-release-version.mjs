@@ -90,6 +90,19 @@ for (const name of ["node-lease", "playground"]) {
   }
 }
 
+// Workspace benchmark (not under packages/) also pins @orbit-id/core.
+{
+  const path = resolve(root, "benchmark/package.json");
+  if (existsSync(path)) {
+    const pkg = readJson(path);
+    if (pkg.dependencies?.["@orbit-id/core"]) {
+      pkg.dependencies["@orbit-id/core"] = version;
+      writeJson(path, pkg);
+      console.log(`benchmark/package.json @orbit-id/core -> ${version}`);
+    }
+  }
+}
+
 const pomPath = resolve(root, "packages/java/pom.xml");
 const pom = readFileSync(pomPath, "utf8");
 const nextPom = pom.replace(
