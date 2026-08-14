@@ -82,6 +82,16 @@ function toHexString(mixed $id): string
     return OrbitId::toHexString($id);
 }
 
+function toBase64UrlString(mixed $id): string
+{
+    return OrbitId::toBase64UrlString($id);
+}
+
+function fromBase64UrlString(string $input): string
+{
+    return OrbitId::fromBase64UrlString($input);
+}
+
 function toUnixTimeMs(string|int $timestamp): string
 {
     return OrbitId::toUnixTimeMs($timestamp);

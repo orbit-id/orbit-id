@@ -7,6 +7,7 @@ import {
   parse,
   toDecimalString,
   toHexString,
+  toBase64UrlString,
 } from "@orbit-id/core";
 import * as v1 from "@orbit-id/core/v1";
 import {
@@ -230,6 +231,7 @@ function bind(): void {
           node: fields.node,
           sequence: fields.sequence,
           hex: v1.toHexString(v1.encode(fields)),
+          base64url: v1.toBase64UrlString(v1.encode(fields)),
         });
         return;
       }
@@ -244,6 +246,7 @@ function bind(): void {
         tenant: fields.tenant,
         reserved: fields.reserved,
         hex: toHexString(fromDecimalString(raw)),
+        base64url: toBase64UrlString(fromDecimalString(raw)),
       });
     } catch (e) {
       setError(parseOut, e);
@@ -262,6 +265,7 @@ function bind(): void {
         setOutput(genOut, {
           id: v1.toDecimalString(id),
           hex: v1.toHexString(id),
+          base64url: v1.toBase64UrlString(id),
           ...fields,
           timestamp: fields.timestamp.toString(),
         });
@@ -277,6 +281,7 @@ function bind(): void {
       setOutput(genOut, {
         id: toDecimalString(id),
         hex: toHexString(id),
+        base64url: toBase64UrlString(id),
         formatVersion: fields.formatVersion,
         timestamp: fields.timestamp.toString(),
         type: fields.type,
@@ -308,6 +313,7 @@ function bind(): void {
         setOutput(genOut, {
           id: v1.toDecimalString(id),
           hex: v1.toHexString(id),
+          base64url: v1.toBase64UrlString(id),
           timestamp: timestamp.toString(),
           type,
           node,
@@ -332,6 +338,7 @@ function bind(): void {
       setOutput(genOut, {
         id: toDecimalString(id),
         hex: toHexString(id),
+        base64url: toBase64UrlString(id),
         formatVersion: 1,
         timestamp: timestamp.toString(),
         type,

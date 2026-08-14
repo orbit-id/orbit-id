@@ -197,6 +197,8 @@ Sequence より上位。Region・Tenant は Sequence より下位。
 - JavaScript / TypeScript: 単一の `bigint` を SHOULD。
 - バイナリ: **16-byte big-endian** が正規。
 - 任意で小文字 hex（32 桁、`0x` なし）を受理 MAY。正規は 10 進。
+- 任意で 16-byte big-endian の **Base64 URL**（RFC 4648 §5、パディングなし）を短い表示用に提供 MAY。
+  JSON / HTTP の交換形式にはしない。
 - フル unsigned 128-bit を保持できる型を選ぶ（例: `numeric`、`BINARY(16)`、順序定義済みの
   64-bit × 2）。署名付き 64-bit 列に v2 ID を入れない。
 

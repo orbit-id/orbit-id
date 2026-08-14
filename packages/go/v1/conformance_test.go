@@ -93,6 +93,11 @@ func TestEncodeDecodeConformance(t *testing.T) {
 			if got := v1.ToHexString(id); got != c.IDHex {
 				t.Fatalf("hex = %q, want %q", got, c.IDHex)
 			}
+			b64 := v1.ToBase64UrlString(id)
+			roundTrip, err := v1.FromBase64UrlString(b64)
+			if err != nil || roundTrip != id {
+				t.Fatalf("base64url round-trip = %v, %v", roundTrip, err)
+			}
 			if got := v1.Decode(id); !reflect.DeepEqual(got, fields) {
 				t.Fatalf("decode = %#v, want %#v", got, fields)
 			}

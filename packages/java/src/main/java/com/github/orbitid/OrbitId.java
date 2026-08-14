@@ -1,6 +1,8 @@
 package com.github.orbitid;
 
 import java.math.BigInteger;
+import java.util.Base64;
+import java.util.regex.Pattern;
 
 /**
  * Codec and field accessors for Orbit ID v2.
@@ -276,6 +278,39 @@ public final class OrbitId {
         }
         return "0x" + hex;
     }
+
+    /** Unpadded Base64 URL of the 16-byte big-endian id (display / compact copy). */
+    public static String toBase64UrlString(BigInteger id) {
+        if (id == null || id.signum() < 0 || id.compareTo(U128_MAX) > 0) {
+            throw new OrbitError(
+                    OrbitError.INVALID_DECIMAL, "id out of unsigned 128-bit range: " + id);
+        }
+        byte[] raw = id.toByteArray();
+        byte[] be = new byte[16];
+        if (raw.length >= 16) {
+            System.arraycopy(raw, raw.length - 16, be, 0, 16);
+        } else {
+            System.arraycopy(raw, 0, be, 16 - raw.length, raw.length);
+        }
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(be);
+    }
+
+    /** Parse unpadded Base64 URL (exactly 22 chars) into a uint128 id. */
+    public static BigInteger fromBase64UrlString(String input) {
+        if (input == null) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "base64url input must be a string");
+        }
+        if (input.length() != 22 || !BASE64URL.matcher(input).matches()) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "invalid base64url string");
+        }
+        byte[] decoded = Base64.getUrlDecoder().decode(input);
+        if (decoded.length != 16) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "invalid base64url length");
+        }
+        return new BigInteger(1, decoded);
+    }
+
+    private static final Pattern BASE64URL = Pattern.compile("^[A-Za-z0-9_-]+$");
 
     static void validateTimestamp(long timestamp) {
         if (timestamp < 0 || timestamp > MAX_TIMESTAMP) {

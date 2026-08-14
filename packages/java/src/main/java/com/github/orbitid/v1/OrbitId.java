@@ -2,6 +2,10 @@ package com.github.orbitid.v1;
 
 import com.github.orbitid.OrbitError;
 
+import java.nio.ByteBuffer;
+import java.util.Base64;
+import java.util.regex.Pattern;
+
 /**
  * Codec and field accessors for Orbit ID v1.
  *
@@ -150,6 +154,30 @@ public final class OrbitId {
     public static String toHexString(long id) {
         return String.format("0x%016x", id);
     }
+
+    /** Unpadded Base64 URL of the 8-byte big-endian id (display / compact copy). */
+    public static String toBase64UrlString(long id) {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putLong(id);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(buffer.array());
+    }
+
+    /** Parse unpadded Base64 URL (exactly 11 chars) into a uint64 id. */
+    public static long fromBase64UrlString(String input) {
+        if (input == null) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "base64url input must be a string");
+        }
+        if (input.length() != 11 || !BASE64URL.matcher(input).matches()) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "invalid base64url string");
+        }
+        byte[] decoded = Base64.getUrlDecoder().decode(input);
+        if (decoded.length != 8) {
+            throw new OrbitError(OrbitError.INVALID_BASE64URL, "invalid base64url length");
+        }
+        return ByteBuffer.wrap(decoded).getLong();
+    }
+
+    private static final Pattern BASE64URL = Pattern.compile("^[A-Za-z0-9_-]+$");
 
     static void validateTimestamp(long timestamp) {
         if (timestamp < 0 || timestamp > MAX_TIMESTAMP) {

@@ -7,6 +7,7 @@ public final class OrbitError extends RuntimeException {
     public static final String INVALID_SEQUENCE = "INVALID_SEQUENCE";
     public static final String INVALID_TIMESTAMP = "INVALID_TIMESTAMP";
     public static final String INVALID_DECIMAL = "INVALID_DECIMAL";
+    public static final String INVALID_BASE64URL = "INVALID_BASE64URL";
     public static final String INVALID_FORMAT_VERSION = "INVALID_FORMAT_VERSION";
     public static final String INVALID_REGION = "INVALID_REGION";
     public static final String INVALID_TENANT = "INVALID_TENANT";

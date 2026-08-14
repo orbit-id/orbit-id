@@ -205,6 +205,8 @@ These are formal upper bounds, not throughput guarantees.
 - JavaScript / TypeScript: SHOULD use a single `bigint`.
 - Binary form: **16-byte big-endian** is canonical.
 - Optional lowercase hex (32 digits, no `0x`) MAY be accepted; decimal remains canonical.
+- Optional unpadded **Base64 URL** (RFC 4648 §5) of the 16-byte big-endian value MAY be provided
+  for compact display; it is **not** a JSON/HTTP interchange form.
 - Prefer storage types that hold full unsigned 128-bit values (e.g. `numeric`, `BINARY(16)`, two
   64-bit halves with defined order). Do not store v2 IDs in signed 64-bit columns.
 

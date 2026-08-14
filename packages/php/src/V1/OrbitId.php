@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OrbitId\V1;
 
+use OrbitId\Base64Url;
 use OrbitId\Decimal;
-
 use OrbitId\OrbitError;
 
 /**
@@ -135,6 +135,16 @@ final class OrbitId
         } while ($value !== '0');
 
         return '0x' . str_pad(strrev($hex), 16, '0', STR_PAD_LEFT);
+    }
+
+    public static function toBase64UrlString(mixed $id): string
+    {
+        return Base64Url::encode(Base64Url::decimalToBigEndian(self::id($id), 8));
+    }
+
+    public static function fromBase64UrlString(string $input): string
+    {
+        return Base64Url::bigEndianToDecimal(Base64Url::decode($input, 8));
     }
 
     /** @param string|int $timestamp */

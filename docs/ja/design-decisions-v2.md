@@ -81,8 +81,10 @@ v1 との識別:
 | JSON / HTTP | 128-bit 整数の符号なし **10 進文字列**（符号なし、先頭 `+` なし） |
 | Binary | 16-byte big-endian |
 | 任意 | 小文字 hex（32 桁、`0x` なし）をライブラリが受理 MAY。正規は 10 進 |
+| 任意（表示） | 16-byte big-endian の **Base64 URL**（RFC 4648 §5、パディングなし）を提供 MAY（`toBase64UrlString` / `fromBase64UrlString`）。JSON/HTTP 交換には使わない |
 
 ULID 風や UUID 8-4-4-4-12 は正規形にしない（後で再検討 MAY）。
+Base64 URL は人が見る／ログ向けの **非正規**な短縮形であり、ワイヤ置換ではない。
 
 ## 7. 言語上の値型（JS/TS）
 

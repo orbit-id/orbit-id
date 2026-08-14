@@ -22,6 +22,7 @@ describe("@orbit-id/typescript v2 surface", () => {
     expect(v2.decode(id)).toEqual(fields);
     expect(v2.parse(decimal)).toEqual(fields);
     expect(v2.fromDecimalString(decimal)).toBe(id);
+    expect(v2.fromBase64UrlString(v2.toBase64UrlString(id))).toBe(id);
     expect(v2.getFormatVersion(id)).toBe(1);
     expect(v2.getReserved(id)).toBe(0);
     expect(v2.getRegion(id)).toBe(0);

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Optional **Base64 URL** helpers (`toBase64UrlString` / `fromBase64UrlString`) across language
+  packages — unpadded RFC 4648 §5 of big-endian bytes (v2: 22 chars; v1: 11). Decimal remains the
+  JSON/HTTP canonical form ([#226](https://github.com/orbit-id/orbit-id/issues/226)).
+
 ## [2.0.0] — 2026-08-14
 
 Coordinated registry cut (slice **J** of the [promotion plan](docs/en/v2-package-2.0.0.md)).

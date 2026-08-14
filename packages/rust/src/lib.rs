@@ -5,6 +5,7 @@
 
 pub mod v1;
 pub mod v2;
+mod base64url;
 
 pub use v2::*;
 
@@ -22,6 +23,8 @@ pub enum OrbitErrorCode {
     InvalidSequence,
     InvalidTimestamp,
     InvalidDecimal,
+    /// Unpadded Base64 URL string is malformed or wrong length.
+    InvalidBase64Url,
     /// Unknown / reserved FormatVersion (v2).
     InvalidFormatVersion,
     /// Region field out of range (v2).
@@ -44,6 +47,7 @@ impl OrbitErrorCode {
             Self::InvalidSequence => "INVALID_SEQUENCE",
             Self::InvalidTimestamp => "INVALID_TIMESTAMP",
             Self::InvalidDecimal => "INVALID_DECIMAL",
+            Self::InvalidBase64Url => "INVALID_BASE64URL",
             Self::InvalidFormatVersion => "INVALID_FORMAT_VERSION",
             Self::InvalidRegion => "INVALID_REGION",
             Self::InvalidTenant => "INVALID_TENANT",

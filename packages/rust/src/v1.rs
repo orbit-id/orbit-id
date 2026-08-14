@@ -86,6 +86,17 @@ pub fn to_hex_string(id: u64) -> String {
     format!("0x{id:016x}")
 }
 
+pub fn to_base64url_string(id: u64) -> String {
+    crate::base64url::encode(&crate::base64url::u64_to_be_bytes(id))
+}
+
+pub fn from_base64url_string(input: &str) -> Result<u64, OrbitError> {
+    let bytes = crate::base64url::decode(input, 8).map_err(|message| {
+        OrbitError::new(OrbitErrorCode::InvalidBase64Url, message)
+    })?;
+    Ok(crate::base64url::be_bytes_to_u64(&bytes))
+}
+
 pub fn is_valid(input: &str) -> bool {
     from_decimal_string(input).is_ok()
 }

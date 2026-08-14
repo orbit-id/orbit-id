@@ -34,6 +34,7 @@ class ConformanceV2Test {
 
             assertEquals(testCase.get("idDecimal").asText(), OrbitId.toDecimalString(id));
             assertEquals(testCase.get("idHex").asText().toLowerCase(), OrbitId.toHexString(id));
+            assertEquals(id, OrbitId.fromBase64UrlString(OrbitId.toBase64UrlString(id)));
             assertEquals(fields, OrbitId.decode(id));
             assertEquals(fields, OrbitId.parse(testCase.get("idDecimal").asText()));
             assertEquals(id, OrbitId.fromDecimalString(testCase.get("idDecimal").asText()));

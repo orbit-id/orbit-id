@@ -1,5 +1,11 @@
 import { OrbitError } from "../errors.js";
 import {
+  bigEndianBytesToId,
+  decodeBase64Url,
+  encodeBase64Url,
+  idToBigEndianBytes,
+} from "../base64url.js";
+import {
   FORMAT_VERSION_MASK,
   FORMAT_VERSION_SHIFT,
   ISSUED_FORMAT_VERSION,
@@ -226,4 +232,25 @@ export function toHexString(id: bigint): string {
     throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 128-bit range: ${id}`);
   }
   return `0x${id.toString(16).padStart(32, "0")}`;
+}
+
+/** Unpadded Base64 URL of the 16-byte big-endian id (display / compact copy). */
+export function toBase64UrlString(id: bigint): string {
+  if (id < 0n || id > U128_MAX) {
+    throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 128-bit range: ${id}`);
+  }
+  return encodeBase64Url(idToBigEndianBytes(id, 16));
+}
+
+/** Parse unpadded Base64 URL (exactly 22 chars) into a uint128 id. */
+export function fromBase64UrlString(input: string): bigint {
+  if (typeof input !== "string") {
+    throw new OrbitError("INVALID_BASE64URL", "base64url input must be a string");
+  }
+  try {
+    return bigEndianBytesToId(decodeBase64Url(input, 16));
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : "invalid base64url string";
+    throw new OrbitError("INVALID_BASE64URL", message);
+  }
 }
