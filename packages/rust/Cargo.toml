@@ -1,6 +1,6 @@
 [package]
 name = "orbit-id"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 rust-version = "1.70"
 description = "Orbit ID encoder/decoder/generator (v2 root; v1 under orbit_id::v1)"
