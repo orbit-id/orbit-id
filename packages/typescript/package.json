@@ -1,6 +1,6 @@
 {
   "name": "@orbit-id/typescript",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Orbit ID TypeScript package (v2 root; v1 under @orbit-id/typescript/v1)",
   "license": "Apache-2.0",
   "type": "module",
@@ -31,7 +31,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@orbit-id/core": "2.0.0"
+    "@orbit-id/core": "2.0.1"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
