@@ -5,8 +5,7 @@ Reference implementation of Orbit ID for the monorepo.
 - **v2** (default export / `@orbit-id/core/v2`): Stable 128-bit wire format
 - **v1** (`v1` namespace / `@orbit-id/core/v1`): Stable 64-bit wire format
 
-Until package major `2.0.0` is cut on registries, treat this root swap as the in-tree API for the
-promotion train ([#203](https://github.com/orbit-id/orbit-id/issues/203)).
+Consumer migration: [1.x → 2.0.0](../../docs/en/migration-1x-to-2.0.0.md). Registry `2.0.0` cut is slice J of the [promotion plan](../../docs/en/v2-package-2.0.0.md).
 
 ## API
 

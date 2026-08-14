@@ -108,9 +108,12 @@ Before tagging `v2.0.0`:
 
 ## Status
 
-| Slice | Issue |
-| --- | --- |
-| A | [#201](https://github.com/orbit-id/orbit-id/issues/201) |
-| B–J | [#203](https://github.com/orbit-id/orbit-id/issues/203)–[#211](https://github.com/orbit-id/orbit-id/issues/211) |
+| Slice | Issue | State |
+| --- | --- | --- |
+| A Spec → Stable | [#201](https://github.com/orbit-id/orbit-id/issues/201) | Done ([#202](https://github.com/orbit-id/orbit-id/pull/202)) |
+| B–H language / CLI roots | [#203](https://github.com/orbit-id/orbit-id/issues/203)–[#209](https://github.com/orbit-id/orbit-id/issues/209) | Done ([#213](https://github.com/orbit-id/orbit-id/pull/213)–[#219](https://github.com/orbit-id/orbit-id/pull/219)) |
+| I Docs polish | [#210](https://github.com/orbit-id/orbit-id/issues/210) | Done (migration guide + CHANGELOG) |
+| J Release cut | [#211](https://github.com/orbit-id/orbit-id/issues/211) | Open |
 
+Consumer migration: [Migrating from package 1.x to 2.0.0](migration-1x-to-2.0.0.md).  
 Epic: [#199](https://github.com/orbit-id/orbit-id/issues/199).

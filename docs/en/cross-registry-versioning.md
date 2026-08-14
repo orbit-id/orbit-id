@@ -39,27 +39,21 @@ all registry cuts. See [#148](https://github.com/orbit-id/orbit-id/issues/148).
 
 ## Root API swap at major `2.0.0` (decision)
 
-Across TypeScript, Java, Rust, PHP, and the CLI (Go follows the same **2.0.0** root swap, but
-**1.x** cannot expose a public additive v2 — see the exception below):
+Completed in-tree (slices B–H). Registry cut is slice **J**. Consumer guide:
+[Migrating from package 1.x to 2.0.0](migration-1x-to-2.0.0.md).
 
 | Line | Public default | How to use the other format |
 | --- | --- | --- |
-| **1.x** | v1 at the package root | v2 as an additive namespace / submodule only (non-breaking; **not** for Go — see below) |
-| **2.0.0** | **v2** at the package root | v1 remains bundled under a `v1` namespace / module |
+| **1.x** (historical) | v1 at the package root | v2 as an additive namespace (Go: not public in 1.x) |
+| **2.0.0** | **v2** at the package root | v1 under a `v1` namespace / module / `--spec v1` |
 
-“Use v2” does **not** require a separate product line — raising the package major swaps the root
-default to v2 while keeping v1 importable. Details and per-language entry points:
-[Library API](library-api.md) · tracker [#150](https://github.com/orbit-id/orbit-id/issues/150).
+Details: [Library API](library-api.md) · tracker [#150](https://github.com/orbit-id/orbit-id/issues/150).  
+Promotion plan: [Package `2.0.0` promotion plan](v2-package-2.0.0.md)
+([#199](https://github.com/orbit-id/orbit-id/issues/199)).  
+Alpha-exit history: [v2 alpha exit](v2-alpha-exit.md).
 
-**When alpha ends** and the checklist before cutting package `2.0.0`:
-[Orbit ID v2 alpha exit and `2.0.0` promotion](v2-alpha-exit.md)
-([#138](https://github.com/orbit-id/orbit-id/issues/138)).  
-**Ordered execution slices:** [Package `2.0.0` promotion plan](v2-package-2.0.0.md)
-([#199](https://github.com/orbit-id/orbit-id/issues/199); optional beta freeze skipped).
-
-**Go exception:** Go modules require a `/v2` path suffix for module major ≥ 2, so a public v2 API
-cannot ship under the v1 module path. During alpha, keep Go v2 under `internal/v2`; publish it when
-the module path moves to `/v2` at package `2.0.0` (see [#142](https://github.com/orbit-id/orbit-id/issues/142)).
+**Go:** module path is `github.com/orbit-id/go/v2`. Prior major tags remain on
+`github.com/orbit-id/go@v1.x`. See [Go module publishing](go-module.md).
 
 ## When to increment X.Y.Z
 
@@ -87,7 +81,7 @@ those fields to the **same** `X.Y.Z` before tagging.
 | --- | --- | --- | --- |
 | npm | `packages/{core,typescript,cli}/package.json` | `"version"` | npm (`@orbit-id/*`) |
 | Java | `packages/java/pom.xml` (`io.github.orbit-id:orbit-id`) | `<version>` | Maven Central ([docs](maven-central.md)) |
-| Go | (Git tag on mirror; no version in `go.mod` for v0/v1) | monorepo `vX.Y.Z` → mirrored to [`orbit-id/go`](https://github.com/orbit-id/go) | `proxy.golang.org` |
+| Go | (Git tag on mirror; `go.mod` declares `github.com/orbit-id/go/v2`) | monorepo `vX.Y.Z` → mirrored to [`orbit-id/go`](https://github.com/orbit-id/go) | `proxy.golang.org` |
 | Rust | `packages/rust/Cargo.toml` | `version` | crates.io |
 | PHP | `packages/php/composer.json` | no fixed version; Packagist uses Git tags | Packagist |
 
@@ -104,7 +98,7 @@ tag a new `vX.Y.Z`, and let other workflows skip already published versions wher
 | --- | --- | --- |
 | **npm** | `package.json` `"version"` at the tagged commit | Workflow publishes each workspace if that version is not already on npm. Tag `v1.0.1` does **not** have to equal every package version, but coordinated releases SHOULD. |
 | **Maven Central** | `pom.xml` `<version>` | Publish job / manual release should use the same `X.Y.Z` as the release cut when shipping together (#54). |
-| **Go** | Git tag on mirror [`orbit-id/go`](https://github.com/orbit-id/go) | Module path: `github.com/orbit-id/go`. Consumers: `go get github.com/orbit-id/go@vX.Y.Z`. CI subtree-splits `packages/go` on monorepo `v*`. Details: [Go module publishing](go-module.md). |
+| **Go** | Git tag on mirror [`orbit-id/go`](https://github.com/orbit-id/go) | Module path: `github.com/orbit-id/go/v2`. Consumers: `go get github.com/orbit-id/go/v2@vX.Y.Z`. CI subtree-splits `packages/go` on monorepo `v*`. Details: [Go module publishing](go-module.md). |
 | **crates.io** | `Cargo.toml` `version` | `cargo publish` from `packages/rust` ([docs](crates-io.md)). Prefer matching `vX.Y.Z`. |
 | **Packagist** | Git tag on mirror [`orbit-id/php`](https://github.com/orbit-id/php) | Prefer root `vX.Y.Z`; CI subtree-splits `packages/php`. Details: [Packagist publishing](packagist.md). |
 
@@ -113,23 +107,28 @@ tag a new `vX.Y.Z`, and let other workflows skip already published versions wher
 Canonical module path (must match `packages/go/go.mod`):
 
 ```text
-github.com/orbit-id/go
+github.com/orbit-id/go/v2
 ```
 
-Tagging checklist:
+Legacy v1 continues to resolve via existing tags on `github.com/orbit-id/go@v1.x`. Do **not** cut
+new `v1.*` tags from a mirror `main` whose `go.mod` declares `/v2`.
+
+Tagging checklist (after slice J bump):
 
 ```bash
 # after merging version bumps to main
-git tag v1.1.0
-git push origin v1.1.0
+git tag v2.0.0
+git push origin v2.0.0
 # Publish workflow mirrors packages/go → orbit-id/go (+ same tag)
 ```
 
 Then verify:
 
 ```bash
-GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.1.0
+GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go/v2@v2.0.0
 ```
+
+Full details: [Go module publishing](go-module.md).
 
 ## Security / provenance expectations
 

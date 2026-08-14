@@ -105,7 +105,7 @@ ULID 風や UUID 8-4-4-4-12 は正規形にしない（後で再検討 MAY）。
 
 - 既存の v1 ID を v2 レイアウトで再デコードしない。
 - 移行はアプリ / ストレージ側（新列、二重書き込み、envelope）。
-- v1 は保守モードのまま。v2 は明示的な beta / Stable まで Draft。パッケージ `2.0.0` でルート API へ
+- v1 は保守モードのまま。v2 は **Stable** で、パッケージ `2.0.0` ではルート既定（[移行ガイド](migration-1x-to-2.0.0.md) · [v2 alpha 終了](v2-alpha-exit.md)）
   （[v2 alpha 終了](v2-alpha-exit.md)）。
 
 ## Related

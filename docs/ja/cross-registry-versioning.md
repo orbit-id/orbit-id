@@ -39,27 +39,21 @@ alpha / beta は**開発フェーズの呼称**であり、レジストリの di
 
 ## major `2.0.0` でのルート API 入れ替え（決定）
 
-TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート入れ替えは同じだが、**1.x** では
-公開の加算 v2 を出せない — 下記例外を参照）:
+in-tree では完了済み（スライス B–H）。レジストリ公開はスライス **J**。利用者向け:
+[パッケージ 1.x → 2.0.0 移行ガイド](migration-1x-to-2.0.0.md)。
 
 | 系列 | 公開の既定 | もう一方の使い方 |
 | --- | --- | --- |
-| **1.x** | パッケージルートが v1 | v2 は加算の名前空間 / サブモジュールのみ（非破壊。**Go は不可** — 下記） |
-| **2.0.0** | パッケージルートが **v2** | v1 は同梱し `v1` 名前空間 / モジュールから利用 |
+| **1.x**（履歴） | パッケージルートが v1 | v2 は加算名前空間（Go は 1.x では非公開） |
+| **2.0.0** | パッケージルートが **v2** | v1 は `v1` 名前空間 / モジュール / `--spec v1` |
 
-「v2 を使うには別プロダクトが要る」ではなく、「major を上げるとルートの既定が v2 になる」形に揃える。
-言語ごとの入口は [Library API](library-api.md) · トラッカー
-[#150](https://github.com/orbit-id/orbit-id/issues/150)。
+詳細: [Library API](library-api.md) · トラッカー [#150](https://github.com/orbit-id/orbit-id/issues/150)。  
+昇格計画: [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)
+（[#199](https://github.com/orbit-id/orbit-id/issues/199)）。  
+alpha 終了の履歴: [v2 alpha 終了](v2-alpha-exit.md)。
 
-**alpha 終了条件**とパッケージ `2.0.0` を切る前のチェックリスト:
-[Orbit ID v2 alpha 終了と `2.0.0` 昇格](v2-alpha-exit.md)
-（[#138](https://github.com/orbit-id/orbit-id/issues/138)）。  
-**実行スライス順:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)
-（[#199](https://github.com/orbit-id/orbit-id/issues/199)。任意 beta 凍結はスキップ）。
-
-**Go の例外:** Go modules は major ≥ 2 で module path に `/v2` が必須なため、v1 module path から
-公開 v2 API を出せない。alpha 期間は `internal/v2` に置き、パッケージ `2.0.0` で path を上げると同時に
-公開する（[#142](https://github.com/orbit-id/orbit-id/issues/142)）。
+**Go:** モジュールパスは `github.com/orbit-id/go/v2`。旧 major のタグは
+`github.com/orbit-id/go@v1.x` で引き続き解決。[Go モジュール公開](go-module.md) を参照。
 
 ## いつ X.Y.Z を上げるか
 
@@ -87,7 +81,7 @@ TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート�
 | --- | --- | --- | --- |
 | npm | `packages/{core,typescript,cli}/package.json` | `"version"` | npm（`@orbit-id/*`） |
 | Java | `packages/java/pom.xml`（`io.github.orbit-id:orbit-id`） | `<version>` | Maven Central（[docs](maven-central.md)） |
-| Go | （ミラー上の Git タグ。`go.mod` に版なし） | モノレポ `vX.Y.Z` → [`orbit-id/go`](https://github.com/orbit-id/go) へミラー | `proxy.golang.org` |
+| Go | （ミラー上の Git タグ。`go.mod` は `github.com/orbit-id/go/v2`） | モノレポ `vX.Y.Z` → [`orbit-id/go`](https://github.com/orbit-id/go) へミラー | `proxy.golang.org` |
 | Rust | `packages/rust/Cargo.toml` | `version` | crates.io |
 | PHP | `packages/php/composer.json` | 固定版なし。Packagist は Git タグ | Packagist |
 
@@ -101,7 +95,7 @@ TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート�
 | --- | --- | --- |
 | **npm** | タグ時点の `package.json` `"version"` | 未公開なら publish。`v1.0.1` と各 package 版の一致は必須ではないが、同時リリースでは揃える。 |
 | **Maven Central** | `pom.xml` `<version>` | 同時出荷時はカットと同じ `X.Y.Z`（#54）。 |
-| **Go** | ミラー [`orbit-id/go`](https://github.com/orbit-id/go) 上の Git タグ | モジュールパス: `github.com/orbit-id/go`。`go get github.com/orbit-id/go@vX.Y.Z`。CI が `packages/go` を subtree-split。詳細: [Go モジュール公開](go-module.md)。 |
+| **Go** | ミラー [`orbit-id/go`](https://github.com/orbit-id/go) 上の Git タグ | モジュールパス: `github.com/orbit-id/go/v2`。`go get github.com/orbit-id/go/v2@vX.Y.Z`。CI が `packages/go` を subtree-split。詳細: [Go モジュール公開](go-module.md)。 |
 | **crates.io** | `Cargo.toml` `version` | `packages/rust` から publish（[docs](crates-io.md)）。`vX.Y.Z` に揃える。 |
 | **Packagist** | ミラー [`orbit-id/php`](https://github.com/orbit-id/php) 上の Git タグ | ルート `vX.Y.Z` を基本に。CI が `packages/php` を subtree-split。詳細: [Packagist 公開](packagist.md)。 |
 
@@ -110,22 +104,27 @@ TypeScript・Java・Rust・PHP・CLI 共通（Go も **2.0.0** でのルート�
 `packages/go/go.mod` と一致させる正本パス:
 
 ```text
-github.com/orbit-id/go
+github.com/orbit-id/go/v2
 ```
 
-手順:
+レガシー v1 は `github.com/orbit-id/go@v1.x` の既存タグで解決する。`go.mod` が `/v2` を宣言した
+ミラー `main` から新しい `v1.*` タグを切らないこと。
+
+手順（スライス J の bump 後）:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v2.0.0
+git push origin v2.0.0
 # Publish workflow が packages/go → orbit-id/go（同名タグ）へミラー
 ```
 
 確認:
 
 ```bash
-GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go@v1.1.0
+GOPROXY=https://proxy.golang.org,direct go list -m github.com/orbit-id/go/v2@v2.0.0
 ```
+
+詳細: [Go モジュール公開](go-module.md)。
 
 ## セキュリティ / provenance
 

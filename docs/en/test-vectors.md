@@ -142,7 +142,7 @@ Layout: `FormatVersion=1`; remaining `Reserved=0`. Region (`0..15`) and Tenant (
 carved from the former 28-bit Reserved. Shared JSON fixtures cover zero and non-zero Region/Tenant
 round-trips plus remaining-Reserved reject (`INVALID_RESERVED`).
 Every package that claims v2 support loads the shared fixtures: `@orbit-id/core`, Java, Rust, PHP,
-and Go (via `internal/v2`).
+and Go (`github.com/orbit-id/go/v2`).
 
 ### v2 Vector 1: Epoch
 

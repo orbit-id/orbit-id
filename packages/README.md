@@ -8,9 +8,12 @@
 | [`@orbit-id/node-lease`](node-lease/) | Optional Node lease control plane (memory / Redis) | monorepo |
 | [`playground`](playground/) | Browser encode / decode UI | local Vite app + GitHub Pages |
 | [`java`](java/) | Java reference library (`io.github.orbit-id:orbit-id`) | monorepo → Maven Central (#54) |
-| [`go`](go/) | Go reference library (`github.com/orbit-id/go` via mirror) | monorepo → [`orbit-id/go`](https://github.com/orbit-id/go) (#55 / #124) |
+| [`go`](go/) | Go reference library (`github.com/orbit-id/go/v2` via mirror) | monorepo → [`orbit-id/go`](https://github.com/orbit-id/go) (#55 / #124) |
 | [`rust`](rust/) | Rust reference crate (`orbit-id` on crates.io) | monorepo → crates.io (#56) |
 | [`php`](php/) | PHP reference library (`orbit-id/php` on Packagist via mirror) | monorepo → Packagist (#57) |
+
+Package roots default to **Orbit ID v2**; v1 remains under explicit namespaces. See
+[Migrating 1.x → 2.0.0](../docs/en/migration-1x-to-2.0.0.md).
 
 Types ship **inside** each TypeScript package (`dist/*.d.ts`). There is no separate `@types/orbit-id`
 DefinitelyTyped package.

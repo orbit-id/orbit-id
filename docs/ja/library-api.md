@@ -2,15 +2,14 @@
 
 [English](../en/library-api.md)
 
-Status: Stable (`v1.1.0`) — `@orbit-id/core` / `@orbit-id/typescript` で実装済み。名前や型は各言語の
-慣例に合わせます。
+Status: Stable — パッケージルートの既定は Orbit ID **v2**（128-bit）。v1 は明示名前空間に残る。[移行ガイド](migration-1x-to-2.0.0.md) を参照。
 
 Orbit ID ライブラリが共通で揃える API 表面です。
 
 ## Goals
 
 - TypeScript / Java / Go / Rust / PHP / CLI で同じ操作を提供する
-- [Orbit ID v1 Specification](orbit-id-v1.md) に沿って encode / decode する
+- 既定は [Orbit ID v2 Specification](orbit-id-v2.md)。v1 は残した入口で ([Orbit ID v1](orbit-id-v1.md))
 - [Canonical Test Vectors](test-vectors.md) / [`spec/conformance/`](../../spec/conformance/) に合格する
 
 ## Operations
@@ -122,24 +121,23 @@ Status: `@orbit-id/core` に加算 namespaceとして **実装済み**（`import
 | Binary | 8-byte BE | **16-byte BE** |
 | Type / Node / Sequence | 6 / 7 / 10 bit | 16 / 16 / 16 bit |
 | 追加フィールド | — | `FormatVersion`（MUST `1`）、`Region`（`0..15`）、`Tenant`（`0..65535`）、残 `Reserved`（encode MUST `0`） |
-| パッケージ入口 | `@orbit-id/core` | `@orbit-id/core/v2`（ルートの `v2` 名前空間でも可） |
+| パッケージ入口 | `@orbit-id/core`（1.x では v1） | `@orbit-id/core` ルート → v2（`/v2` エイリアス） |
 
 v2 で追加するエラーコード: `INVALID_FORMAT_VERSION`、`INVALID_REGION`、`INVALID_TENANT`、
 `INVALID_RESERVED`。
 
-v1 の 64-bit ID を v2 として再解釈してはならない。公開言語パッケージは 1.x で v2 を加算的な
-名前空間として同梱する（TypeScript / Java / Rust / PHP）。Go はパッケージ `2.0.0` で
-`/v2` モジュールパスに出るまで `internal/v2` に置く。
+v1 の 64-bit ID を v2 として再解釈してはならない。
 
 ### 言語ごとの入口（1.x → 2.0.0）
 
-方針: [横断 versioning](cross-registry-versioning.md) · [#150](https://github.com/orbit-id/orbit-id/issues/150)。
+方針: [横断 versioning](cross-registry-versioning.md) ·
+[移行ガイド](migration-1x-to-2.0.0.md) · [#150](https://github.com/orbit-id/orbit-id/issues/150)。
 
 | 言語 | 1.x 既定（v1） | 1.x の加算 v2 | 2.0.0 既定（v2） | 2.0.0 で残る v1 |
 | --- | --- | --- | --- | --- |
-| TypeScript | `@orbit-id/core` ルート | `v2` / `@orbit-id/core/v2` | ルート → v2 | `v1` 名前空間 |
-| Java | `com.github.orbitid` | `com.github.orbitid.v2` | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
-| Rust | crate root | `orbit_id::v2` | crate root → v2 | `orbit_id::v1` |
-| PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2 | `OrbitId\V1` |
-| Go | module `github.com/orbit-id/go` | 非公開（パッケージ `2.0.0` まで `internal/v2`） | module `/v2` path | 前 major の module |
-| CLI | v1 既定 | 加算の v2 フラグ（CLI Issue 参照） | 既定 → v2 | 明示的 v1 モード |
+| TypeScript | `@orbit-id/core` ルート | `v2` / `@orbit-id/core/v2` | ルート → v2（`/v2` エイリアス） | `v1` / `@orbit-id/core/v1` |
+| Java | `com.github.orbitid` | `com.github.orbitid.v2`（昇格後は削除） | `com.github.orbitid` → v2 | `com.github.orbitid.v1` |
+| Rust | crate root | `orbit_id::v2` | crate root → v2（`v2` エイリアス） | `orbit_id::v1` |
+| PHP | `OrbitId\` | `OrbitId\V2` | `OrbitId\` → v2（`V2` class alias） | `OrbitId\V1` |
+| Go | module `github.com/orbit-id/go` | （1.x では非公開） | module `github.com/orbit-id/go/v2` | `…/v2/v1` または旧 major `@v1.x` |
+| CLI | 既定 v1 | `--spec v2` / `--v2` | 既定 v2 | `--spec v1` |
