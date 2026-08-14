@@ -7,13 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Documentation
-
-- Add [1.x → 2.0.0 migration guide](docs/en/migration-1x-to-2.0.0.md)
-  ([日本語](docs/ja/migration-1x-to-2.0.0.md)) and refresh install / entry-point docs for the
-  package `2.0.0` promotion train ([#210](https://github.com/orbit-id/orbit-id/issues/210)).
-
-## [2.0.0] — TBD
+## [2.0.0] — 2026-08-14
 
 Coordinated registry cut (slice **J** of the [promotion plan](docs/en/v2-package-2.0.0.md)).
 In-tree API work for this major landed under package versions `1.1.1` before the bump.
@@ -37,6 +31,12 @@ In-tree API work for this major landed under package versions `1.1.1` before the
   Go ([#218](https://github.com/orbit-id/orbit-id/pull/218)),
   CLI + playground ([#219](https://github.com/orbit-id/orbit-id/pull/219)).
 
+### Documentation
+
+- Add [1.x → 2.0.0 migration guide](docs/en/migration-1x-to-2.0.0.md)
+  ([日本語](docs/ja/migration-1x-to-2.0.0.md)) and refresh install / entry-point docs for the
+  package `2.0.0` promotion train ([#210](https://github.com/orbit-id/orbit-id/issues/210)).
+
 ### Migration
 
 See [Migrating from package 1.x to 2.0.0](docs/en/migration-1x-to-2.0.0.md).
@@ -48,6 +48,6 @@ See [Migrating from package 1.x to 2.0.0](docs/en/migration-1x-to-2.0.0.md).
 - Cross-language conformance and packaging maintenance on the v1 default line (see Git history and
   prior release notes on registries).
 
-[Unreleased]: https://github.com/orbit-id/orbit-id/compare/v1.1.1...HEAD
-[2.0.0]: https://github.com/orbit-id/orbit-id/releases/tag/v2.0.0
+[Unreleased]: https://github.com/orbit-id/orbit-id/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/orbit-id/orbit-id/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/orbit-id/orbit-id/releases/tag/v1.1.1

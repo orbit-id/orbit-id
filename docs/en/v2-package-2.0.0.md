@@ -2,12 +2,13 @@
 
 [日本語](../ja/v2-package-2.0.0.md)
 
-Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199).  
+Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199) (**closed** — slices A–J done).  
+Status: **Complete** — GitHub Release [`v2.0.0`](https://github.com/orbit-id/orbit-id/releases/tag/v2.0.0) (2026-08-14).  
 Related: [v2 alpha exit](v2-alpha-exit.md) · [Library API](library-api.md) ·
 [Cross-registry versioning](cross-registry-versioning.md) · [Roadmap](roadmap.md).
 
-This document is the **execution plan** for moving package majors to `2.0.0` (v2 at the public
-root). It does **not** cut tags or publish by itself.
+This document is the **execution plan** (kept for history) for moving package majors to `2.0.0`
+(v2 at the public root). It does **not** cut tags or publish by itself.
 
 ## Decision
 
