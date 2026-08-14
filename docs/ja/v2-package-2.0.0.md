@@ -2,11 +2,12 @@
 
 [English](../en/v2-package-2.0.0.md)
 
-Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)。  
+Tracker: [#199](https://github.com/orbit-id/orbit-id/issues/199)（**クローズ** — スライス A–J 完了）。  
+ステータス: **完了** — GitHub Release [`v2.0.0`](https://github.com/orbit-id/orbit-id/releases/tag/v2.0.0)（2026-08-14）。  
 関連: [v2 alpha 終了](v2-alpha-exit.md) · [Library API](library-api.md) ·
 [横断 versioning](cross-registry-versioning.md) · [Roadmap](roadmap.md)。
 
-本ドキュメントはパッケージ major を `2.0.0` にし、公開ルートを v2 にする **実行計画**です。
+本ドキュメントはパッケージ major を `2.0.0` にし、公開ルートを v2 にする **実行計画**（履歴用）です。
 タグ切りやレジストリ公開そのものは含みません。
 
 ## 決定

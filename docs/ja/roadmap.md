@@ -71,8 +71,10 @@ Draft → **Stable** 仕様: [Orbit ID v2 Specification](orbit-id-v2.md)
 alpha 終了 / 昇格概要: [v2 alpha 終了](v2-alpha-exit.md)。  
 **パッケージ `2.0.0` 実行計画:** [パッケージ `2.0.0` 昇格計画](v2-package-2.0.0.md)。
 
-次: 残りの昇格スライス（各言語 → CLI → `v2.0.0` カット）。
-追加の Reserved 切り出し（例: Datacenter）はパッケージ `2.0.0` 以降。
+パッケージ `2.0.0` 昇格スライス **A–J は完了**
+（[リリース](https://github.com/orbit-id/orbit-id/releases/tag/v2.0.0)、epic [#199](https://github.com/orbit-id/orbit-id/issues/199)）。
+次の任意作業: 追加の Reserved 切り出し（例: Datacenter）は **新 ADR** 経由。
+v1.x はメンテモードのまま。
 
 ## リポジトリ構成（モノレポ）
 

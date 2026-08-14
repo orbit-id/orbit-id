@@ -74,8 +74,10 @@ Locked decisions: [Design Decisions (v2)](design-decisions-v2.md).
 Alpha exit / promotion overview: [v2 alpha exit](v2-alpha-exit.md).  
 **Package `2.0.0` execution plan:** [Package `2.0.0` promotion plan](v2-package-2.0.0.md).
 
-Next: implement remaining promotion slices (languages → CLI → `v2.0.0` cut). Further Reserved
-carve-outs (for example Datacenter) wait until after package `2.0.0`.
+Package `2.0.0` promotion slices **A–J are shipped**
+([release](https://github.com/orbit-id/orbit-id/releases/tag/v2.0.0), epic [#199](https://github.com/orbit-id/orbit-id/issues/199)).
+Next optional work: further Reserved carve-outs (for example Datacenter) via a **new ADR**;
+v1.x stays in maintenance mode.
 
 ## Repository layout (monorepo)
 
