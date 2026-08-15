@@ -5,6 +5,9 @@
 Orbit ID は specification-first です。新しい言語パッケージより先に、形式・境界条件・test vector を
 整えます。stable v1 の解釈は凍結済みです（下記 Compatibility を参照）。
 
+`main` 向け PR のコミットは GitHub で **Verified** である必要があります。
+[コミット署名](commit-signing.md) を参照。
+
 ## Proposing a change
 
 1. 変更する要件とユースケースを説明する issue を作成する。
@@ -33,3 +36,4 @@ Orbit ID は specification-first です。新しい言語パッケージより�
 - [ ] clock rollback、overflow、concurrency への影響を確認した
 - [ ] storage / JSON interoperability への影響を確認した
 - [ ] 必要な specification と docs を更新した
+- [ ] PR ブランチのコミットが GitHub Verified である（[コミット署名](commit-signing.md)）

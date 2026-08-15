@@ -66,16 +66,18 @@ jobs:
           set -euo pipefail
           branch="chore/release-v${VERSION}"
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$branch"
-          git add -A
-          if git diff --cached --quiet; then
+          if git diff --quiet && git diff --cached --quiet; then
             echo "::error::No version changes to commit (already at ${VERSION}?)"
             exit 1
           fi
-          git commit -m "chore: bump release metadata to v${VERSION}"
-          git push -u origin "$branch" --force-with-lease
+
+          # Point the remote branch at main, then add a GitHub-verified commit
+          # (createCommitOnBranch). Local `git commit` is unsigned and cannot
+          # merge to `main` under required_signatures.
+          git fetch origin main
+          git push origin "origin/main:refs/heads/${branch}" --force-with-lease
+          git fetch origin "$branch"
+          node scripts/github-commit-on-branch.mjs "$branch" "chore: bump release metadata to v${VERSION}"
 
           body="$(cat <<EOF
           Lockstep version bump for \`${VERSION}\`.

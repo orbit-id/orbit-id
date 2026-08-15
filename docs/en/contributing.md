@@ -8,6 +8,8 @@ packages. Stable v1 interpretation is frozen; see the compatibility section belo
 The root [`CONTRIBUTING.md`](../../CONTRIBUTING.md) mirrors this document for GitHub’s conventional
 entry point.
 
+Pull requests targeting `main` need **GitHub-verified** commits. See [Commit signing](commit-signing.md).
+
 ## Proposing a change
 
 1. Open an issue describing the requirement and use case.
@@ -36,3 +38,4 @@ do not add features by default. New format / API work belongs on the v2 (128-bit
 - [ ] Checked impact on clock rollback, overflow, and concurrency
 - [ ] Checked impact on storage / JSON interoperability
 - [ ] Updated the required specification and docs
+- [ ] Commits on the PR branch are GitHub-verified ([commit signing](commit-signing.md))
