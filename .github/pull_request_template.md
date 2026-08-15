@@ -12,6 +12,7 @@ Closes #
 - [ ] Checked impact on clock rollback, overflow, and concurrency
 - [ ] Checked impact on storage / JSON interoperability
 - [ ] Updated the required specification, docs, and test vectors together
+- [ ] Commits on the PR branch are GitHub-verified
 
 ## Test plan
 
