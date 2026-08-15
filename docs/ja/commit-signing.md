@@ -7,40 +7,33 @@
 
 squash 後の `main` 上のコミットは GitHub が署名しますが、ruleset が見るのは **PR ブランチ**です。
 
+## 方針
+
+1. `main` 向け PR の各コミットは GitHub で **Verified** であること。
+2. git の署名を切らない（`--no-gpg-sign`、`commit.gpgsign=false`）。
+3. `gh pr merge --admin` を使わない。保護条件が揃ってからマージする。
+4. Verified でなければ止める。回避しない。
+
+GitHub アカウントに署名鍵を登録する（**SSH signing keys** または GPG）。認証用キーとは別。
+コミットの Verified バッジで確認する。
+
 ## エージェント
 
-1. `--no-gpg-sign` / `commit.gpgsign=false` は使わない。
-2. `gh pr merge --admin` は使わない。
-3. PR のコミットは `scripts/github-commit-on-branch.mjs`（GraphQL `createCommitOnBranch` →
-   GitHub verified）で作る。先にブランチ先端を `main` から push する:
+`scripts/github-commit-on-branch.mjs`（GraphQL `createCommitOnBranch`）で GitHub 署名のコミットを
+作る。リモートにブランチがある状態で:
 
-   ```bash
-   git fetch origin main
-   git push -u origin HEAD:refs/heads/<branch>
-   node scripts/github-commit-on-branch.mjs <branch> "<commit headline>"
-   git fetch origin <branch> && git reset --hard origin/<branch>
-   ```
+```bash
+git fetch origin main
+git push -u origin HEAD:refs/heads/<branch>
+node scripts/github-commit-on-branch.mjs <branch> "<commit headline>"
+git fetch origin <branch> && git reset --hard origin/<branch>
+```
 
-   GitHub が署名するトークンが必要: Actions の **`GITHUB_TOKEN`**（GitHub App）、または
-   Contents: write の **fine-grained PAT**。CLI の OAuth（`gho_` / `gh auth token`）では
-   `CreateCommitOnBranch` が FORBIDDEN になり、Contents REST も未署名のまま。
-
-4. 失敗したら止める。回避しない。`commit.gpgsign=false` も `gh pr merge --admin` も使わない。
-
-## メンテナ（ローカル SSH / 1Password）
-
-GitHub API を使わない場合の任意手順:
-
-1. `gpg.format=ssh`、`commit.gpgsign=true`、`user.signingkey` に SSH 公開鍵。
-2. `gpg.ssh.program` は 1Password の **実体** `op-ssh-sign`。`WindowsApps` の Store エイリアスは
-   WSL から失敗する。
-3. 1Password SSH agent が動いていること（`SSH_AUTH_SOCK`）。
-4. その公開鍵を GitHub の **SSH signing key** に登録する（Settings → SSH and GPG keys →
-   Signing keys）。認証用キーだけでは足りない。
-5. `git log -1 --show-signature` と GitHub の Verified バッジで確認。
+GitHub が署名できるトークンを使う（Actions の `GITHUB_TOKEN`）。mutation が拒否される、または
+コミットが未署名なら止める。
 
 ## Bump release PR
 
 `.github/workflows/bump-release-pr.yml` は未署名の `git commit` を使わない。
-`chore/release-vX.Y.Z` を `main` 先端に push したあと `scripts/github-commit-on-branch.mjs` で
+`chore/release-vX.Y.Z` を `main` 先端に合わせたあと `scripts/github-commit-on-branch.mjs` で
 verified な bump コミットを足す。

@@ -19,6 +19,6 @@ Follow these rules when working in this repository:
 
 6. **Do not change repository settings.** Do not modify GitHub org/repo settings, rulesets, Actions permissions, secrets, deploy keys, or similar infrastructure unless the user explicitly requests that ops work in the current task.
 
-7. **Signed commits.** `main` requires GitHub-verified signatures. Never disable signing (`--no-gpg-sign`, `git -c commit.gpgsign=false`). Prefer `node scripts/github-commit-on-branch.mjs` with Actions `GITHUB_TOKEN` or a fine-grained PAT (the `gh` OAuth `gho_` token cannot create verified commits). If local SSH/1Password signing fails, stop and report; do not work around it.
+7. **Signed commits.** `main` requires GitHub-verified signatures. Never disable signing (`--no-gpg-sign`, `git -c commit.gpgsign=false`). Prefer `node scripts/github-commit-on-branch.mjs` (Actions `GITHUB_TOKEN`). If the commit is not Verified, stop; do not work around it.
 
 8. **No admin merge.** Never `gh pr merge --admin`. Merge only after branch protection is satisfied (verified commits, required checks). See [commit signing](docs/en/commit-signing.md).
