@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CLI `generate` default output is **Base64 URL** (was unsigned decimal). Use
+  `--format int` or `--format hex` for those forms. `parse` accepts Base64 URL, decimal, and
+  `0x`-hex ([#235](https://github.com/orbit-id/orbit-id/issues/235)).
+
+### Added
+
+- Short display helpers `toInt` / `toHex` / `toBase64Url` (aliases alongside existing `to*String`
+  names) in `@orbit-id/core` v1 and v2 ([#235](https://github.com/orbit-id/orbit-id/issues/235)).
+
 ## [2.0.1] — 2026-08-15
 
 ### Added

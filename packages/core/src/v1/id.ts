@@ -142,7 +142,23 @@ export function fromUnixTimeMs(unixMs: bigint): bigint {
 }
 
 export function toHexString(id: bigint): string {
+  if (id < 0n || id > (1n << 64n) - 1n) {
+    throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 64-bit range: ${id}`);
+  }
   return `0x${id.toString(16).padStart(16, "0")}`;
+}
+
+/** Unsigned integer form of the id (in-memory bigint). */
+export function toInt(id: bigint): bigint {
+  if (id < 0n || id > (1n << 64n) - 1n) {
+    throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 64-bit range: ${id}`);
+  }
+  return id;
+}
+
+/** Short alias of {@link toHexString}. */
+export function toHex(id: bigint): string {
+  return toHexString(id);
 }
 
 /** Unpadded Base64 URL of the 8-byte big-endian id (display / compact copy). */
@@ -151,6 +167,11 @@ export function toBase64UrlString(id: bigint): string {
     throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 64-bit range: ${id}`);
   }
   return encodeBase64Url(idToBigEndianBytes(id, 8));
+}
+
+/** Short alias of {@link toBase64UrlString} (preferred compact display). */
+export function toBase64Url(id: bigint): string {
+  return toBase64UrlString(id);
 }
 
 /** Parse unpadded Base64 URL (exactly 11 chars) into a uint64 id. */
