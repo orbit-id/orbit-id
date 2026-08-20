@@ -265,6 +265,11 @@ describe("v2 encode/decode coverage", () => {
     expect(() => v2.toDecimalString(v2.U128_MAX + 1n)).toThrow(/128-bit/);
     expect(() => v2.toHexString(-1n)).toThrow(/128-bit/);
     expect(() => v2.toHexString(v2.U128_MAX + 1n)).toThrow(/128-bit/);
+    expect(v2.toInt(0n)).toBe(0n);
+    expect(v2.toHex(0n)).toBe(v2.toHexString(0n));
+    expect(v2.toBase64Url(0n)).toBe(v2.toBase64UrlString(0n));
+    expect(() => v2.toInt(-1n)).toThrow(/128-bit/);
+    expect(() => v2.toInt(v2.U128_MAX + 1n)).toThrow(/128-bit/);
     expect(v2.toBase64UrlString(0n)).toBe("AAAAAAAAAAAAAAAAAAAAAA");
     expect(v2.fromBase64UrlString("AAAAAAAAAAAAAAAAAAAAAA")).toBe(0n);
     expect(() => v2.toBase64UrlString(-1n)).toThrow(/128-bit/);

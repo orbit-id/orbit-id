@@ -38,7 +38,10 @@ export {
   systemOrbitClock,
   toDecimalString,
   toHexString,
+  toHex,
+  toInt,
   toBase64UrlString,
+  toBase64Url,
   fromBase64UrlString,
   toUnixTimeMs,
 } from "@orbit-id/core";
