@@ -27,10 +27,11 @@ This document describes the common API surface for Orbit ID libraries.
 `isValid` MUST NOT claim that an ID was issued by an Orbit generator. See specification §11.
 
 Optional helpers MAY be provided (`encode(fields)`, `toDecimalString(id)`, `fromDecimalString(s)`,
-`toHexString(id)`, `toBase64UrlString(id)`, `fromBase64UrlString(s)`) but MUST NOT diverge from the
-operations above. Decimal remains the JSON / HTTP canonical string; hex and Base64 URL are
-**non-canonical** display / compact-copy forms (Base64 URL = RFC 4648 §5, unpadded, big-endian
-bytes).
+`toHexString(id)` / `toHex(id)`, `toInt(id)`, `toBase64UrlString(id)` / `toBase64Url(id)`,
+`fromBase64UrlString(s)`) but MUST NOT diverge from the operations above. Decimal remains the
+JSON / HTTP canonical string; hex and Base64 URL are **non-canonical** display / compact-copy
+forms (Base64 URL = RFC 4648 §5, unpadded, big-endian bytes). The CLI defaults `generate` output
+to Base64 URL (`--format base64url|int|hex`).
 
 ## Value representation
 
@@ -39,7 +40,7 @@ bytes).
 | In-memory (JS/TS) | `bigint` |
 | JSON / HTTP | unsigned decimal string |
 | Binary | v1: 8-byte big-endian; v2: **16-byte big-endian** |
-| Compact display (optional) | unpadded Base64 URL (v1: 11 chars; v2: 22 chars) |
+| Compact display (optional) | unpadded Base64 URL (v1: 11 chars; v2: 22 chars); CLI `generate` default |
 
 Example JSON:
 

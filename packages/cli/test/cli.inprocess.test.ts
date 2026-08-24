@@ -87,13 +87,13 @@ describe("orbit-id cli in-process", () => {
   it("generates with --type and --node", () => {
     const result = captureRun(["generate", "--type", "1", "--node", "7"]);
     expect(result.code).toBeUndefined();
-    expect(result.stdout.trim()).toMatch(/^\d+$/);
+    expect(result.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{22}$/);
   });
 
   it("generates with ORBIT_NODE_ID", () => {
     const result = captureRun(["generate", "--type", "2"], { ORBIT_NODE_ID: "3" });
     expect(result.code).toBeUndefined();
-    expect(result.stdout.trim()).toMatch(/^\d+$/);
+    expect(result.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{22}$/);
   });
 
   it("requires node for generate", () => {
@@ -151,7 +151,7 @@ describe("orbit-id cli in-process", () => {
   it("generates with wider v2 ranges by default", () => {
     const result = captureRun(["generate", "--type", "100", "--node", "200"]);
     expect(result.code).toBeUndefined();
-    expect(result.stdout.trim()).toMatch(/^\d+$/);
+    expect(result.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{22}$/);
   });
 
   it("generates v2 with region and tenant flags", () => {
@@ -186,7 +186,7 @@ describe("orbit-id cli in-process", () => {
   it("covers --v2 alias and optional flag validation", () => {
     const alias = captureRun(["generate", "--v2", "--type", "1", "--node", "7"]);
     expect(alias.code).toBeUndefined();
-    expect(alias.stdout.trim()).toMatch(/^\d+$/);
+    expect(alias.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{22}$/);
 
     expect(captureRun(["parse", "--spec"]).stderr).toContain("--spec requires v1 or v2");
     expect(captureRun(["generate", "--type", "--node", "1"]).stderr).toContain("Missing --type");
@@ -200,6 +200,15 @@ describe("orbit-id cli in-process", () => {
       "0..15",
     );
     expect(captureRun(["generate", "--type", "1.", "--node", "1"]).stderr).toContain("Invalid --type");
+    expect(captureRun(["generate", "--type", "1", "--node", "1", "--format"]).stderr).toContain(
+      "--format requires",
+    );
+    expect(captureRun(["generate", "--type", "1", "--node", "1", "--format", "uuid"]).stderr).toContain(
+      "Invalid --format",
+    );
+    const asInt = captureRun(["generate", "--type", "1", "--node", "1", "--format", "decimal"]);
+    expect(asInt.code).toBeUndefined();
+    expect(asInt.stdout.trim()).toMatch(/^\d+$/);
   });
 
   it("covers OrbitError on generate", async () => {
@@ -230,6 +239,70 @@ describe("orbit-id cli in-process", () => {
       captureRun(["parse", "21267647932558653967613957625668960256"]),
     ).toThrow("boom-parse");
     parseSpy.mockRestore();
+  });
+
+  it("covers output formats including v1 hex/base64url", () => {
+    const b64 = captureRun(["generate", "--type", "1", "--node", "1", "--format", "base64url"]);
+    expect(b64.code).toBeUndefined();
+    expect(b64.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{22}$/);
+
+    const asInt = captureRun(["generate", "--type", "1", "--node", "1", "--format", "int"]);
+    expect(asInt.code).toBeUndefined();
+    expect(asInt.stdout.trim()).toMatch(/^\d+$/);
+
+    const asHex = captureRun(["generate", "--type", "1", "--node", "1", "--format", "hex"]);
+    expect(asHex.code).toBeUndefined();
+    expect(asHex.stdout.trim()).toMatch(/^0x[0-9a-f]{32}$/);
+
+    const v1Hex = captureRun([
+      "generate",
+      "--spec",
+      "v1",
+      "--type",
+      "1",
+      "--node",
+      "1",
+      "--format",
+      "hex",
+    ]);
+    expect(v1Hex.code).toBeUndefined();
+    expect(v1Hex.stdout.trim()).toMatch(/^0x[0-9a-f]{16}$/);
+
+    const v1B64 = captureRun([
+      "generate",
+      "--spec",
+      "v1",
+      "--type",
+      "1",
+      "--node",
+      "1",
+      "--format",
+      "base64url",
+    ]);
+    expect(v1B64.code).toBeUndefined();
+    expect(v1B64.stdout.trim()).toMatch(/^[A-Za-z0-9_-]{11}$/);
+  });
+
+  it("parses v1 hex and rejects malformed base64url-shaped input", () => {
+    const hex = captureRun([
+      "parse",
+      "--spec",
+      "v1",
+      "0x0000000000021c2a",
+    ]);
+    expect(hex.code).toBeUndefined();
+    const body = JSON.parse(hex.stdout);
+    expect(body.int).toBe("138282");
+    expect(body.hex).toBe("0x0000000000021c2a");
+
+    const badWidth = captureRun(["parse", "--spec", "v1", "0xabc"]);
+    expect(badWidth.code).toBe(1);
+    expect(badWidth.stderr).toContain("hex id must be");
+
+    // Correct length but invalid alphabet → falls through to decimal and fails.
+    const junk = captureRun(["parse", "!!!!!!!!!!!!!!!!!!!!!!"]);
+    expect(junk.code).toBe(1);
+    expect(junk.stderr).toContain("INVALID_DECIMAL");
   });
 
   it("rejects invalid --spec", () => {

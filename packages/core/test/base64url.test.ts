@@ -15,6 +15,20 @@ describe("base64url helpers", () => {
     expect(v1.fromBase64UrlString("AAAAAAAAAAA")).toBe(0n);
     const id = 0x1000_0000_0000_002an;
     expect(v1.fromBase64UrlString(v1.toBase64UrlString(id))).toBe(id);
+    expect(v1.toInt(id)).toBe(id);
+    expect(v1.toHex(id)).toBe(v1.toHexString(id));
+    expect(v1.toBase64Url(id)).toBe(v1.toBase64UrlString(id));
+    expect(() => v1.toInt(-1n)).toThrow(OrbitError);
+    expect(() => v1.toHexString(-1n)).toThrow(OrbitError);
+    expect(() => v1.toBase64UrlString(-1n)).toThrow(OrbitError);
+    expect(() => v1.fromBase64UrlString(1 as unknown as string)).toThrow(OrbitError);
+  });
+
+  it("exposes short v2 display aliases", () => {
+    const id = v2.fromDecimalString("21267647932558653967613957625668960256");
+    expect(v2.toInt(id)).toBe(id);
+    expect(v2.toHex(id)).toBe(v2.toHexString(id));
+    expect(v2.toBase64Url(id)).toBe(v2.toBase64UrlString(id));
   });
 
   it("rejects padded / standard alphabet / wrong length", () => {

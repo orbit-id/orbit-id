@@ -44,10 +44,11 @@ describe("orbit-id cli", () => {
     expect(result.stderr).toContain("INVALID_DECIMAL");
   });
 
-  it("generates a decimal id with --type and --node", () => {
+  it("generates a base64url id by default", () => {
     const result = runBin(["generate", "--type", "1", "--node", "7"]);
     expect(result.status).toBe(0);
-    expect(result.stdout.trim()).toMatch(/^\d+$/);
+    expect(result.stdout.trim()).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(result.stdout.trim()).not.toMatch(/^\d+$/);
   });
 
   it("generates using ORBIT_NODE_ID", () => {
@@ -94,15 +95,24 @@ describe("orbit-id cli", () => {
       reserved: 0,
     });
     expect(body.time).toBe("2026-01-01T00:00:00.000Z");
+    expect(body.int).toBe("21267647932558653967613957625668960256");
     expect(body.hex).toBe("0x100000000000000010007002a0000000");
     expect(body.base64url).toBe("EAAAAAAAAAAQAHACoAAAAA");
   });
 
-  it("generates a v2 decimal id by default", () => {
+  it("parses a known v2 base64url id", () => {
+    const result = runBin(["parse", "EAAAAAAAAAAQAHACoAAAAA"]);
+    expect(result.status).toBe(0);
+    const body = JSON.parse(result.stdout);
+    expect(body.int).toBe("21267647932558653967613957625668960256");
+    expect(body.base64url).toBe("EAAAAAAAAAAQAHACoAAAAA");
+  });
+
+  it("generates a v2 base64url id by default", () => {
     const result = runBin(["generate", "--type", "1", "--node", "7"]);
     expect(result.status).toBe(0);
     const id = result.stdout.trim();
-    expect(id).toMatch(/^\d+$/);
+    expect(id).toMatch(/^[A-Za-z0-9_-]{22}$/);
     const parsed = runBin(["parse", id]);
     expect(parsed.status).toBe(0);
     const body = JSON.parse(parsed.stdout);
@@ -111,6 +121,29 @@ describe("orbit-id cli", () => {
     expect(body.type).toBe(1);
     expect(body.region).toBe(0);
     expect(body.tenant).toBe(0);
+  });
+
+  it("generates int and hex via --format", () => {
+    const asInt = runBin(["generate", "--type", "1", "--node", "7", "--format", "int"]);
+    expect(asInt.status).toBe(0);
+    expect(asInt.stdout.trim()).toMatch(/^\d+$/);
+
+    const asHex = runBin(["generate", "--type", "1", "--node", "7", "--format", "hex"]);
+    expect(asHex.status).toBe(0);
+    expect(asHex.stdout.trim()).toMatch(/^0x[0-9a-f]{32}$/);
+  });
+
+  it("parses hex ids and rejects wrong hex width", () => {
+    const ok = runBin([
+      "parse",
+      "0x100000000000000010007002a0000000",
+    ]);
+    expect(ok.status).toBe(0);
+    expect(JSON.parse(ok.stdout).base64url).toBe("EAAAAAAAAAAQAHACoAAAAA");
+
+    const bad = runBin(["parse", "0xabc"]);
+    expect(bad.status).not.toBe(0);
+    expect(bad.stderr).toContain("hex id must be");
   });
 
   it("generates v2 with --region and --tenant", () => {

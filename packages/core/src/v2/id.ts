@@ -234,12 +234,30 @@ export function toHexString(id: bigint): string {
   return `0x${id.toString(16).padStart(32, "0")}`;
 }
 
+/** Unsigned integer form of the id (in-memory bigint). */
+export function toInt(id: bigint): bigint {
+  if (id < 0n || id > U128_MAX) {
+    throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 128-bit range: ${id}`);
+  }
+  return id;
+}
+
+/** Short alias of {@link toHexString}. */
+export function toHex(id: bigint): string {
+  return toHexString(id);
+}
+
 /** Unpadded Base64 URL of the 16-byte big-endian id (display / compact copy). */
 export function toBase64UrlString(id: bigint): string {
   if (id < 0n || id > U128_MAX) {
     throw new OrbitError("INVALID_DECIMAL", `id out of unsigned 128-bit range: ${id}`);
   }
   return encodeBase64Url(idToBigEndianBytes(id, 16));
+}
+
+/** Short alias of {@link toBase64UrlString} (preferred compact display). */
+export function toBase64Url(id: bigint): string {
+  return toBase64UrlString(id);
 }
 
 /** Parse unpadded Base64 URL (exactly 22 chars) into a uint128 id. */

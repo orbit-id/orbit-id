@@ -26,10 +26,11 @@ Orbit ID ライブラリが共通で揃える API 表面です。
 
 `isValid` は Orbit generator が発行したことを主張してはなりません。仕様 §11 を参照。
 
-`encode(fields)`、`toDecimalString(id)`、`fromDecimalString(s)`、`toHexString(id)`、
-`toBase64UrlString(id)`、`fromBase64UrlString(s)` などの補助 API を提供しても構いませんが、
-上記 operations と矛盾してはなりません。JSON / HTTP の正規形は 10 進のまま。hex と Base64 URL は
-**非正規**の表示・短いコピペ用（Base64 URL = RFC 4648 §5、パディングなし、big-endian バイト）です。
+`encode(fields)`、`toDecimalString(id)`、`fromDecimalString(s)`、`toHexString(id)` / `toHex(id)`、
+`toInt(id)`、`toBase64UrlString(id)` / `toBase64Url(id)`、`fromBase64UrlString(s)` などの補助 API を
+提供しても構いませんが、上記 operations と矛盾してはなりません。JSON / HTTP の正規形は 10 進のまま。
+hex と Base64 URL は **非正規**の表示・短いコピペ用（Base64 URL = RFC 4648 §5、パディングなし、
+big-endian バイト）です。CLI の `generate` 既定出力は Base64 URL（`--format base64url|int|hex`）です。
 
 ## Value representation
 
@@ -38,7 +39,7 @@ Orbit ID ライブラリが共通で揃える API 表面です。
 | In-memory (JS/TS) | `bigint` |
 | JSON / HTTP | 符号なし 10 進文字列 |
 | Binary | v1: 8-byte big-endian、v2: **16-byte big-endian** |
-| 短い表示（任意） | パディングなし Base64 URL（v1: 11 文字、v2: 22 文字） |
+| 短い表示（任意） | パディングなし Base64 URL（v1: 11 文字、v2: 22 文字）。CLI `generate` の既定 |
 
 JSON 例:
 
