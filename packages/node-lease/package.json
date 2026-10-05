@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.4",
     "ioredis": "^6.0.0",
     "ioredis-mock": "^8.9.0",
     "typescript": "^7.0.2",
